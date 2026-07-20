@@ -2,17 +2,26 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, ChartNoAxesColumn, Home, Star, UserRound } from "lucide-react";
+import { BookOpen, ChartNoAxesColumn, Home, Loader2, Star, UserRound } from "lucide-react";
+import { useRequireAuth } from "@/lib/auth";
 
 const navItems = [
   { href: "/student/dashboard", label: "Beranda", icon: Home },
-  { href: "/student/attempts/demo", label: "Misi", icon: BookOpen },
   { href: "/student/history", label: "Hasil", icon: ChartNoAxesColumn },
   { href: "/student/profile", label: "Profil", icon: UserRound },
 ];
 
 export function StudentShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { ready } = useRequireAuth(["STUDENT"], "/student/login");
+
+  if (!ready) {
+    return (
+      <main className="grid min-h-screen place-items-center">
+        <Loader2 className="animate-spin text-slate-400" size={32} />
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen pb-24">
@@ -37,7 +46,7 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
       {children}
 
       <nav className="fixed inset-x-3 bottom-3 z-40 rounded-[8px] border border-slate-200 bg-white/95 p-2 shadow-2xl backdrop-blur md:hidden">
-        <div className="grid grid-cols-4 gap-1">
+        <div className="grid grid-cols-3 gap-1">
           {navItems.map((item) => {
             const active = pathname === item.href;
             const Icon = item.icon;

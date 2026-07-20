@@ -1,10 +1,33 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowRight, BookOpen, KeyRound, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, KeyRound, Loader2, Sparkles } from "lucide-react";
+import { FormEvent, useState } from "react";
+import { ApiError } from "@/lib/api";
+import { studentLogin } from "@/lib/auth";
 
 export default function StudentLoginPage() {
+  const router = useRouter();
+  const [participantCode, setParticipantCode] = useState("BB-S001");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      await studentLogin(participantCode);
+      router.push("/student/dashboard");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Gagal masuk. Coba lagi.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <main className="flex min-h-screen items-center px-4 py-8 sm:px-6">
       <motion.section
@@ -46,7 +69,7 @@ export default function StudentLoginPage() {
           <h2 className="font-heading mt-5 text-3xl font-black">
             Siap mulai?
           </h2>
-          <form className="mt-7 space-y-5">
+          <form className="mt-7 space-y-5" onSubmit={handleSubmit}>
             <label className="block">
               <span className="mb-2 block text-sm font-black text-slate-600">
                 Kode peserta
@@ -55,22 +78,31 @@ export default function StudentLoginPage() {
                 <KeyRound className="text-[#22c55e]" size={22} />
                 <input
                   className="w-full border-0 bg-transparent font-heading text-xl font-black uppercase tracking-[0.08em] outline-none"
-                  defaultValue="BB-S001"
+                  onChange={(event) => setParticipantCode(event.target.value)}
+                  required
+                  value={participantCode}
                 />
               </span>
             </label>
 
-            <Link
-              className="flex items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_7px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
-              href="/student/dashboard"
+            {error ? (
+              <p className="rounded-[8px] bg-[#fff1f2] px-4 py-3 text-sm font-bold text-[#e11d48]">
+                {error}
+              </p>
+            ) : null}
+
+            <button
+              className="flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_7px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-70"
+              disabled={loading}
+              type="submit"
             >
+              {loading ? <Loader2 className="animate-spin" size={19} /> : null}
               Masuk dan lanjut
-              <ArrowRight size={19} />
-            </Link>
+              {!loading ? <ArrowRight size={19} /> : null}
+            </button>
           </form>
         </div>
       </motion.section>
     </main>
   );
 }
-

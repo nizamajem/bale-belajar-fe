@@ -130,7 +130,7 @@ export default function HomePage() {
             </Link>
             <Link
               className="inline-flex items-center justify-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-6 py-4 font-heading text-base font-black text-slate-700 shadow-[0_6px_0_#d8e2ef] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
-              href="/student/results/demo"
+              href="/login"
             >
               Lihat Dashboard
               <ArrowRight size={19} />

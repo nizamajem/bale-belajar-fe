@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   BarChart3,
   Bell,
@@ -9,11 +9,13 @@ import {
   ClipboardList,
   GraduationCap,
   LayoutDashboard,
+  Loader2,
   LogOut,
   School,
   Settings,
   UsersRound,
 } from "lucide-react";
+import { logout, useRequireAuth } from "@/lib/auth";
 
 type Role = "admin" | "teacher";
 
@@ -34,6 +36,11 @@ const nav = {
   ],
 };
 
+const roleGuard: Record<Role, ("SUPER_ADMIN" | "ADMIN" | "TEACHER")[]> = {
+  admin: ["SUPER_ADMIN", "ADMIN"],
+  teacher: ["TEACHER"],
+};
+
 export function DashboardShell({
   children,
   role,
@@ -44,7 +51,22 @@ export function DashboardShell({
   title: string;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, ready } = useRequireAuth(roleGuard[role]);
   const items = nav[role];
+
+  function handleLogout() {
+    logout();
+    router.push("/login");
+  }
+
+  if (!ready || !user) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-[#f8fafc]">
+        <Loader2 className="animate-spin text-slate-400" size={32} />
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#f8fafc] text-[#172033]">
@@ -85,13 +107,14 @@ export function DashboardShell({
             })}
           </nav>
 
-          <Link
-            className="mt-auto flex items-center gap-3 rounded-[8px] px-4 py-3 font-heading font-black text-slate-500 hover:bg-slate-50"
-            href="/login"
+          <button
+            className="mt-auto flex items-center gap-3 rounded-[8px] px-4 py-3 text-left font-heading font-black text-slate-500 hover:bg-slate-50"
+            onClick={handleLogout}
+            type="button"
           >
             <LogOut size={20} />
             Keluar
-          </Link>
+          </button>
         </div>
       </aside>
 
@@ -100,7 +123,7 @@ export function DashboardShell({
           <div className="flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
             <div>
               <p className="text-xs font-black uppercase text-slate-400">
-                {role === "admin" ? "Super Admin" : "Guru Matematika"}
+                {user.name}
               </p>
               <h1 className="font-heading text-xl font-black sm:text-2xl">
                 {title}
@@ -111,7 +134,7 @@ export function DashboardShell({
                 <Bell size={19} />
               </button>
               <div className="grid size-10 place-items-center rounded-full bg-[#172033] font-heading font-black text-white">
-                {role === "admin" ? "A" : "G"}
+                {user.name.charAt(0).toUpperCase()}
               </div>
             </div>
           </div>
@@ -148,4 +171,3 @@ export function MetricCard({
     </div>
   );
 }
-

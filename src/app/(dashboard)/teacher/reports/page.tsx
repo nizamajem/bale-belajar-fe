@@ -1,17 +1,38 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Download, FileText, MessageCircle } from "lucide-react";
+import { AlertTriangle, FileText, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { apiFetch } from "@/lib/api";
 import { DashboardShell } from "../../_components/dashboard-shell";
-
-const reports = [
-  ["Aulia Rahman", "76", "Sedang Berkembang"],
-  ["Bima Saputra", "58", "Perlu Latihan"],
-  ["Citra Lestari", "88", "Dikuasai"],
-  ["Dimas Pratama", "52", "Perlu Latihan"],
-];
+import { Assessment } from "@/lib/types";
 
 export default function TeacherReportsPage() {
+  const [assessments, setAssessments] = useState<Assessment[]>([]);
+  const [selectedId, setSelectedId] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [results, setResults] = useState<unknown[]>([]);
+  const [resultsLoading, setResultsLoading] = useState(false);
+
+  useEffect(() => {
+    apiFetch<Assessment[]>("/assessments", { query: { page: 1, limit: 100 } })
+      .then(({ data }) => {
+        setAssessments(data);
+        const firstClosed = data.find((a) => a.status === "CLOSED" || a.status === "ACTIVE");
+        if (firstClosed) setSelectedId(firstClosed.id);
+      })
+      .catch(() => setAssessments([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (!selectedId) return;
+    setResultsLoading(true);
+    apiFetch<unknown[]>(`/assessments/${selectedId}/results`)
+      .then(({ data }) => setResults(data))
+      .catch(() => setResults([]))
+      .finally(() => setResultsLoading(false));
+  }, [selectedId]);
+
   return (
     <DashboardShell role="teacher" title="Laporan Siswa">
       <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
@@ -24,44 +45,57 @@ export default function TeacherReportsPage() {
               Ringkasan hasil siswa
             </h2>
           </div>
-          <button className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#2563eb] px-4 py-3 font-heading font-black text-white shadow-[0_5px_0_#1d4ed8]">
-            <Download size={18} />
-            Export Excel
-          </button>
+          {loading ? null : (
+            <select
+              className="rounded-[8px] border-2 border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-600"
+              onChange={(event) => setSelectedId(event.target.value)}
+              value={selectedId}
+            >
+              <option value="">Pilih asesmen</option>
+              {assessments.map((assessment) => (
+                <option key={assessment.id} value={assessment.id}>
+                  {assessment.title}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
-        <div className="mt-5 grid gap-3">
-          {reports.map(([name, score, status], index) => (
-            <motion.div
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col gap-4 rounded-[8px] bg-[#f8fafc] p-4 sm:flex-row sm:items-center sm:justify-between"
-              initial={{ opacity: 0, y: 10 }}
-              key={name}
-              transition={{ delay: index * 0.04 }}
-            >
-              <div className="flex items-center gap-3">
-                <span className="grid size-11 place-items-center rounded-[8px] bg-white text-[#2563eb]">
-                  <FileText size={20} />
-                </span>
-                <div>
-                  <p className="font-heading font-black">{name}</p>
-                  <p className="text-sm font-bold text-slate-500">{status}</p>
+        <div className="mt-5">
+          {loading || resultsLoading ? (
+            <div className="grid place-items-center py-10">
+              <Loader2 className="animate-spin text-slate-400" size={28} />
+            </div>
+          ) : !selectedId ? (
+            <p className="py-10 text-center font-bold text-slate-500">
+              Pilih asesmen untuk melihat hasil siswa.
+            </p>
+          ) : results.length === 0 ? (
+            <div className="flex items-start gap-3 rounded-[8px] bg-[#fffbeb] p-5 text-sm font-bold text-[#92400e]">
+              <AlertTriangle className="mt-0.5 shrink-0" size={20} />
+              <p>
+                Laporan agregat per siswa belum tersedia dari backend untuk asesmen
+                ini (endpoint hasil masih dalam pengembangan). Hasil individual
+                bisa dilihat langsung oleh siswa masing-masing setelah mengerjakan.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              {results.map((result, index) => (
+                <div
+                  className="flex items-center gap-3 rounded-[8px] bg-[#f8fafc] p-4"
+                  key={index}
+                >
+                  <span className="grid size-11 place-items-center rounded-[8px] bg-white text-[#2563eb]">
+                    <FileText size={20} />
+                  </span>
+                  <pre className="text-xs">{JSON.stringify(result)}</pre>
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="font-heading text-2xl font-black">{score}</span>
-                <button className="grid size-10 place-items-center rounded-[8px] bg-[#f0fdf4] text-[#166534]">
-                  <MessageCircle size={19} />
-                </button>
-                <button className="grid size-10 place-items-center rounded-[8px] bg-[#eff6ff] text-[#2563eb]">
-                  <Download size={19} />
-                </button>
-              </div>
-            </motion.div>
-          ))}
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </DashboardShell>
   );
 }
-

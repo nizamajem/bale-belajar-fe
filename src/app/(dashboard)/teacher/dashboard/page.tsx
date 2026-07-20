@@ -1,43 +1,70 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { AlertCircle, ClipboardCheck, UsersRound } from "lucide-react";
+import { ClipboardCheck, GraduationCap, Loader2, UsersRound } from "lucide-react";
+import { useEffect, useState } from "react";
+import { apiFetch } from "@/lib/api";
 import {
   DashboardShell,
   MetricCard,
 } from "../../_components/dashboard-shell";
+import { Assessment, Classroom } from "@/lib/types";
 
-const students = ["Aulia", "Bima", "Citra", "Dimas", "Eka", "Fajar"];
-const competencies = ["Pecahan", "Perbandingan", "Soal Cerita", "Bangun Datar"];
-const heatmap = [
-  [92, 76, 62, 84],
-  [84, 58, 54, 72],
-  [88, 80, 74, 90],
-  [70, 48, 52, 64],
-  [95, 86, 80, 88],
-  [78, 60, 58, 76],
-];
+type ProgressRow = { status: string; count: number };
 
-const remedial = [
-  ["Dimas", "Perbandingan senilai", "48%"],
-  ["Bima", "Soal cerita", "54%"],
-  ["Fajar", "Soal cerita", "58%"],
-];
-
-function statusColor(score: number) {
-  if (score >= 80) return "bg-[#22c55e]";
-  if (score >= 60) return "bg-[#f9c74f]";
-  return "bg-[#ff6b6b]";
-}
+const statusLabel: Record<string, string> = {
+  ASSIGNED: "Ditugaskan",
+  STARTED: "Sedang mengerjakan",
+  COMPLETED: "Selesai",
+  EXPIRED: "Kedaluwarsa",
+};
 
 export default function TeacherDashboardPage() {
+  const [loading, setLoading] = useState(true);
+  const [classrooms, setClassrooms] = useState<Classroom[]>([]);
+  const [assessments, setAssessments] = useState<Assessment[]>([]);
+  const [activeAssessment, setActiveAssessment] = useState<Assessment | null>(null);
+  const [progress, setProgress] = useState<ProgressRow[]>([]);
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      try {
+        const [classroomsRes, assessmentsRes] = await Promise.all([
+          apiFetch<Classroom[]>("/classrooms", { query: { page: 1, limit: 100 } }),
+          apiFetch<Assessment[]>("/assessments", { query: { page: 1, limit: 100 } }),
+        ]);
+        setClassrooms(classroomsRes.data);
+        setAssessments(assessmentsRes.data);
+
+        const firstActive = assessmentsRes.data.find((a) => a.status === "ACTIVE") ?? null;
+        setActiveAssessment(firstActive);
+        if (firstActive) {
+          const { data } = await apiFetch<ProgressRow[]>(
+            `/assessments/${firstActive.id}/progress`,
+          );
+          setProgress(data);
+        }
+      } catch {
+        // keep empty state on failure
+      } finally {
+        setLoading(false);
+      }
+    }
+    void load();
+  }, []);
+
+  const totalStudents = classrooms.reduce((sum, c) => sum + (c._count?.students ?? 0), 0);
+  const activeCount = assessments.filter((a) => a.status === "ACTIVE").length;
+  const totalAssigned = progress.reduce((sum, p) => sum + p.count, 0);
+
   return (
     <DashboardShell role="teacher" title="Dashboard Guru">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Jumlah kelas" value="4" />
-        <MetricCard label="Total siswa" tone="green" value="126" />
-        <MetricCard label="Sudah mengerjakan" tone="yellow" value="82%" />
-        <MetricCard label="Butuh remedial" tone="red" value="18" />
+        <MetricCard label="Jumlah kelas" value={loading ? "-" : String(classrooms.length)} />
+        <MetricCard label="Total siswa" tone="green" value={loading ? "-" : String(totalStudents)} />
+        <MetricCard label="Asesmen aktif" tone="yellow" value={loading ? "-" : String(activeCount)} />
+        <MetricCard label="Total asesmen" tone="red" value={loading ? "-" : String(assessments.length)} />
       </div>
 
       <div className="mt-5 grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
@@ -46,54 +73,45 @@ export default function TeacherDashboardPage() {
           className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm"
           initial={{ opacity: 0, y: 14 }}
         >
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-black uppercase text-[#2563eb]">
-                Heatmap kelas
-              </p>
-              <h2 className="font-heading text-2xl font-black">
-                Matematika VI A
-              </h2>
-            </div>
-            <select className="rounded-[8px] border-2 border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-600">
-              <option>Asesmen Perbandingan</option>
-              <option>Asesmen Pecahan</option>
-            </select>
+          <div className="mb-5">
+            <p className="text-sm font-black uppercase text-[#2563eb]">
+              Progress pengerjaan
+            </p>
+            <h2 className="font-heading text-2xl font-black">
+              {activeAssessment ? activeAssessment.title : "Belum ada asesmen aktif"}
+            </h2>
           </div>
 
-          <div className="overflow-x-auto">
-            <div className="min-w-[640px]">
-              <div className="grid grid-cols-[120px_repeat(4,1fr)] gap-2">
-                <div />
-                {competencies.map((item) => (
-                  <div
-                    className="rounded-[8px] bg-[#f8fafc] px-3 py-2 text-center text-xs font-black text-slate-500"
-                    key={item}
-                  >
-                    {item}
-                  </div>
-                ))}
-                {students.map((student, row) => (
-                  <div className="contents" key={student}>
-                    <div className="rounded-[8px] bg-[#f8fafc] px-3 py-3 font-heading font-black">
-                      {student}
-                    </div>
-                    {heatmap[row].map((score, column) => (
-                      <motion.div
-                        animate={{ opacity: 1, scale: 1 }}
-                        className={`${statusColor(score)} rounded-[8px] px-3 py-3 text-center font-heading font-black text-white`}
-                        initial={{ opacity: 0, scale: 0.92 }}
-                        key={`${student}-${column}`}
-                        transition={{ delay: (row + column) * 0.025 }}
-                      >
-                        {score}
-                      </motion.div>
-                    ))}
-                  </div>
-                ))}
-              </div>
+          {loading ? (
+            <div className="grid place-items-center py-10">
+              <Loader2 className="animate-spin text-slate-400" size={28} />
             </div>
-          </div>
+          ) : !activeAssessment ? (
+            <p className="rounded-[8px] bg-[#f8fafc] p-5 text-sm font-bold text-slate-500">
+              Belum ada asesmen berstatus aktif saat ini.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {progress.map((row) => (
+                <div className="rounded-[8px] bg-[#f8fafc] p-4" key={row.status}>
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="font-heading font-black">
+                      {statusLabel[row.status] ?? row.status}
+                    </span>
+                    <span className="font-heading font-black">{row.count}</span>
+                  </div>
+                  <div className="h-3 overflow-hidden rounded-full bg-slate-200">
+                    <div
+                      className="h-full rounded-full bg-[#2563eb]"
+                      style={{
+                        width: totalAssigned ? `${(row.count / totalAssigned) * 100}%` : "0%",
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </motion.section>
 
         <motion.section
@@ -103,29 +121,33 @@ export default function TeacherDashboardPage() {
           transition={{ delay: 0.08 }}
         >
           <div className="mb-5 flex items-center gap-3">
-            <span className="grid size-11 place-items-center rounded-[8px] bg-[#fff1f2] text-[#e11d48]">
-              <AlertCircle size={23} />
+            <span className="grid size-11 place-items-center rounded-[8px] bg-[#eff6ff] text-[#2563eb]">
+              <GraduationCap size={23} />
             </span>
             <div>
-              <p className="text-sm font-black uppercase text-[#e11d48]">
-                Remedial
+              <p className="text-sm font-black uppercase text-[#2563eb]">
+                Kelas saya
               </p>
-              <h2 className="font-heading text-2xl font-black">
-                Prioritas minggu ini
-              </h2>
+              <h2 className="font-heading text-2xl font-black">Ringkasan</h2>
             </div>
           </div>
 
           <div className="space-y-3">
-            {remedial.map(([name, topic, score]) => (
-              <div className="rounded-[8px] bg-[#f8fafc] p-4" key={name}>
+            {classrooms.length === 0 && !loading ? (
+              <p className="rounded-[8px] bg-[#f8fafc] p-4 text-sm font-bold text-slate-500">
+                Belum ada kelas terdaftar.
+              </p>
+            ) : null}
+            {classrooms.slice(0, 5).map((classroom) => (
+              <div className="rounded-[8px] bg-[#f8fafc] p-4" key={classroom.id}>
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="font-heading font-black">{name}</p>
-                    <p className="text-sm font-bold text-slate-500">{topic}</p>
+                    <p className="font-heading font-black">{classroom.name}</p>
+                    <p className="text-sm font-bold text-slate-500">Kelas {classroom.gradeLevel}</p>
                   </div>
-                  <span className="rounded-full bg-[#ffe4e6] px-3 py-1 text-sm font-black text-[#9f1239]">
-                    {score}
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-sm font-black text-slate-600">
+                    <UsersRound size={15} />
+                    {classroom._count?.students ?? 0}
                   </span>
                 </div>
               </div>
@@ -134,45 +156,30 @@ export default function TeacherDashboardPage() {
         </motion.section>
       </div>
 
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
+      <div className="mt-5">
         <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-center gap-3">
             <ClipboardCheck className="text-[#22c55e]" size={24} />
-            <h2 className="font-heading text-xl font-black">Asesmen aktif</h2>
+            <h2 className="font-heading text-xl font-black">Ringkasan asesmen</h2>
           </div>
-          <div className="rounded-[8px] bg-[#f0fdf4] p-5">
-            <p className="font-heading text-xl font-black">
-              Diagnostik Perbandingan VI A
-            </p>
-            <p className="mt-2 font-semibold text-slate-600">
-              31 dari 36 siswa sudah mengerjakan. 5 siswa belum mulai.
-            </p>
-            <div className="mt-4 h-4 overflow-hidden rounded-full bg-white">
-              <div className="h-full w-[82%] rounded-full bg-[#22c55e]" />
+          {loading ? (
+            <div className="grid place-items-center py-6">
+              <Loader2 className="animate-spin text-slate-400" size={24} />
             </div>
-          </div>
-        </section>
-
-        <section className="rounded-[8px] border border-slate-200 bg-[#172033] p-5 text-white shadow-sm">
-          <div className="mb-4 flex items-center gap-3">
-            <UsersRound className="text-[#f9c74f]" size={24} />
-            <h2 className="font-heading text-xl font-black">
-              Rekomendasi kelompok
-            </h2>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-3">
-            {["Perbandingan", "Soal Cerita", "Pengayaan"].map((group, index) => (
-              <div className="rounded-[8px] bg-white/10 p-4" key={group}>
-                <p className="font-heading text-lg font-black">{group}</p>
-                <p className="mt-2 text-sm font-bold text-slate-300">
-                  {index === 0 ? "8 siswa" : index === 1 ? "6 siswa" : "12 siswa"}
-                </p>
-              </div>
-            ))}
-          </div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-3">
+              {(["DRAFT", "ACTIVE", "CLOSED"] as const).map((status) => (
+                <div className="rounded-[8px] bg-[#f8fafc] p-4 text-center" key={status}>
+                  <p className="font-heading text-2xl font-black">
+                    {assessments.filter((a) => a.status === status).length}
+                  </p>
+                  <p className="mt-1 text-xs font-black uppercase text-slate-500">{status}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </DashboardShell>
   );
 }
-

@@ -1,10 +1,34 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowRight, BookOpen, GraduationCap, Lock, Mail, School } from "lucide-react";
+import { ArrowRight, BookOpen, GraduationCap, Loader2, Lock, Mail, School } from "lucide-react";
+import { FormEvent, useState } from "react";
+import { ApiError } from "@/lib/api";
+import { dashboardPathForRole, login } from "@/lib/auth";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("guru@balebelajar.id");
+  const [password, setPassword] = useState("Guru123!");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      const user = await login(email, password);
+      router.push(dashboardPathForRole(user.role));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Gagal masuk. Coba lagi.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <main className="grid min-h-screen lg:grid-cols-[0.95fr_1.05fr]">
       <section className="flex items-center px-4 py-8 sm:px-8 lg:px-12">
@@ -30,7 +54,7 @@ export default function LoginPage() {
             Gunakan akun admin atau guru untuk masuk ke dashboard sekolah.
           </p>
 
-          <form className="mt-7 space-y-4">
+          <form className="mt-7 space-y-4" onSubmit={handleSubmit}>
             <label className="block">
               <span className="mb-2 block text-sm font-black text-slate-600">
                 Email
@@ -39,8 +63,10 @@ export default function LoginPage() {
                 <Mail className="text-slate-400" size={20} />
                 <input
                   className="w-full border-0 bg-transparent font-bold outline-none"
-                  defaultValue="guru@balebelajar.id"
+                  onChange={(event) => setEmail(event.target.value)}
+                  required
                   type="email"
+                  value={email}
                 />
               </span>
             </label>
@@ -53,30 +79,34 @@ export default function LoginPage() {
                 <Lock className="text-slate-400" size={20} />
                 <input
                   className="w-full border-0 bg-transparent font-bold outline-none"
-                  defaultValue="Guru123!"
+                  onChange={(event) => setPassword(event.target.value)}
+                  required
                   type="password"
+                  value={password}
                 />
               </span>
             </label>
 
-            <Link
-              className="flex items-center justify-center gap-2 rounded-[8px] bg-[#2563eb] px-5 py-4 font-heading font-black text-white shadow-[0_7px_0_#1d4ed8] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
-              href="/teacher/dashboard"
+            {error ? (
+              <p className="rounded-[8px] bg-[#fff1f2] px-4 py-3 text-sm font-bold text-[#e11d48]">
+                {error}
+              </p>
+            ) : null}
+
+            <button
+              className="flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#2563eb] px-5 py-4 font-heading font-black text-white shadow-[0_7px_0_#1d4ed8] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-70"
+              disabled={loading}
+              type="submit"
             >
-              Masuk sebagai guru
-              <ArrowRight size={19} />
-            </Link>
+              {loading ? <Loader2 className="animate-spin" size={19} /> : null}
+              Masuk
+              {!loading ? <ArrowRight size={19} /> : null}
+            </button>
           </form>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className="mt-5">
             <Link
-              className="rounded-[8px] border-2 border-slate-200 bg-white px-4 py-3 text-center font-heading font-black text-slate-700 shadow-[0_5px_0_#e2e8f0] active:translate-y-1 active:shadow-none"
-              href="/admin/dashboard"
-            >
-              Demo Admin
-            </Link>
-            <Link
-              className="rounded-[8px] border-2 border-[#bbf7d0] bg-[#f0fdf4] px-4 py-3 text-center font-heading font-black text-[#166534] shadow-[0_5px_0_#bbf7d0] active:translate-y-1 active:shadow-none"
+              className="block rounded-[8px] border-2 border-[#bbf7d0] bg-[#f0fdf4] px-4 py-3 text-center font-heading font-black text-[#166534] shadow-[0_5px_0_#bbf7d0] active:translate-y-1 active:shadow-none"
               href="/student/login"
             >
               Masuk Siswa
@@ -112,4 +142,3 @@ export default function LoginPage() {
     </main>
   );
 }
-
