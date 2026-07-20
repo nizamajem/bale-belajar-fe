@@ -1,0 +1,151 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  BarChart3,
+  Bell,
+  BookOpen,
+  ClipboardList,
+  GraduationCap,
+  LayoutDashboard,
+  LogOut,
+  School,
+  Settings,
+  UsersRound,
+} from "lucide-react";
+
+type Role = "admin" | "teacher";
+
+const nav = {
+  admin: [
+    { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/admin/schools", label: "Sekolah", icon: School },
+    { href: "/admin/students", label: "Siswa", icon: UsersRound },
+    { href: "/admin/assessments", label: "Asesmen", icon: ClipboardList },
+    { href: "/admin/analytics", label: "Analitik", icon: BarChart3 },
+    { href: "/admin/settings", label: "Pengaturan", icon: Settings },
+  ],
+  teacher: [
+    { href: "/teacher/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/teacher/classrooms", label: "Kelas", icon: GraduationCap },
+    { href: "/teacher/assessments", label: "Asesmen", icon: ClipboardList },
+    { href: "/teacher/reports", label: "Laporan", icon: BarChart3 },
+  ],
+};
+
+export function DashboardShell({
+  children,
+  role,
+  title,
+}: {
+  children: React.ReactNode;
+  role: Role;
+  title: string;
+}) {
+  const pathname = usePathname();
+  const items = nav[role];
+
+  return (
+    <main className="min-h-screen bg-[#f8fafc] text-[#172033]">
+      <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-slate-200 bg-white lg:block">
+        <div className="flex h-full flex-col p-5">
+          <Link className="mb-8 flex items-center gap-3" href="/">
+            <span className="grid size-11 place-items-center rounded-[8px] bg-[#2563eb] text-white shadow-[0_6px_0_#1d4ed8]">
+              <BookOpen size={24} strokeWidth={3} />
+            </span>
+            <div>
+              <p className="font-heading text-lg font-black">BaleBelajar</p>
+              <p className="text-xs font-bold uppercase text-slate-400">
+                {role === "admin" ? "Admin Console" : "Teacher Console"}
+              </p>
+            </div>
+          </Link>
+
+          <nav className="space-y-2">
+            {items.map((item) => {
+              const active = pathname === item.href;
+              const Icon = item.icon;
+
+              return (
+                <Link
+                  className={[
+                    "flex items-center gap-3 rounded-[8px] px-4 py-3 font-heading font-black transition",
+                    active
+                      ? "bg-[#eff6ff] text-[#2563eb]"
+                      : "text-slate-600 hover:bg-slate-50",
+                  ].join(" ")}
+                  href={item.href}
+                  key={item.href}
+                >
+                  <Icon size={20} />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <Link
+            className="mt-auto flex items-center gap-3 rounded-[8px] px-4 py-3 font-heading font-black text-slate-500 hover:bg-slate-50"
+            href="/login"
+          >
+            <LogOut size={20} />
+            Keluar
+          </Link>
+        </div>
+      </aside>
+
+      <section className="lg:pl-72">
+        <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
+          <div className="flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+            <div>
+              <p className="text-xs font-black uppercase text-slate-400">
+                {role === "admin" ? "Super Admin" : "Guru Matematika"}
+              </p>
+              <h1 className="font-heading text-xl font-black sm:text-2xl">
+                {title}
+              </h1>
+            </div>
+            <div className="flex items-center gap-3">
+              <button className="grid size-10 place-items-center rounded-[8px] border border-slate-200 bg-white text-slate-600 shadow-sm">
+                <Bell size={19} />
+              </button>
+              <div className="grid size-10 place-items-center rounded-full bg-[#172033] font-heading font-black text-white">
+                {role === "admin" ? "A" : "G"}
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div className="px-4 py-5 sm:px-6 lg:px-8">{children}</div>
+      </section>
+    </main>
+  );
+}
+
+export function MetricCard({
+  label,
+  tone = "blue",
+  value,
+}: {
+  label: string;
+  tone?: "blue" | "green" | "yellow" | "red";
+  value: string;
+}) {
+  const tones = {
+    blue: "bg-[#eff6ff] text-[#2563eb]",
+    green: "bg-[#f0fdf4] text-[#16a34a]",
+    red: "bg-[#fff1f2] text-[#e11d48]",
+    yellow: "bg-[#fffbeb] text-[#d97706]",
+  };
+
+  return (
+    <div className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+      <span className={`rounded-full px-3 py-1 text-xs font-black ${tones[tone]}`}>
+        {label}
+      </span>
+      <p className="font-heading mt-4 text-3xl font-black">{value}</p>
+    </div>
+  );
+}
+

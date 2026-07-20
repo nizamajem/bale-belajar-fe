@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7fbff;
+  --foreground: #172033;
+  --blue: #2563eb;
+  --green: #22c55e;
+  --yellow: #f9c74f;
+  --coral: #ff6b6b;
+  --ink: #172033;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(247, 251, 255, 0.96)),
+    radial-gradient(circle at 12% 18%, rgba(34, 197, 94, 0.13), transparent 28%),
+    radial-gradient(circle at 88% 12%, rgba(249, 199, 79, 0.16), transparent 24%),
+    var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.font-heading {
+  font-family: var(--font-heading), system-ui, sans-serif;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(180%);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    box-shadow: 0 12px 0 #129447, 0 18px 28px rgba(18, 148, 71, 0.22);
+  }
+  50% {
+    box-shadow: 0 8px 0 #129447, 0 12px 22px rgba(18, 148, 71, 0.18);
+  }
+}
+
+.book-buddy {
+  animation: bob 3.2s ease-in-out infinite;
+}
+
+.shine::after {
+  animation: shine 2.6s ease-in-out infinite;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.55),
+    transparent
+  );
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.primary-bounce {
+  animation: pulse-soft 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
