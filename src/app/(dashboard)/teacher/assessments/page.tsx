@@ -20,7 +20,7 @@ export default function TeacherAssessmentsPage() {
 
   return (
     <DashboardShell role="teacher" title="Asesmen Guru">
-      <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <p className="text-sm font-black uppercase text-[#2563eb]">Monitoring</p>
         <h2 className="font-heading text-2xl font-black">Semua asesmen</h2>
 
@@ -37,18 +37,18 @@ export default function TeacherAssessmentsPage() {
             {assessments.map((assessment, index) => (
               <motion.article
                 animate={{ opacity: 1, x: 0 }}
-                className="rounded-[8px] bg-[#f8fafc] p-5"
+                className="rounded-[8px] bg-[#f8fafc] p-4 sm:p-5"
                 initial={{ opacity: 0, x: -12 }}
                 key={assessment.id}
                 transition={{ delay: index * 0.05 }}
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex gap-4">
+                  <div className="flex min-w-0 gap-4">
                     <span className="grid size-12 shrink-0 place-items-center rounded-[8px] bg-white text-[#22c55e]">
                       <ClipboardCheck size={23} />
                     </span>
-                    <div>
-                      <h3 className="font-heading text-xl font-black">{assessment.title}</h3>
+                    <div className="min-w-0">
+                      <h3 className="font-heading text-xl font-black text-balance-soft">{assessment.title}</h3>
                       <p className="mt-1 font-bold text-slate-500">
                         {assessment.subject?.name ?? "-"} - {assessment._count?.questions ?? 0} soal
                       </p>

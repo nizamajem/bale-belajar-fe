@@ -28,7 +28,7 @@ export default function AdminStudentsPage() {
   return (
     <DashboardShell role="admin" title="Data Siswa">
       <div className="grid gap-5 xl:grid-cols-[1fr_320px]">
-        <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-black uppercase text-[#22c55e]">
@@ -51,7 +51,7 @@ export default function AdminStudentsPage() {
             />
           </label>
 
-          <div className="mt-5 overflow-x-auto">
+          <div className="hide-scrollbar mt-5 overflow-x-auto">
             {loading ? (
               <div className="grid place-items-center py-10">
                 <Loader2 className="animate-spin text-slate-400" size={28} />
@@ -109,7 +109,7 @@ export default function AdminStudentsPage() {
           </div>
         </section>
 
-        <aside className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+        <aside className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
           <FileSpreadsheet className="text-[#22c55e]" size={30} />
           <h2 className="font-heading mt-4 text-2xl font-black">
             Import siswa

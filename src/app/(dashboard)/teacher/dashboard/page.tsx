@@ -70,7 +70,7 @@ export default function TeacherDashboardPage() {
       <div className="mt-5 grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
         <motion.section
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm"
+          className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
           initial={{ opacity: 0, y: 14 }}
         >
           <div className="mb-5">
@@ -116,7 +116,7 @@ export default function TeacherDashboardPage() {
 
         <motion.section
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm"
+          className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
           initial={{ opacity: 0, y: 14 }}
           transition={{ delay: 0.08 }}
         >
@@ -157,7 +157,7 @@ export default function TeacherDashboardPage() {
       </div>
 
       <div className="mt-5">
-        <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
           <div className="mb-4 flex items-center gap-3">
             <ClipboardCheck className="text-[#22c55e]" size={24} />
             <h2 className="font-heading text-xl font-black">Ringkasan asesmen</h2>

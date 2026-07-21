@@ -35,7 +35,7 @@ export default function TeacherReportsPage() {
 
   return (
     <DashboardShell role="teacher" title="Laporan Siswa">
-      <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-black uppercase text-[#22c55e]">
@@ -47,7 +47,7 @@ export default function TeacherReportsPage() {
           </div>
           {loading ? null : (
             <select
-              className="rounded-[8px] border-2 border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-600"
+              className="w-full rounded-[8px] border-2 border-slate-200 bg-white px-4 py-3 text-sm font-black text-slate-600 sm:w-auto"
               onChange={(event) => setSelectedId(event.target.value)}
               value={selectedId}
             >
@@ -89,7 +89,7 @@ export default function TeacherReportsPage() {
                   <span className="grid size-11 place-items-center rounded-[8px] bg-white text-[#2563eb]">
                     <FileText size={20} />
                   </span>
-                  <pre className="text-xs">{JSON.stringify(result)}</pre>
+                  <pre className="hide-scrollbar overflow-x-auto text-xs">{JSON.stringify(result)}</pre>
                 </div>
               ))}
             </div>

@@ -27,16 +27,16 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
     <main className="min-h-screen pb-24">
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/88 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-          <Link className="flex items-center gap-3" href="/student/dashboard">
+          <Link className="flex min-w-0 items-center gap-3" href="/student/dashboard">
             <span className="grid size-10 place-items-center rounded-[8px] bg-[#22c55e] text-white shadow-[0_5px_0_#129447]">
               <BookOpen size={22} strokeWidth={3} />
             </span>
-            <span className="font-heading text-lg font-black text-[#172033]">
+            <span className="truncate font-heading text-lg font-black text-[#172033]">
               BaleBelajar
             </span>
           </Link>
 
-          <div className="flex items-center gap-2 rounded-full bg-[#fff7ed] px-3 py-2 text-sm font-black text-[#c2410c]">
+          <div className="flex shrink-0 items-center gap-2 rounded-full bg-[#fff7ed] px-3 py-2 text-sm font-black text-[#c2410c]">
             <Star size={17} fill="#f9c74f" />
             7 hari
           </div>

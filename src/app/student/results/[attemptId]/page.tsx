@@ -66,13 +66,13 @@ export default function ResultPage() {
           className="relative overflow-hidden rounded-[8px] bg-[#2563eb] p-6 text-white shadow-[0_10px_0_#1d4ed8] sm:p-8"
           initial={{ opacity: 0, y: 16 }}
         >
-          <div className="relative z-10 grid gap-6 md:grid-cols-[1fr_220px] md:items-center">
+          <div className="relative z-10 grid gap-6 lg:grid-cols-[1fr_220px] lg:items-center">
             <div>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/16 px-3 py-2 text-sm font-black">
                 <Sparkles size={17} />
                 Hasil asesmen selesai
               </span>
-              <h1 className="font-heading mt-4 text-3xl font-black leading-tight sm:text-5xl">
+              <h1 className="font-heading mt-4 text-3xl font-black leading-tight sm:text-5xl text-balance-soft">
                 {result.assignment.assessment.title}
               </h1>
               <p className="mt-4 max-w-2xl font-bold leading-7 text-white/86">
@@ -82,15 +82,15 @@ export default function ResultPage() {
             </div>
             <div className="rounded-[8px] bg-white p-5 text-center text-[#172033] shadow-xl">
               <Trophy className="mx-auto text-[#f9c74f]" fill="#f9c74f" size={42} />
-              <p className="font-heading mt-3 text-6xl font-black">{score}</p>
+              <p className="font-heading mt-3 text-5xl font-black sm:text-6xl">{score}</p>
               <p className="mt-1 text-sm font-black text-slate-500">Skor total</p>
             </div>
           </div>
         </motion.div>
 
         <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_360px]">
-          <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-            <div className="mb-5 flex items-center justify-between gap-3">
+          <section className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm font-black uppercase text-[#22c55e]">
                   Peta kemampuan
@@ -99,7 +99,7 @@ export default function ResultPage() {
                   Ringkasan kompetensi
                 </h2>
               </div>
-              <span className="rounded-full bg-[#eff6ff] px-3 py-1 text-xs font-black text-[#2563eb]">
+              <span className="w-fit rounded-full bg-[#eff6ff] px-3 py-1 text-xs font-black text-[#2563eb]">
                 {result.assignment.assessment.subject.name}
               </span>
             </div>
@@ -133,7 +133,7 @@ export default function ResultPage() {
             )}
           </section>
 
-          <aside className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <aside className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
             <p className="text-sm font-black uppercase text-[#2563eb]">
               Prioritas belajar
             </p>

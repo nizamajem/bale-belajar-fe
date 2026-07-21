@@ -151,7 +151,7 @@ export default function StudentDashboardPage() {
               Belum ada asesmen yang ditugaskan.
             </p>
           ) : (
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {assignments.map((assignment, index) => (
                 <motion.div
                   animate={{ opacity: 1, y: 0 }}

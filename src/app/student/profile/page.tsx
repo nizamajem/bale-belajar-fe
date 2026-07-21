@@ -54,7 +54,7 @@ export default function StudentProfilePage() {
           <div className="grid size-20 place-items-center rounded-full bg-white font-heading text-3xl font-black text-[#16a34a]">
             {(me?.studentProfile?.fullName ?? me?.name ?? "?").charAt(0).toUpperCase()}
           </div>
-          <h1 className="font-heading mt-5 text-3xl font-black">
+          <h1 className="font-heading mt-5 text-3xl font-black text-balance-soft">
             {me?.studentProfile?.fullName ?? me?.name ?? "Siswa"}
           </h1>
         </motion.div>
@@ -72,7 +72,7 @@ export default function StudentProfilePage() {
               <p className="text-sm font-black uppercase text-slate-400">
                 {label}
               </p>
-              <p className="font-heading mt-1 text-xl font-black">
+              <p className="font-heading mt-1 break-words text-xl font-black">
                 {value}
               </p>
             </motion.div>

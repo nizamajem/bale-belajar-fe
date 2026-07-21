@@ -55,18 +55,18 @@ export default function StudentHistoryPage() {
               return (
                 <motion.article
                   animate={{ opacity: 1, y: 0 }}
-                  className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm"
+                  className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
                   initial={{ opacity: 0, y: 12 }}
                   key={assignment.id}
                   transition={{ delay: index * 0.05 }}
                 >
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex gap-4">
+                    <div className="flex min-w-0 gap-4">
                       <span className="grid size-12 shrink-0 place-items-center rounded-[8px] bg-[#fff7ed] text-[#c2410c]">
                         <Trophy size={23} fill="#f9c74f" />
                       </span>
-                      <div>
-                        <h2 className="font-heading text-xl font-black">
+                      <div className="min-w-0">
+                        <h2 className="font-heading text-xl font-black text-balance-soft">
                           {assignment.assessment.title}
                         </h2>
                         <p className="mt-1 flex items-center gap-2 text-sm font-bold text-slate-500">
@@ -76,7 +76,7 @@ export default function StudentHistoryPage() {
                       </div>
                     </div>
                     <Link
-                      className="grid size-10 place-items-center rounded-[8px] bg-[#eff6ff] text-[#2563eb]"
+                      className="grid size-10 shrink-0 place-items-center rounded-[8px] bg-[#eff6ff] text-[#2563eb]"
                       href={`/student/results/${attempt.id}`}
                     >
                       <ArrowRight size={20} />

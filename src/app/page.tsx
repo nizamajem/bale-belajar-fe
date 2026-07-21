@@ -64,12 +64,12 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen overflow-hidden">
-      <nav className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <a className="flex items-center gap-3" href="#">
+      <nav className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
+        <a className="flex min-w-0 items-center gap-3" href="#">
           <span className="grid size-11 place-items-center rounded-[8px] bg-[#22c55e] text-white shadow-[0_6px_0_#129447]">
             <BookOpen size={24} strokeWidth={3} />
           </span>
-          <span className="font-heading text-xl font-black text-[#172033]">
+          <span className="truncate font-heading text-lg font-black text-[#172033] sm:text-xl">
             BaleBelajar
           </span>
         </a>
@@ -88,17 +88,17 @@ export default function HomePage() {
         <div>
           <motion.div
             animate={{ opacity: 1, y: 0 }}
-            className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#b8ead0] bg-white px-4 py-2 text-sm font-extrabold text-[#147a3d] shadow-sm"
+            className="mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-[#b8ead0] bg-white px-4 py-2 text-xs font-extrabold text-[#147a3d] shadow-sm sm:text-sm"
             initial={{ opacity: 0, y: 12 }}
             transition={{ duration: 0.45 }}
           >
-            <Sparkles size={17} />
-            Asesmen terasa seperti misi belajar
+            <Sparkles className="shrink-0" size={17} />
+            <span className="min-w-0">Asesmen terasa seperti misi belajar</span>
           </motion.div>
 
           <motion.h1
             animate={{ opacity: 1, y: 0 }}
-            className="font-heading max-w-3xl text-4xl font-black leading-[1.05] text-[#172033] sm:text-5xl lg:text-6xl"
+            className="font-heading max-w-3xl text-[2.45rem] font-black leading-[1.05] text-[#172033] min-[380px]:text-5xl lg:text-6xl"
             initial={{ opacity: 0, y: 18 }}
             transition={{ delay: 0.08, duration: 0.5 }}
           >
@@ -202,16 +202,16 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
         <div className="grid gap-5 lg:grid-cols-[1fr_0.9fr]">
           <div className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-            <div className="mb-5 flex items-center justify-between gap-3">
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm font-extrabold uppercase text-[#2563eb]">
                   Peta kemampuan
                 </p>
-                <h2 className="font-heading text-2xl font-black text-[#172033]">
+                <h2 className="font-heading text-2xl font-black text-[#172033] text-balance-soft">
                   Rekomendasi dibuat jelas dan positif
                 </h2>
               </div>
-              <span className="rounded-full bg-[#ecfeff] px-3 py-1 text-sm font-extrabold text-[#0f766e]">
+              <span className="w-fit rounded-full bg-[#ecfeff] px-3 py-1 text-sm font-extrabold text-[#0f766e]">
                 Live
               </span>
             </div>

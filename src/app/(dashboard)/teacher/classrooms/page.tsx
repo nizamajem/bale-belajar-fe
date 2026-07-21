@@ -29,11 +29,11 @@ export default function TeacherClassroomsPage() {
           Belum ada kelas terdaftar.
         </p>
       ) : (
-        <section className="grid gap-4 md:grid-cols-3">
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {classrooms.map((classroom, index) => (
             <motion.article
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm"
+              className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
               initial={{ opacity: 0, y: 12 }}
               key={classroom.id}
               transition={{ delay: index * 0.05 }}
@@ -41,7 +41,7 @@ export default function TeacherClassroomsPage() {
               <span className="grid size-12 place-items-center rounded-[8px] bg-[#eff6ff] text-[#2563eb]">
                 <GraduationCap size={24} />
               </span>
-              <h2 className="font-heading mt-5 text-3xl font-black">{classroom.name}</h2>
+              <h2 className="font-heading mt-5 text-2xl font-black sm:text-3xl">{classroom.name}</h2>
               <div className="mt-4 space-y-2 text-sm font-bold text-slate-600">
                 <p className="flex items-center gap-2">
                   <UsersRound size={17} />

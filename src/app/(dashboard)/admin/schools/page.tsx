@@ -84,7 +84,7 @@ export default function AdminSchoolsPage() {
 
   return (
     <DashboardShell role="admin" title="Data Sekolah">
-      <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-black uppercase text-[#2563eb]">
@@ -112,7 +112,7 @@ export default function AdminSchoolsPage() {
           />
         </label>
 
-        <div className="mt-5 overflow-x-auto">
+        <div className="hide-scrollbar mt-5 overflow-x-auto">
           {loading ? (
             <div className="grid place-items-center py-10">
               <Loader2 className="animate-spin text-slate-400" size={28} />
@@ -166,10 +166,10 @@ export default function AdminSchoolsPage() {
       </section>
 
       {showModal ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 px-4">
+        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-black/40 px-4 py-6">
           <motion.div
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-lg rounded-[8px] bg-white p-6 shadow-xl"
+            className="max-h-[calc(100vh-48px)] w-full max-w-lg overflow-y-auto rounded-[8px] bg-white p-5 shadow-xl sm:p-6"
             initial={{ opacity: 0, scale: 0.96 }}
           >
             <div className="mb-4 flex items-center justify-between">
@@ -206,7 +206,7 @@ export default function AdminSchoolsPage() {
                 required
                 value={form.address}
               />
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <input
                   className="rounded-[8px] border-2 border-slate-200 px-4 py-2 font-bold outline-none"
                   onChange={(event) => updateField("city", event.target.value)}
@@ -228,7 +228,7 @@ export default function AdminSchoolsPage() {
                 placeholder="Nama kontak (opsional)"
                 value={form.contactName}
               />
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <input
                   className="rounded-[8px] border-2 border-slate-200 px-4 py-2 font-bold outline-none"
                   onChange={(event) => updateField("contactPhone", event.target.value)}

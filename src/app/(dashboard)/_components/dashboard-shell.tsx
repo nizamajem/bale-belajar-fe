@@ -118,14 +118,14 @@ export function DashboardShell({
         </div>
       </aside>
 
-      <section className="lg:pl-72">
+      <section className="pb-24 lg:pl-72 lg:pb-0">
         <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
           <div className="flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-            <div>
-              <p className="text-xs font-black uppercase text-slate-400">
+            <div className="min-w-0">
+              <p className="truncate text-xs font-black uppercase text-slate-400">
                 {user.name}
               </p>
-              <h1 className="font-heading text-xl font-black sm:text-2xl">
+              <h1 className="truncate font-heading text-xl font-black sm:text-2xl">
                 {title}
               </h1>
             </div>
@@ -142,6 +142,40 @@ export function DashboardShell({
 
         <div className="px-4 py-5 sm:px-6 lg:px-8">{children}</div>
       </section>
+
+      <nav className="fixed inset-x-3 bottom-3 z-40 rounded-[8px] border border-slate-200 bg-white/95 p-2 shadow-2xl backdrop-blur lg:hidden">
+        <div
+          className="hide-scrollbar grid auto-cols-[minmax(82px,1fr)] grid-flow-col gap-1 overflow-x-auto"
+          style={{ gridTemplateColumns: `repeat(${items.length + 1}, minmax(82px, 1fr))` }}
+        >
+          {items.map((item) => {
+            const active = pathname === item.href;
+            const Icon = item.icon;
+
+            return (
+              <Link
+                className={[
+                  "flex min-h-16 flex-col items-center justify-center gap-1 rounded-[8px] px-2 py-2 text-center text-[11px] font-black",
+                  active ? "bg-[#eff6ff] text-[#2563eb]" : "text-slate-500",
+                ].join(" ")}
+                href={item.href}
+                key={item.href}
+              >
+                <Icon size={20} />
+                <span className="leading-tight">{item.label}</span>
+              </Link>
+            );
+          })}
+          <button
+            className="flex min-h-16 flex-col items-center justify-center gap-1 rounded-[8px] px-2 py-2 text-center text-[11px] font-black text-slate-500"
+            onClick={handleLogout}
+            type="button"
+          >
+            <LogOut size={20} />
+            <span className="leading-tight">Keluar</span>
+          </button>
+        </div>
+      </nav>
     </main>
   );
 }
@@ -163,11 +197,11 @@ export function MetricCard({
   };
 
   return (
-    <div className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
       <span className={`rounded-full px-3 py-1 text-xs font-black ${tones[tone]}`}>
         {label}
       </span>
-      <p className="font-heading mt-4 text-3xl font-black">{value}</p>
+      <p className="font-heading mt-4 text-2xl font-black sm:text-3xl">{value}</p>
     </div>
   );
 }

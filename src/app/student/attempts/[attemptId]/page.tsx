@@ -242,7 +242,7 @@ export default function AttemptPage() {
                   >
                     {option.optionKey}
                   </span>
-                  {option.optionText}
+                  <span className="min-w-0 text-base leading-6 sm:text-lg">{option.optionText}</span>
                 </motion.button>
               );
             })}
@@ -296,14 +296,14 @@ export default function AttemptPage() {
         </div>
 
         <aside className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-heading text-xl font-black">Navigator</h2>
             <span className="inline-flex items-center gap-1 rounded-full bg-[#dcfce7] px-3 py-1 text-xs font-black text-[#166534]">
               <Check size={14} />
               {answeredCount} dijawab
             </span>
           </div>
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-5 gap-2 sm:grid-cols-8 lg:grid-cols-5">
             {attempt.questions.map((question, index) => {
               const isCurrent = index === currentIndex;
               const isAnswered = Boolean(answers[question.id]?.selectedOptionId);

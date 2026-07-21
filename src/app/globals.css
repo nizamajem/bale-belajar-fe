@@ -31,8 +31,22 @@ body {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
+}
+
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
 }
 
 .font-heading {
@@ -87,6 +101,19 @@ input {
 
 .primary-bounce {
   animation: pulse-soft 2.2s ease-in-out infinite;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.text-balance-soft {
+  overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
 @media (prefers-reduced-motion: reduce) {
