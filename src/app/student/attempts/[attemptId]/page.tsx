@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Bookmark, Check, Clock3, Flag, Loader2 } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Bookmark, Check, Clock3, Flag, Loader2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { apiFetch, ApiError } from "@/lib/api";
 import { ProgressBar, StudentShell } from "../../_components/student-shell";
@@ -38,6 +38,7 @@ export default function AttemptPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [submitting, setSubmitting] = useState(false);
+  const [confirmSubmit, setConfirmSubmit] = useState(false);
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
 
   useEffect(() => {
@@ -171,6 +172,7 @@ export default function AttemptPage() {
   const currentAnswer = answers[currentQuestion.id];
   const marked = currentAnswer?.isMarkedForReview ?? false;
   const progressPct = Math.round(((currentIndex + 1) / total) * 100);
+  const unansweredCount = total - answeredCount;
 
   return (
     <StudentShell>
@@ -285,7 +287,7 @@ export default function AttemptPage() {
               <button
                 className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#2563eb] px-5 py-3 font-heading font-black text-white shadow-[0_6px_0_#1d4ed8] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-70"
                 disabled={submitting}
-                onClick={handleSubmit}
+                onClick={() => setConfirmSubmit(true)}
                 type="button"
               >
                 {submitting ? <Loader2 className="animate-spin" size={18} /> : null}
@@ -337,6 +339,58 @@ export default function AttemptPage() {
           </div>
         </aside>
       </section>
+
+      {confirmSubmit ? (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 px-4">
+          <motion.div
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-md rounded-[8px] bg-white p-5 shadow-2xl"
+            initial={{ opacity: 0, scale: 0.96 }}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <span className="grid size-11 place-items-center rounded-[8px] bg-[#fffbeb] text-[#92400e]">
+                  <AlertTriangle size={22} />
+                </span>
+                <h2 className="font-heading mt-4 text-2xl font-black">
+                  Selesaikan asesmen?
+                </h2>
+              </div>
+              <button
+                className="grid size-9 place-items-center rounded-[8px] bg-slate-100 text-slate-600"
+                onClick={() => setConfirmSubmit(false)}
+                type="button"
+              >
+                <X size={19} />
+              </button>
+            </div>
+            <p className="mt-3 font-semibold leading-7 text-slate-600">
+              Kamu sudah menjawab {answeredCount} dari {total} soal.
+              {unansweredCount > 0
+                ? ` Masih ada ${unansweredCount} soal yang belum dijawab.`
+                : " Semua soal sudah terjawab."}
+            </p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <button
+                className="rounded-[8px] border-2 border-slate-200 bg-white px-4 py-3 font-heading font-black text-slate-600 shadow-[0_5px_0_#e2e8f0] active:translate-y-1 active:shadow-none"
+                onClick={() => setConfirmSubmit(false)}
+                type="button"
+              >
+                Periksa lagi
+              </button>
+              <button
+                className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#2563eb] px-4 py-3 font-heading font-black text-white shadow-[0_5px_0_#1d4ed8] disabled:opacity-70"
+                disabled={submitting}
+                onClick={handleSubmit}
+                type="button"
+              >
+                {submitting ? <Loader2 className="animate-spin" size={18} /> : null}
+                Ya, kumpulkan
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      ) : null}
     </StudentShell>
   );
 }

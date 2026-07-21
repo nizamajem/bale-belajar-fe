@@ -19,6 +19,31 @@ function toneColor(status: "MASTERED" | "DEVELOPING" | "NEEDS_PRACTICE") {
   return "bg-[#ff6b6b]";
 }
 
+function studentOpening(result: AttemptResult) {
+  const mastered = result.competencyResults.filter((item) => item.masteryStatus === "MASTERED");
+  const practice = result.competencyResults.filter((item) => item.masteryStatus === "NEEDS_PRACTICE");
+  if (mastered.length > 0 && practice.length > 0) {
+    return `Kamu sudah menunjukkan pemahaman yang baik pada ${mastered[0].competency.name}. Langkah berikutnya adalah memperkuat ${practice[0].competency.name} secara bertahap.`;
+  }
+  if (mastered.length > 0) {
+    return `Kamu sudah menunjukkan pemahaman yang baik pada ${mastered[0].competency.name}. Pertahankan ritme belajar dan gunakan hasil ini untuk menentukan target berikutnya.`;
+  }
+  return "Hasil ini membantu kamu melihat bagian yang perlu dilatih lebih dulu. Fokus pada satu prioritas kecil akan membuat belajar terasa lebih ringan.";
+}
+
+function sevenDayPlan(priority?: string) {
+  const topic = priority ?? "materi prioritas";
+  return [
+    ["Hari 1", `Baca ulang catatan ${topic} dan tulis dua hal yang belum jelas.`],
+    ["Hari 2", `Kerjakan 5 soal dasar tentang ${topic} tanpa melihat pembahasan.`],
+    ["Hari 3", "Bahas jawaban yang salah dan catat pola kesalahannya."],
+    ["Hari 4", `Kerjakan 5 soal baru dengan tingkat sedikit lebih menantang.`],
+    ["Hari 5", "Jelaskan langkah penyelesaian dengan kata-katamu sendiri."],
+    ["Hari 6", "Minta guru atau teman memeriksa satu soal yang masih membingungkan."],
+    ["Hari 7", "Coba asesmen ulang singkat atau latihan campuran untuk melihat kemajuan."],
+  ];
+}
+
 export default function ResultPage() {
   const params = useParams<{ attemptId: string }>();
   const [result, setResult] = useState<AttemptResult | null>(null);
@@ -57,6 +82,9 @@ export default function ResultPage() {
 
   const score = Math.round(Number(result.totalScore));
   const weakest = result.competencyResults.slice().sort((a, b) => Number(a.score) - Number(b.score))[0];
+  const strongest = result.competencyResults.slice().sort((a, b) => Number(b.score) - Number(a.score))[0];
+  const opening = studentOpening(result);
+  const plan = sevenDayPlan(weakest?.competency.name);
 
   function printResult() {
     window.print();
@@ -80,7 +108,10 @@ export default function ResultPage() {
                 {result.assignment.assessment.title}
               </h1>
               <p className="mt-4 max-w-2xl font-bold leading-7 text-white/86">
-                {result.correctAnswers} jawaban benar, {result.wrongAnswers} salah, {result.unanswered} belum dijawab.
+                {opening}
+              </p>
+              <p className="mt-3 max-w-2xl text-sm font-bold leading-6 text-white/78">
+                Ringkasan jawaban: {result.correctAnswers} benar, {result.wrongAnswers} perlu diperiksa kembali, {result.unanswered} belum dijawab.
                 {weakest ? ` Fokus latihan berikutnya: ${weakest.competency.name}.` : ""}
               </p>
             </div>
@@ -145,6 +176,11 @@ export default function ResultPage() {
               Rekomendasi
             </h2>
             <div className="mt-5 space-y-3">
+              {strongest ? (
+                <div className="rounded-[8px] bg-[#f0fdf4] p-4 text-sm font-bold leading-6 text-[#166534]">
+                  Kekuatan saat ini: {strongest.competency.name} ({Math.round(Number(strongest.score))}%).
+                </div>
+              ) : null}
               {result.recommendations.length === 0 ? (
                 <p className="rounded-[8px] bg-[#f8fafc] p-4 text-sm font-bold text-slate-500">
                   Tidak ada rekomendasi khusus - kemampuan sudah merata.
@@ -170,6 +206,29 @@ export default function ResultPage() {
             </div>
           </aside>
         </div>
+
+        <section className="mt-6 rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+          <p className="text-sm font-black uppercase text-[#22c55e]">
+            Rencana belajar 7 hari
+          </p>
+          <h2 className="font-heading mt-1 text-2xl font-black">
+            Mulai dari satu prioritas kecil
+          </h2>
+          <div className="mt-5 grid gap-3 md:grid-cols-2">
+            {plan.map(([day, activity]) => (
+              <div className="rounded-[8px] bg-[#f8fafc] p-4" key={day}>
+                <p className="font-heading font-black text-[#2563eb]">{day}</p>
+                <p className="mt-1 text-sm font-semibold leading-6 text-slate-600">
+                  {activity}
+                </p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-5 rounded-[8px] bg-[#fffbeb] p-4 text-sm font-bold leading-6 text-[#92400e]">
+            Catatan: hasil ini adalah alat bantu belajar, bukan penilaian akhir kemampuanmu.
+            Guru tetap dapat membantu menyesuaikan langkah belajar yang paling tepat.
+          </p>
+        </section>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
           <button

@@ -87,9 +87,22 @@ export default function StudentDashboardPage() {
               </h1>
               <p className="mt-4 max-w-lg font-bold leading-7 text-white/88">
                 {active
-                  ? `Asesmen "${active.assessment.title}" menunggumu. Jawaban tersimpan otomatis.`
+                  ? `Asesmen "${active.assessment.title}" siap dikerjakan. Kerjakan dengan tenang; jawaban akan tersimpan otomatis.`
                   : "Belum ada asesmen yang ditugaskan untukmu saat ini. Cek lagi nanti."}
               </p>
+              {active ? (
+                <div className="mt-5 grid gap-2 text-sm font-bold text-white/90 sm:grid-cols-3">
+                  {[
+                    "Baca soal perlahan",
+                    "Pilih jawaban terbaik",
+                    "Cek kembali sebelum selesai",
+                  ].map((item) => (
+                    <span className="rounded-[8px] bg-white/14 px-3 py-2" key={item}>
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
               {active ? (
                 <button
                   className="mt-6 inline-flex items-center gap-2 rounded-[8px] bg-white px-5 py-4 font-heading font-black text-[#15803d] shadow-[0_6px_0_#d9f99d] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-70"
@@ -98,7 +111,7 @@ export default function StudentDashboardPage() {
                   type="button"
                 >
                   {starting ? <Loader2 className="animate-spin" size={18} /> : null}
-                  {active.status === "STARTED" ? "Lanjutkan Misi" : "Mulai Misi"}
+                  {active.status === "STARTED" ? "Lanjutkan Asesmen" : "Mulai Asesmen"}
                   <Play size={18} fill="#15803d" />
                 </button>
               ) : null}
@@ -138,7 +151,7 @@ export default function StudentDashboardPage() {
               Jalur belajar
             </p>
             <h2 className="font-heading text-2xl font-black">
-              Misi kamu
+              Asesmen kamu
             </h2>
           </div>
 
@@ -148,7 +161,7 @@ export default function StudentDashboardPage() {
             </div>
           ) : assignments.length === 0 ? (
             <p className="rounded-[8px] border border-slate-200 bg-white p-8 text-center font-bold text-slate-500 shadow-sm">
-              Belum ada asesmen yang ditugaskan.
+              Belum ada asesmen yang ditugaskan. Jika guru sudah membagikan asesmen, pastikan kode peserta yang digunakan sudah benar.
             </p>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -173,6 +186,7 @@ export default function StudentDashboardPage() {
                   </h3>
                   <p className="mt-2 min-h-10 text-sm font-bold leading-5 text-slate-500">
                     {assignment.assessment.subject.name} - {assignment.assessment._count.questions} soal
+                    {assignment.assessment.durationMinutes ? ` - ${assignment.assessment.durationMinutes} menit` : ""}
                   </p>
                   <div className="mt-5">
                     <ProgressBar value={progressForStatus(assignment.status)} />

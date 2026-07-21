@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ClipboardCheck, GraduationCap, Loader2, UsersRound } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ClipboardCheck, GraduationCap, Loader2, UsersRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import {
@@ -18,6 +18,10 @@ const statusLabel: Record<string, string> = {
   COMPLETED: "Selesai",
   EXPIRED: "Kedaluwarsa",
 };
+
+function countStatus(progress: ProgressRow[], status: string) {
+  return progress.find((row) => row.status === status)?.count ?? 0;
+}
 
 export default function TeacherDashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -57,6 +61,21 @@ export default function TeacherDashboardPage() {
   const totalStudents = classrooms.reduce((sum, c) => sum + (c._count?.students ?? 0), 0);
   const activeCount = assessments.filter((a) => a.status === "ACTIVE").length;
   const totalAssigned = progress.reduce((sum, p) => sum + p.count, 0);
+  const completed = countStatus(progress, "COMPLETED");
+  const assigned = countStatus(progress, "ASSIGNED");
+  const started = countStatus(progress, "STARTED");
+  const completionRate = totalAssigned ? Math.round((completed / totalAssigned) * 100) : 0;
+  const actionItems = [
+    assigned > 0
+      ? `${assigned} siswa belum mulai. Kirim pengingat melalui wali kelas atau grup kelas.`
+      : null,
+    started > 0
+      ? `${started} siswa sedang mengerjakan. Pantau sampai selesai sebelum membaca hasil kelas.`
+      : null,
+    activeAssessment && completed > 0
+      ? "Setelah mayoritas siswa selesai, buka laporan untuk melihat kompetensi prioritas dan rencana remedial."
+      : null,
+  ].filter(Boolean) as string[];
 
   return (
     <DashboardShell role="teacher" title="Dashboard Guru">
@@ -64,7 +83,7 @@ export default function TeacherDashboardPage() {
         <MetricCard label="Jumlah kelas" value={loading ? "-" : String(classrooms.length)} />
         <MetricCard label="Total siswa" tone="green" value={loading ? "-" : String(totalStudents)} />
         <MetricCard label="Asesmen aktif" tone="yellow" value={loading ? "-" : String(activeCount)} />
-        <MetricCard label="Total asesmen" tone="red" value={loading ? "-" : String(assessments.length)} />
+        <MetricCard label="Selesai aktif" tone="red" value={loading ? "-" : `${completionRate}%`} />
       </div>
 
       <div className="mt-5 grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
@@ -92,6 +111,22 @@ export default function TeacherDashboardPage() {
             </p>
           ) : (
             <div className="space-y-3">
+              <div className="rounded-[8px] bg-[#eff6ff] p-4">
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <span className="font-heading font-black text-[#1d4ed8]">
+                    Completion rate
+                  </span>
+                  <span className="font-heading font-black text-[#1d4ed8]">
+                    {completionRate}%
+                  </span>
+                </div>
+                <div className="h-3 overflow-hidden rounded-full bg-white">
+                  <div
+                    className="h-full rounded-full bg-[#2563eb]"
+                    style={{ width: `${completionRate}%` }}
+                  />
+                </div>
+              </div>
               {progress.map((row) => (
                 <div className="rounded-[8px] bg-[#f8fafc] p-4" key={row.status}>
                   <div className="mb-2 flex items-center justify-between">
@@ -108,6 +143,45 @@ export default function TeacherDashboardPage() {
                       }}
                     />
                   </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </motion.section>
+
+        <motion.section
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-[8px] border border-slate-200 bg-[#172033] p-4 text-white shadow-sm sm:p-5"
+          initial={{ opacity: 0, y: 14 }}
+          transition={{ delay: 0.1 }}
+        >
+          <div className="mb-5 flex items-center gap-3">
+            <span className="grid size-11 place-items-center rounded-[8px] bg-white/10 text-[#f9c74f]">
+              <CheckCircle2 size={23} />
+            </span>
+            <div>
+              <p className="text-sm font-black uppercase text-[#f9c74f]">
+                Tindakan utama
+              </p>
+              <h2 className="font-heading text-2xl font-black">Fokus guru hari ini</h2>
+            </div>
+          </div>
+          {loading ? (
+            <div className="grid place-items-center py-8">
+              <Loader2 className="animate-spin text-slate-400" size={24} />
+            </div>
+          ) : actionItems.length === 0 ? (
+            <p className="rounded-[8px] bg-white/10 p-4 text-sm font-bold leading-6 text-slate-200">
+              Belum ada tindakan khusus. Pastikan asesmen aktif dan siswa sudah mendapat penugasan.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {actionItems.slice(0, 3).map((item, index) => (
+                <div className="flex gap-3 rounded-[8px] bg-white/10 p-4" key={item}>
+                  <span className="grid size-8 shrink-0 place-items-center rounded-[8px] bg-[#22c55e] font-heading font-black">
+                    {index + 1}
+                  </span>
+                  <p className="text-sm font-semibold leading-6 text-slate-200">{item}</p>
                 </div>
               ))}
             </div>
@@ -178,6 +252,14 @@ export default function TeacherDashboardPage() {
               ))}
             </div>
           )}
+          {!loading && activeAssessment && completionRate < 70 ? (
+            <div className="mt-4 flex items-start gap-3 rounded-[8px] bg-[#fffbeb] p-4 text-sm font-bold leading-6 text-[#92400e]">
+              <AlertTriangle className="mt-0.5 shrink-0" size={20} />
+              <p>
+                Baca hasil kelas setelah lebih banyak siswa menyelesaikan asesmen agar keputusan remedial lebih stabil.
+              </p>
+            </div>
+          ) : null}
         </section>
       </div>
     </DashboardShell>
