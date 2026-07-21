@@ -10,7 +10,7 @@ import { studentLogin } from "@/lib/auth";
 
 export default function StudentLoginPage() {
   const router = useRouter();
-  const [participantCode, setParticipantCode] = useState("BB-S001");
+  const [participantCode, setParticipantCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -22,7 +22,7 @@ export default function StudentLoginPage() {
       await studentLogin(participantCode);
       router.push("/student/dashboard");
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Gagal masuk. Coba lagi.");
+      setError(err instanceof ApiError ? err.message : "Kode peserta belum sesuai. Periksa kembali kode dari guru.");
     } finally {
       setLoading(false);
     }
@@ -79,6 +79,7 @@ export default function StudentLoginPage() {
                 <input
                   className="w-full border-0 bg-transparent font-heading text-xl font-black uppercase tracking-[0.08em] outline-none"
                   onChange={(event) => setParticipantCode(event.target.value)}
+                  placeholder="KODE PESERTA"
                   required
                   value={participantCode}
                 />

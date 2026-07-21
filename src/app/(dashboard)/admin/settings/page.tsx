@@ -13,7 +13,7 @@ const settings = [
   {
     icon: Database,
     title: "API",
-    value: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1",
+    value: process.env.NEXT_PUBLIC_API_URL ?? "Belum dikonfigurasi",
     text: "Endpoint backend yang dipakai browser untuk login dan data dashboard.",
   },
   {
@@ -25,8 +25,8 @@ const settings = [
   {
     icon: Bell,
     title: "Notifikasi",
-    value: "Draft",
-    text: "Tombol notifikasi sudah tersedia di shell, integrasi event bisa ditambahkan berikutnya.",
+    value: "Belum aktif",
+    text: "Notifikasi akan aktif setelah event backend untuk pengingat asesmen tersedia.",
   },
 ];
 

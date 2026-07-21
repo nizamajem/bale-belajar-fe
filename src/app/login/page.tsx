@@ -10,8 +10,8 @@ import { dashboardPathForRole, login } from "@/lib/auth";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("guru@balebelajar.id");
-  const [password, setPassword] = useState("Guru123!");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -23,7 +23,7 @@ export default function LoginPage() {
       const user = await login(email, password);
       router.push(dashboardPathForRole(user.role));
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Gagal masuk. Coba lagi.");
+      setError(err instanceof ApiError ? err.message : "Email atau password belum sesuai. Periksa kembali akun Anda.");
     } finally {
       setLoading(false);
     }
@@ -48,10 +48,11 @@ export default function LoginPage() {
             Masuk platform
           </p>
           <h1 className="font-heading mt-2 text-3xl font-black leading-tight sm:text-4xl">
-            Kelola asesmen dan lihat perkembangan siswa.
+            Masuk untuk mengelola asesmen dan tindak lanjut belajar.
           </h1>
           <p className="mt-3 font-semibold leading-7 text-slate-600">
-            Gunakan akun admin atau guru untuk masuk ke dashboard sekolah.
+            Gunakan akun resmi dari sekolah untuk mengakses data siswa, kelas,
+            asesmen, dan laporan belajar.
           </p>
 
           <form className="mt-7 space-y-4" onSubmit={handleSubmit}>
@@ -64,6 +65,7 @@ export default function LoginPage() {
                 <input
                   className="w-full border-0 bg-transparent font-bold outline-none"
                   onChange={(event) => setEmail(event.target.value)}
+                  placeholder="nama@sekolah.sch.id"
                   required
                   type="email"
                   value={email}
@@ -80,6 +82,7 @@ export default function LoginPage() {
                 <input
                   className="w-full border-0 bg-transparent font-bold outline-none"
                   onChange={(event) => setPassword(event.target.value)}
+                  placeholder="Masukkan password"
                   required
                   type="password"
                   value={password}

@@ -58,6 +58,18 @@ export type Subject = {
   isActive: boolean;
 };
 
+export type Question = {
+  id: string;
+  code: string;
+  questionText: string;
+  gradeLevel: number;
+  status: "DRAFT" | "ACTIVE" | "INACTIVE" | "ARCHIVED";
+  subjectId: string;
+  competencyId: string;
+  subject?: { id: string; code: string; name: string };
+  competency?: { id: string; code: string; name: string };
+};
+
 export type AssessmentStatus = "DRAFT" | "SCHEDULED" | "ACTIVE" | "CLOSED" | "ARCHIVED";
 
 export type Assessment = {
