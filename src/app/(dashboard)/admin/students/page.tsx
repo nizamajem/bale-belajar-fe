@@ -12,6 +12,20 @@ export default function AdminStudentsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
+  function downloadTemplate() {
+    const csv = [
+      "fullName,participantCode,studentNumber,schoolSlug,classroomName,academicYear",
+      "Siswa Contoh,BB-S999,S-999,sdn-1-mataram,VI A,2026/2027",
+    ].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "template-import-siswa-balebelajar.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       setLoading(true);
@@ -119,11 +133,11 @@ export default function AdminStudentsPage() {
             tahun ajaran. Fitur import massal sedang dalam pengembangan.
           </p>
           <button
-            className="mt-5 w-full cursor-not-allowed rounded-[8px] border-2 border-slate-200 bg-white px-4 py-3 font-heading font-black text-slate-400 shadow-[0_5px_0_#e2e8f0]"
-            disabled
+            className="mt-5 w-full rounded-[8px] border-2 border-slate-200 bg-white px-4 py-3 font-heading font-black text-slate-600 shadow-[0_5px_0_#e2e8f0] transition active:translate-y-1 active:shadow-none"
+            onClick={downloadTemplate}
             type="button"
           >
-            Segera hadir
+            Unduh template CSV
           </button>
         </aside>
       </div>

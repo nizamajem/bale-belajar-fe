@@ -6,11 +6,19 @@ import { apiFetch } from "@/lib/api";
 import { DashboardShell } from "../../_components/dashboard-shell";
 import { Assessment } from "@/lib/types";
 
+type AssessmentResultsResponse =
+  | unknown[]
+  | {
+      results?: unknown[];
+      note?: string;
+    };
+
 export default function TeacherReportsPage() {
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [selectedId, setSelectedId] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState<unknown[]>([]);
+  const [note, setNote] = useState("");
   const [resultsLoading, setResultsLoading] = useState(false);
 
   useEffect(() => {
@@ -27,9 +35,20 @@ export default function TeacherReportsPage() {
   useEffect(() => {
     if (!selectedId) return;
     setResultsLoading(true);
-    apiFetch<unknown[]>(`/assessments/${selectedId}/results`)
-      .then(({ data }) => setResults(data))
-      .catch(() => setResults([]))
+    setNote("");
+    apiFetch<AssessmentResultsResponse>(`/assessments/${selectedId}/results`)
+      .then(({ data }) => {
+        if (Array.isArray(data)) {
+          setResults(data);
+          return;
+        }
+        setResults(data.results ?? []);
+        setNote(data.note ?? "");
+      })
+      .catch(() => {
+        setResults([]);
+        setNote("Laporan belum bisa dimuat dari backend.");
+      })
       .finally(() => setResultsLoading(false));
   }, [selectedId]);
 
@@ -74,9 +93,8 @@ export default function TeacherReportsPage() {
             <div className="flex items-start gap-3 rounded-[8px] bg-[#fffbeb] p-5 text-sm font-bold text-[#92400e]">
               <AlertTriangle className="mt-0.5 shrink-0" size={20} />
               <p>
-                Laporan agregat per siswa belum tersedia dari backend untuk asesmen
-                ini (endpoint hasil masih dalam pengembangan). Hasil individual
-                bisa dilihat langsung oleh siswa masing-masing setelah mengerjakan.
+                {note ||
+                  "Laporan agregat per siswa belum tersedia untuk asesmen ini. Hasil individual bisa dilihat langsung oleh siswa masing-masing setelah mengerjakan."}
               </p>
             </div>
           ) : (

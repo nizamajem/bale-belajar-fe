@@ -58,6 +58,10 @@ export default function ResultPage() {
   const score = Math.round(Number(result.totalScore));
   const weakest = result.competencyResults.slice().sort((a, b) => Number(a.score) - Number(b.score))[0];
 
+  function printResult() {
+    window.print();
+  }
+
   return (
     <StudentShell>
       <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:py-8">
@@ -169,12 +173,12 @@ export default function ResultPage() {
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
           <button
-            className="inline-flex items-center justify-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_6px_0_#d8e2ef] transition active:translate-y-1 active:shadow-none disabled:opacity-50"
-            disabled
+            className="inline-flex items-center justify-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_6px_0_#d8e2ef] transition active:translate-y-1 active:shadow-none"
+            onClick={printResult}
             type="button"
           >
             <Download size={18} />
-            Unduh PDF
+            Cetak / Simpan PDF
           </button>
           <Link
             className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#2563eb] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#1d4ed8] transition active:translate-y-1 active:shadow-none"

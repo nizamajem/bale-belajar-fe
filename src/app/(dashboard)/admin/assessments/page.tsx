@@ -91,7 +91,7 @@ export default function AdminAssessmentsPage() {
 
   return (
     <DashboardShell role="admin" title="Manajemen Asesmen">
-      <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-black uppercase text-[#2563eb]">
@@ -122,18 +122,18 @@ export default function AdminAssessmentsPage() {
             {assessments.map((assessment, index) => (
               <motion.article
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-[8px] bg-[#f8fafc] p-5"
+                className="rounded-[8px] bg-[#f8fafc] p-4 sm:p-5"
                 initial={{ opacity: 0, y: 10 }}
                 key={assessment.id}
                 transition={{ delay: index * 0.05 }}
               >
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                  <div className="flex gap-4">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="flex min-w-0 gap-4">
                     <span className="grid size-12 shrink-0 place-items-center rounded-[8px] bg-white text-[#2563eb]">
                       <CalendarClock size={23} />
                     </span>
-                    <div>
-                      <h3 className="font-heading text-xl font-black">{assessment.title}</h3>
+                    <div className="min-w-0">
+                      <h3 className="font-heading text-xl font-black text-balance-soft">{assessment.title}</h3>
                       <p className="mt-1 font-bold text-slate-500">
                         {assessment.subject?.name ?? "-"} - {assessment._count?.questions ?? 0} soal - {assessment._count?.classrooms ?? 0} kelas
                       </p>
@@ -167,10 +167,10 @@ export default function AdminAssessmentsPage() {
       </section>
 
       {showModal ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 px-4">
+        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-black/40 px-4 py-6">
           <motion.div
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-lg rounded-[8px] bg-white p-6 shadow-xl"
+            className="max-h-[calc(100vh-48px)] w-full max-w-lg overflow-y-auto rounded-[8px] bg-white p-5 shadow-xl sm:p-6"
             initial={{ opacity: 0, scale: 0.96 }}
           >
             <div className="mb-4 flex items-center justify-between">
@@ -207,7 +207,7 @@ export default function AdminAssessmentsPage() {
                   </option>
                 ))}
               </select>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <input
                   className="rounded-[8px] border-2 border-slate-200 px-4 py-2 font-bold outline-none"
                   min={1}
