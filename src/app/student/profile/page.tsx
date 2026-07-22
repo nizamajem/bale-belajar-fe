@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CalendarDays, IdCard, Loader2, LucideIcon } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, CalendarDays, GraduationCap, IdCard, Loader2, LucideIcon, School as SchoolIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { StudentShell } from "../_components/student-shell";
@@ -11,9 +12,11 @@ type Me = {
   name: string;
   studentProfile: {
     id: string;
-    participantCode: string;
+    participantCode: string | null;
     fullName: string;
-    academicYear: string;
+    academicYear: string | null;
+    gradeLevel: number | null;
+    school: { id: string; name: string; city: string } | null;
   } | null;
 };
 
@@ -40,8 +43,14 @@ export default function StudentProfilePage() {
 
   const profile: { label: string; value: string; icon: LucideIcon }[] = [
     { label: "Kode peserta", value: me?.studentProfile?.participantCode ?? "-", icon: IdCard },
+    {
+      label: "Kelas",
+      value: me?.studentProfile?.gradeLevel ? `Kelas ${me.studentProfile.gradeLevel}` : "-",
+      icon: GraduationCap,
+    },
     { label: "Tahun ajaran", value: me?.studentProfile?.academicYear ?? "-", icon: CalendarDays },
   ];
+  const school = me?.studentProfile?.school ?? null;
 
   return (
     <StudentShell>
@@ -78,6 +87,32 @@ export default function StudentProfilePage() {
             </motion.div>
           ))}
         </div>
+
+        <motion.div
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-5 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm"
+          initial={{ opacity: 0, y: 12 }}
+          transition={{ delay: 0.1 }}
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <SchoolIcon className="text-[#6d28d9]" size={24} />
+              <div>
+                <p className="text-sm font-black uppercase text-slate-400">Sekolah</p>
+                <p className="font-heading text-lg font-black">
+                  {school ? `${school.name} - ${school.city}` : "Belum terhubung"}
+                </p>
+              </div>
+            </div>
+            <Link
+              className="inline-flex shrink-0 items-center gap-2 rounded-[8px] bg-[#6d28d9] px-4 py-3 font-heading font-black text-white shadow-[0_5px_0_#4c1d95] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
+              href="/student/onboarding?step=school"
+            >
+              {school ? "Ubah" : "Hubungkan"}
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </motion.div>
       </section>
     </StudentShell>
   );

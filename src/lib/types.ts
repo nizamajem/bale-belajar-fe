@@ -323,6 +323,13 @@ export function learningMasteryLabel(status: LearningMasteryStatus): string {
   return "Perlu Data Lagi";
 }
 
+export type SchoolSearchResult = {
+  id: string;
+  name: string;
+  city: string;
+  province: string;
+};
+
 export function rankLabel(rank: BaleRank): string {
   const map: Record<BaleRank, string> = {
     TUNAS: "Tunas",

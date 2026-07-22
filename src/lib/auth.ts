@@ -10,6 +10,7 @@ export type AuthUser = {
   id: string;
   name: string;
   email?: string;
+  avatarUrl?: string;
   role: UserRole;
   schoolId?: string;
   teacherProfileId?: string;
@@ -17,6 +18,7 @@ export type AuthUser = {
 };
 
 type AuthResponse = { accessToken: string; user: AuthUser };
+type GoogleAuthResponse = AuthResponse & { isNewUser: boolean };
 
 function storeSession(accessToken: string, user: AuthUser) {
   setToken(accessToken);
@@ -52,6 +54,16 @@ export async function studentLogin(participantCode: string) {
   });
   storeSession(data.accessToken, data.user);
   return data.user;
+}
+
+export async function loginWithGoogle(idToken: string) {
+  const { data } = await apiFetch<GoogleAuthResponse>("/auth/google", {
+    method: "POST",
+    body: { idToken },
+    auth: false,
+  });
+  storeSession(data.accessToken, data.user);
+  return { user: data.user, isNewUser: data.isNewUser };
 }
 
 export function logout() {

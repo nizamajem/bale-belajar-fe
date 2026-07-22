@@ -5,14 +5,16 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, KeyRound, Loader2, Sparkles } from "lucide-react";
 import { FormEvent, useState } from "react";
+import { GoogleAuthButton } from "@/components/google-auth-button";
 import { ApiError } from "@/lib/api";
-import { studentLogin } from "@/lib/auth";
+import { loginWithGoogle, studentLogin } from "@/lib/auth";
 
 export default function StudentLoginPage() {
   const router = useRouter();
   const [participantCode, setParticipantCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -25,6 +27,18 @@ export default function StudentLoginPage() {
       setError(err instanceof ApiError ? err.message : "Kode peserta belum sesuai. Periksa kembali kode dari guru.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleGoogleSuccess(idToken: string) {
+    setError(null);
+    setGoogleLoading(true);
+    try {
+      const { isNewUser } = await loginWithGoogle(idToken);
+      router.push(isNewUser ? "/student/onboarding" : "/student/dashboard");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Gagal masuk dengan Google. Silakan coba lagi.");
+      setGoogleLoading(false);
     }
   }
 
@@ -102,6 +116,31 @@ export default function StudentLoginPage() {
               {!loading ? <ArrowRight size={19} /> : null}
             </button>
           </form>
+
+          <div className="my-6 flex items-center gap-3 text-xs font-black uppercase text-slate-400">
+            <span className="h-px flex-1 bg-slate-100" />
+            atau
+            <span className="h-px flex-1 bg-slate-100" />
+          </div>
+
+          {googleLoading ? (
+            <div className="flex items-center justify-center gap-2 rounded-[8px] border-2 border-slate-200 px-4 py-4 font-heading font-black text-slate-500">
+              <Loader2 className="animate-spin" size={20} />
+              Menyiapkan akunmu...
+            </div>
+          ) : (
+            <GoogleAuthButton
+              onError={() => setError("Login Google dibatalkan atau gagal. Coba lagi.")}
+              onSuccess={handleGoogleSuccess}
+            />
+          )}
+
+          <p className="mt-5 text-center text-sm font-bold text-slate-400">
+            Belum punya kode peserta?{" "}
+            <Link className="text-[#6d28d9] hover:underline" href="/daftar">
+              Daftar tanpa sekolah
+            </Link>
+          </p>
         </div>
       </motion.section>
     </main>
