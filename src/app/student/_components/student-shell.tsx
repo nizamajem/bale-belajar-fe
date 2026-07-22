@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookOpen, ChartNoAxesColumn, Home, Loader2, Star, UserRound } from "lucide-react";
+import { useEffect, useState } from "react";
+import { apiFetch } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
+import { GameProfileSummary } from "@/lib/types";
 
 const navItems = [
   { href: "/student/dashboard", label: "Beranda", icon: Home },
@@ -14,6 +17,14 @@ const navItems = [
 export function StudentShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { ready } = useRequireAuth(["STUDENT"], "/student/login");
+  const [streakCurrent, setStreakCurrent] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!ready) return;
+    apiFetch<GameProfileSummary>("/student/game-profile")
+      .then(({ data }) => setStreakCurrent(data.streakCurrent))
+      .catch(() => setStreakCurrent(null));
+  }, [ready]);
 
   if (!ready) {
     return (
@@ -38,7 +49,7 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
 
           <div className="flex shrink-0 items-center gap-2 rounded-full bg-[#fff7ed] px-3 py-2 text-sm font-black text-[#c2410c]">
             <Star size={17} fill="#f9c74f" />
-            7 hari
+            {streakCurrent ?? 0} hari
           </div>
         </div>
       </header>

@@ -175,3 +175,163 @@ export function pilotStatusProgress(status: PilotStatus): number {
   };
   return map[status];
 }
+
+// ---------------------------------------------------------------------------
+// BaleTeman / BaleVerse: dunia, misi harian, XP/game profile, dan mastery
+// (Peta Tumbuh). Terpisah dari tipe asesmen formal di atas.
+// ---------------------------------------------------------------------------
+
+export type WorldSummary = {
+  id: string;
+  key: string;
+  name: string;
+  characterClass: string;
+  themeDescription?: string;
+  subject: { id: string; code: string; name: string };
+  worldLevel: number;
+  worldXp: number;
+};
+
+export type BaleRank =
+  | "TUNAS"
+  | "PERINTIS"
+  | "PENJELAJAH"
+  | "PAKAR"
+  | "MAESTRO"
+  | "GUARDIAN"
+  | "LEGENDA_BALE";
+
+export type GameProfileSummary = {
+  accountLevel: number;
+  accountXp: number;
+  xpIntoCurrentLevel: number;
+  xpRequiredForNextLevel: number;
+  rank: BaleRank;
+  dayaBale: number;
+  streakCurrent: number;
+  streakLongest: number;
+  streakTargetPerWeek: number;
+  lastActivityDate?: string | null;
+};
+
+export type MissionActivityOption = {
+  id: string;
+  optionKey: string;
+  optionText: string;
+  // Hanya terisi setelah attempt disubmit - tidak boleh bocor sebelumnya.
+  isCorrect?: boolean;
+};
+
+export type MissionActivity = {
+  id: string;
+  orderNumber: number;
+  prompt: string;
+  selectedOptionId?: string | null;
+  explanation?: string | null;
+  options: MissionActivityOption[];
+};
+
+export type MissionAttemptStatus =
+  | "IN_PROGRESS"
+  | "SUBMITTED"
+  | "AUTO_SUBMITTED"
+  | "CANCELLED";
+
+export type TodayMission = {
+  assignmentId: string;
+  worldId: string;
+  status: AssignmentStatus;
+  mission: {
+    id: string;
+    title: string;
+    narrative: string;
+    estimatedMinutes: number;
+    competency: { id: string; code: string; name: string };
+  };
+  attempt: { id: string; status: MissionAttemptStatus; startedAt: string } | null;
+  activities: MissionActivity[];
+};
+
+export type LearningMasteryStatus =
+  | "MASTERED"
+  | "DEVELOPING"
+  | "NEEDS_PRACTICE"
+  | "INSUFFICIENT_EVIDENCE";
+
+export type ConfidenceLevel = "HIGH" | "MEDIUM" | "LOW";
+
+export type MissionMasterySnapshot = {
+  competencyId: string;
+  masteryScore: number;
+  status: LearningMasteryStatus;
+  confidence: ConfidenceLevel;
+  evidenceCount: number;
+};
+
+export type MissionSubmitResult = {
+  attemptId: string;
+  correctCount: number;
+  totalActivities: number;
+  activities: {
+    activityId: string;
+    selectedOptionId: string | null;
+    isCorrect: boolean;
+    explanation: string | null;
+  }[];
+  xpGained: number;
+  gameProfile: {
+    accountLevel: number;
+    accountXp: number;
+    accountLeveledUp: boolean;
+    worldXp?: number;
+    worldLevel?: number;
+    worldLeveledUp?: boolean;
+  };
+  mastery: MissionMasterySnapshot | null;
+};
+
+export type MissionResult = {
+  attemptId: string;
+  missionTitle: string;
+  correctCount: number | null;
+  totalActivities: number | null;
+  activities: {
+    activityId: string;
+    prompt: string;
+    selectedOptionId: string | null;
+    isCorrect: boolean;
+    explanation: string | null;
+    options: { id: string; optionKey: string; optionText: string; isCorrect: boolean }[];
+  }[];
+  mastery: MissionMasterySnapshot | null;
+};
+
+export type GrowthMapEntry = {
+  competencyId: string;
+  competencyName: string;
+  masteryScore: number;
+  status: LearningMasteryStatus;
+  confidence: ConfidenceLevel;
+  evidenceCount: number;
+  lastEvaluatedAt: string | null;
+};
+
+export function learningMasteryLabel(status: LearningMasteryStatus): string {
+  if (status === "MASTERED") return "Dikuasai";
+  if (status === "DEVELOPING") return "Sedang Berkembang";
+  if (status === "NEEDS_PRACTICE") return "Perlu Latihan";
+  return "Perlu Data Lagi";
+}
+
+export function rankLabel(rank: BaleRank): string {
+  const map: Record<BaleRank, string> = {
+    TUNAS: "Tunas",
+    PERINTIS: "Perintis",
+    PENJELAJAH: "Penjelajah",
+    PAKAR: "Pakar",
+    MAESTRO: "Maestro",
+    GUARDIAN: "Guardian",
+    LEGENDA_BALE: "Legenda Bale",
+  };
+  return map[rank];
+}

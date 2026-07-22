@@ -7,8 +7,9 @@ import { ArrowRight, BookOpen, ClipboardCheck, Loader2, Play, Sparkles, Target }
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { getStoredUser } from "@/lib/auth";
-import { StudentAssignment } from "@/lib/types";
+import { StudentAssignment, WorldSummary } from "@/lib/types";
 import { ProgressBar, StudentShell } from "../_components/student-shell";
+import { WorldCard } from "../_components/world-card";
 
 const toneByStatus = {
   ASSIGNED: "bg-[#fef3c7] text-[#92400e]",
@@ -33,6 +34,7 @@ function progressForStatus(status: keyof typeof statusLabel) {
 export default function StudentDashboardPage() {
   const router = useRouter();
   const [assignments, setAssignments] = useState<StudentAssignment[]>([]);
+  const [worlds, setWorlds] = useState<WorldSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const user = getStoredUser();
@@ -42,6 +44,10 @@ export default function StudentDashboardPage() {
       .then(({ data }) => setAssignments(data))
       .catch(() => setAssignments([]))
       .finally(() => setLoading(false));
+
+    apiFetch<WorldSummary[]>("/student/worlds")
+      .then(({ data }) => setWorlds(data))
+      .catch(() => setWorlds([]));
   }, []);
 
   const active = assignments.find((a) => a.status === "ASSIGNED" || a.status === "STARTED");
@@ -144,6 +150,24 @@ export default function StudentDashboardPage() {
             </div>
           </motion.div>
         </div>
+
+        {worlds.length > 0 ? (
+          <section className="mt-8">
+            <div className="mb-4">
+              <p className="text-sm font-black uppercase text-[#6d28d9]">
+                BaleVerse
+              </p>
+              <h2 className="font-heading text-2xl font-black">
+                Pilih Dunia
+              </h2>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {worlds.map((world) => (
+                <WorldCard key={world.id} world={world} />
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section className="mt-8">
           <div className="mb-4">
