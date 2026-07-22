@@ -81,7 +81,7 @@ export default function DaftarPage() {
               </div>
             ) : (
               <GoogleAuthButton
-                onError={() => setError("Login Google dibatalkan atau gagal. Coba lagi.")}
+                onError={(message) => setError(message)}
                 onSuccess={handleGoogleSuccess}
               />
             )}

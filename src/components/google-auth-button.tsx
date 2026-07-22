@@ -1,16 +1,32 @@
 "use client";
 
+import { FirebaseError } from "firebase/app";
 import { signInWithPopup } from "firebase/auth";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { firebaseAuth, googleAuthProvider } from "@/lib/firebase";
+
+const errorMessageByCode: Record<string, string> = {
+  "auth/popup-closed-by-user": "Kamu menutup jendela Google sebelum selesai. Coba lagi.",
+  "auth/popup-blocked": "Browser memblokir pop-up Google. Izinkan pop-up untuk situs ini, lalu coba lagi.",
+  "auth/unauthorized-domain": "Domain ini belum diizinkan di pengaturan Firebase. Hubungi admin.",
+  "auth/network-request-failed": "Gagal terhubung ke internet. Periksa koneksi lalu coba lagi.",
+  "auth/invalid-api-key": "Konfigurasi Firebase server ini belum benar. Hubungi admin.",
+};
+
+function describeAuthError(error: unknown): string {
+  if (error instanceof FirebaseError) {
+    return errorMessageByCode[error.code] ?? `Login Google gagal (${error.code}). Coba lagi.`;
+  }
+  return "Login Google gagal. Coba lagi.";
+}
 
 export function GoogleAuthButton({
   onSuccess,
   onError,
 }: {
   onSuccess: (idToken: string) => void;
-  onError?: () => void;
+  onError?: (message: string) => void;
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -20,8 +36,9 @@ export function GoogleAuthButton({
       const result = await signInWithPopup(firebaseAuth, googleAuthProvider);
       const idToken = await result.user.getIdToken();
       onSuccess(idToken);
-    } catch {
-      onError?.();
+    } catch (error) {
+      console.error("Google sign-in failed:", error);
+      onError?.(describeAuthError(error));
     } finally {
       setLoading(false);
     }

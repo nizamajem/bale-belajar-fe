@@ -130,7 +130,7 @@ export default function StudentLoginPage() {
             </div>
           ) : (
             <GoogleAuthButton
-              onError={() => setError("Login Google dibatalkan atau gagal. Coba lagi.")}
+              onError={(message) => setError(message)}
               onSuccess={handleGoogleSuccess}
             />
           )}
