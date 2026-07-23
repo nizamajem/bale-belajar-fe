@@ -14,8 +14,8 @@ export type CareerPathConfig = {
 export const careerPaths: CareerPathConfig[] = [
   {
     id: "DETECTIVE",
-    title: "Detektif Angka",
-    tagline: "Pecahkan misteri lewat pola dan logika matematika.",
+    title: "Detektif Muda",
+    tagline: "Amati petunjuk, uji bukti, dan pecahkan misteri langkah demi langkah.",
     emoji: "🕵️",
     gradient: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
     shadowColor: "#0b1120",
