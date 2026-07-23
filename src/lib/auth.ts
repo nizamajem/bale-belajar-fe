@@ -56,6 +56,21 @@ export async function studentLogin(participantCode: string) {
   return data.user;
 }
 
+export async function registerStudent(
+  name: string,
+  email: string,
+  password: string,
+  gradeLevel?: number,
+) {
+  const { data } = await apiFetch<AuthResponse>("/auth/register", {
+    method: "POST",
+    body: { name, email, password, gradeLevel },
+    auth: false,
+  });
+  storeSession(data.accessToken, data.user);
+  return data.user;
+}
+
 export async function loginWithGoogle(idToken: string) {
   const { data } = await apiFetch<GoogleAuthResponse>("/auth/google", {
     method: "POST",

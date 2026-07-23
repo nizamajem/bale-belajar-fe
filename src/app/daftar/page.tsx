@@ -3,20 +3,40 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BookOpen, KeyRound, Loader2, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { ArrowRight, BookOpen, KeyRound, Loader2, Mail, Sparkles } from "lucide-react";
+import { FormEvent, useState } from "react";
 import { GoogleAuthButton } from "@/components/google-auth-button";
 import { ApiError } from "@/lib/api";
-import { loginWithGoogle } from "@/lib/auth";
+import { loginWithGoogle, registerStudent } from "@/lib/auth";
 
 export default function DaftarPage() {
   const router = useRouter();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      await registerStudent(name, email, password);
+      router.push("/student/onboarding");
+    } catch (err) {
+      setError(
+        err instanceof ApiError ? err.message : "Gagal mendaftar. Silakan coba lagi.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function handleGoogleSuccess(idToken: string) {
     setError(null);
-    setLoading(true);
+    setGoogleLoading(true);
     try {
       const { isNewUser } = await loginWithGoogle(idToken);
       router.push(isNewUser ? "/student/onboarding" : "/student/dashboard");
@@ -26,7 +46,7 @@ export default function DaftarPage() {
           ? err.message
           : "Gagal mendaftar dengan Google. Silakan coba lagi.",
       );
-      setLoading(false);
+      setGoogleLoading(false);
     }
   }
 
@@ -56,8 +76,8 @@ export default function DaftarPage() {
             Belajar Matematika jadi misi seru, bukan tugas menakutkan.
           </h1>
           <p className="mt-3 font-bold leading-7 text-white/86">
-            Daftar dengan akun Google kamu - tidak perlu menunggu sekolah.
-            Kamu bisa menghubungkan akun ke sekolahmu belakangan, kapan saja.
+            Daftar dengan email kamu - tidak perlu menunggu sekolah. Kamu
+            bisa menghubungkan akun ke sekolahmu belakangan, kapan saja.
           </p>
         </div>
 
@@ -69,23 +89,70 @@ export default function DaftarPage() {
           <h2 className="font-heading mt-5 text-3xl font-black">
             Mulai dalam hitungan detik
           </h2>
-          <p className="mt-3 font-bold leading-6 text-slate-500">
-            Nama dan foto profilmu otomatis terisi dari akun Google.
-          </p>
 
-          <div className="mt-8">
-            {loading ? (
-              <div className="flex items-center justify-center gap-2 rounded-[8px] border-2 border-slate-200 px-4 py-4 font-heading font-black text-slate-500">
-                <Loader2 className="animate-spin" size={20} />
-                Menyiapkan akunmu...
-              </div>
-            ) : (
-              <GoogleAuthButton
-                onError={(message) => setError(message)}
-                onSuccess={handleGoogleSuccess}
+          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+            <label className="block">
+              <span className="mb-2 block text-sm font-black text-slate-600">Nama lengkap</span>
+              <input
+                className="w-full rounded-[8px] border-2 border-slate-200 px-4 py-3 font-bold outline-none focus:border-[#6d28d9]"
+                onChange={(event) => setName(event.target.value)}
+                placeholder="Dimas Aditya"
+                required
+                value={name}
               />
-            )}
+            </label>
+            <label className="block">
+              <span className="mb-2 block text-sm font-black text-slate-600">Email</span>
+              <input
+                className="w-full rounded-[8px] border-2 border-slate-200 px-4 py-3 font-bold outline-none focus:border-[#6d28d9]"
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="kamu@email.com"
+                required
+                type="email"
+                value={email}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-2 block text-sm font-black text-slate-600">Password</span>
+              <input
+                className="w-full rounded-[8px] border-2 border-slate-200 px-4 py-3 font-bold outline-none focus:border-[#6d28d9]"
+                minLength={8}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="Minimal 8 karakter"
+                required
+                type="password"
+                value={password}
+              />
+            </label>
+
+            <button
+              className="flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#6d28d9] px-5 py-4 font-heading font-black text-white shadow-[0_7px_0_#4c1d95] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-70"
+              disabled={loading}
+              type="submit"
+            >
+              {loading ? <Loader2 className="animate-spin" size={19} /> : <Mail size={19} />}
+              Daftar dengan Email
+              {!loading ? <ArrowRight size={19} /> : null}
+            </button>
+          </form>
+
+          <div className="my-6 flex items-center gap-3 text-xs font-black uppercase text-slate-400">
+            <span className="h-px flex-1 bg-slate-100" />
+            atau
+            <span className="h-px flex-1 bg-slate-100" />
           </div>
+
+          {googleLoading ? (
+            <div className="flex items-center justify-center gap-2 rounded-[8px] border-2 border-slate-200 px-4 py-4 font-heading font-black text-slate-500">
+              <Loader2 className="animate-spin" size={20} />
+              Menyiapkan akunmu...
+            </div>
+          ) : (
+            <GoogleAuthButton
+              onError={(message) => setError(message)}
+              onSuccess={handleGoogleSuccess}
+            />
+          )}
 
           {error ? (
             <p className="mt-4 rounded-[8px] bg-[#fff1f2] px-4 py-3 text-sm font-bold text-[#e11d48]">
@@ -99,7 +166,7 @@ export default function DaftarPage() {
               href="/student/login"
             >
               <KeyRound size={18} />
-              Sudah punya kode peserta dari sekolah? Masuk di sini
+              Sudah punya akun? Masuk di sini
             </Link>
           </div>
         </div>
