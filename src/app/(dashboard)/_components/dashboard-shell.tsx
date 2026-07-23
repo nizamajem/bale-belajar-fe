@@ -52,12 +52,12 @@ export function DashboardShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, ready } = useRequireAuth(roleGuard[role]);
+  const { user, ready } = useRequireAuth(roleGuard[role], "/staff/login");
   const items = nav[role];
 
   function handleLogout() {
     logout();
-    router.push("/login");
+    router.push("/staff/login");
   }
 
   if (!ready || !user) {
@@ -72,7 +72,7 @@ export function DashboardShell({
     <main className="min-h-screen bg-[#f8fafc] text-[#172033]">
       <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-slate-200 bg-white lg:block">
         <div className="flex h-full flex-col p-5">
-          <Link className="mb-8 flex items-center gap-3" href="/">
+          <Link className="mb-8 flex items-center gap-3" href={items[0].href}>
             <span className="grid size-11 place-items-center rounded-[8px] bg-[#2563eb] text-white shadow-[0_6px_0_#1d4ed8]">
               <BookOpen size={24} strokeWidth={3} />
             </span>

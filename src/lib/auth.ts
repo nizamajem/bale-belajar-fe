@@ -76,7 +76,7 @@ export function dashboardPathForRole(role: UserRole): string {
   return "/admin/dashboard";
 }
 
-export function useRequireAuth(allowedRoles: UserRole[], loginPath = "/login") {
+export function useRequireAuth(allowedRoles: UserRole[], loginPath = "/student/login") {
   const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [ready, setReady] = useState(false);
