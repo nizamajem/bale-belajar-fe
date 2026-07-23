@@ -14,6 +14,7 @@ import {
   evidenceRelevanceLabel,
 } from "@/lib/types";
 import { StudentShell } from "../../../_components/student-shell";
+import { LoadingEvidence, MentorDialogue } from "../../../_components/motion-kit";
 
 const CONFIDENCE_OPTIONS: CaseConfidenceDeclaration[] = [
   "HIGH",
@@ -108,8 +109,8 @@ export default function CaseRunnerPage() {
   if (loading) {
     return (
       <StudentShell>
-        <div className="grid min-h-[60vh] place-items-center">
-          <Loader2 className="animate-spin text-slate-400" size={32} />
+        <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+          <LoadingEvidence label="Menghubungkan bukti dan pertanyaan..." />
         </div>
       </StudentShell>
     );
@@ -119,9 +120,19 @@ export default function CaseRunnerPage() {
     return (
       <StudentShell>
         <section className="mx-auto max-w-3xl px-4 py-10 text-center sm:px-6">
-          <p className="rounded-[8px] border border-slate-200 bg-white p-8 font-bold text-slate-500 shadow-sm">
-            {error}
-          </p>
+          <div className="rounded-[8px] border border-slate-200 bg-white p-8 shadow-sm">
+            <Search className="mx-auto text-[#6d28d9]" size={34} />
+            <p className="mt-4 font-heading text-2xl font-black">Papan analisis belum siap.</p>
+            <p className="mt-2 font-bold leading-7 text-slate-500">
+              {error} Progresmu tetap aman.
+            </p>
+            <Link
+              className="mt-5 inline-flex rounded-[8px] bg-[#2563eb] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#1e40af]"
+              href={`/student/world/${worldKey}`}
+            >
+              Kembali ke Dunia
+            </Link>
+          </div>
         </section>
       </StudentShell>
     );
@@ -205,11 +216,16 @@ export default function CaseRunnerPage() {
             {currentCase.case.title}
           </span>
           <p className="mt-3 font-bold leading-6 text-white/90">{currentCase.case.openingStory}</p>
+          <div className="mt-4">
+            <MentorDialogue>
+              Hubungkan bukti dengan hati-hati. Jika informasinya belum cukup, tulis apa yang masih perlu diverifikasi.
+            </MentorDialogue>
+          </div>
         </motion.div>
 
         {error ? (
-          <p className="mt-4 rounded-[8px] border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-600">
-            {error}
+          <p className="mt-4 rounded-[8px] border border-[#fed7aa] bg-[#fff7ed] p-3 text-sm font-bold text-[#c2410c]">
+            {error} Coba kirim ulang saat koneksi stabil.
           </p>
         ) : null}
 
@@ -221,13 +237,13 @@ export default function CaseRunnerPage() {
           {currentCase.evidence.map((item, index) => (
             <motion.div
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm"
+              className="interactive-card group rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm"
               initial={{ opacity: 0, y: 16 }}
               key={item.id}
               transition={{ delay: index * 0.04 }}
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="rounded-full bg-[#ede9fe] px-3 py-1 text-xs font-black text-[#6d28d9]">
+                <span className="rounded-full bg-[#ede9fe] px-3 py-1 text-xs font-black text-[#6d28d9] transition group-hover:bg-[#f5f3ff]">
                   Bukti {item.orderNumber} - {item.type}
                 </span>
                 <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-500">
@@ -235,6 +251,22 @@ export default function CaseRunnerPage() {
                 </span>
               </div>
               <p className="mt-3 font-bold leading-6 text-slate-700">{item.content}</p>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
+                <div
+                  className={[
+                    "progress-reveal h-full rounded-full",
+                    item.relevance === "RELEVANT"
+                      ? "bg-[#22c55e]"
+                      : item.relevance === "PARTIAL"
+                        ? "bg-[#f9c74f]"
+                        : "bg-slate-300",
+                  ].join(" ")}
+                  style={{ "--progress-width": item.relevance === "RELEVANT" ? "88%" : item.relevance === "PARTIAL" ? "58%" : "30%" } as React.CSSProperties}
+                />
+              </div>
+              <p className="mt-2 text-xs font-bold text-slate-400">
+                Baca detail sebelum menarik kesimpulan.
+              </p>
             </motion.div>
           ))}
         </div>
@@ -259,7 +291,7 @@ export default function CaseRunnerPage() {
                 Kompetensi: {question.skill.name}
               </p>
               <textarea
-                className="mt-3 w-full rounded-[8px] border-2 border-slate-200 p-3 font-bold text-slate-700 outline-none focus:border-[#6d28d9]"
+                className="mt-3 w-full rounded-[8px] border-2 border-slate-200 p-3 font-bold text-slate-700 outline-none transition focus:border-[#6d28d9] focus:ring-4 focus:ring-[#ddd6fe]"
                 onBlur={(event) => saveAnswer(question.id, event.target.value)}
                 onChange={(event) =>
                   setAnswers((prev) => ({ ...prev, [question.id]: event.target.value }))
@@ -278,7 +310,7 @@ export default function CaseRunnerPage() {
             <h2 className="font-heading text-xl font-black">Kesimpulan Detektif</h2>
           </div>
           <textarea
-            className="mt-3 w-full rounded-[8px] border-2 border-slate-200 p-3 font-bold text-slate-700 outline-none focus:border-[#6d28d9]"
+            className="mt-3 w-full rounded-[8px] border-2 border-slate-200 p-3 font-bold text-slate-700 outline-none transition focus:border-[#6d28d9] focus:ring-4 focus:ring-[#ddd6fe]"
             onChange={(event) => setConclusionText(event.target.value)}
             placeholder="Apa kesimpulanmu dari kasus ini?"
             rows={4}
@@ -292,7 +324,7 @@ export default function CaseRunnerPage() {
               return (
                 <button
                   className={[
-                    "rounded-[8px] border-2 px-4 py-3 text-left font-bold transition",
+                    "min-h-12 rounded-[8px] border-2 px-4 py-3 text-left font-bold transition focus:outline-none focus:ring-4 focus:ring-[#ddd6fe]",
                     selected
                       ? "border-[#6d28d9] bg-[#f5f3ff] text-[#4c1d95]"
                       : "border-slate-200 bg-white text-slate-600 hover:border-slate-300",
@@ -309,7 +341,7 @@ export default function CaseRunnerPage() {
         </div>
 
         <button
-          className="mt-6 inline-flex items-center gap-2 rounded-[8px] bg-[#22c55e] px-6 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-60"
+          className="light-trail mt-6 inline-flex items-center gap-2 rounded-[8px] bg-[#22c55e] px-6 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-60"
           disabled={!canSubmit}
           onClick={handleSubmit}
           type="button"

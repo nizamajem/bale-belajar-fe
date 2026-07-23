@@ -23,8 +23,8 @@ export function XpBar({
       </div>
       <div className="h-3 overflow-hidden rounded-full bg-slate-100">
         <div
-          className="h-full rounded-full bg-[#f9c74f]"
-          style={{ width: `${percent}%` }}
+          className="progress-reveal h-full rounded-full bg-[#f9c74f]"
+          style={{ "--progress-width": `${percent}%` } as React.CSSProperties}
         />
       </div>
     </div>

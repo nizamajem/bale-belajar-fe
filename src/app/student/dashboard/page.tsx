@@ -11,6 +11,7 @@ import { getCareerPathConfig } from "@/lib/career-paths";
 import { StudentAssignment, WorldSummary } from "@/lib/types";
 import { ProgressBar, StudentShell } from "../_components/student-shell";
 import { WorldCard } from "../_components/world-card";
+import { DetectiveAvatar, LoadingEvidence, MentorDialogue, MissionMapNode } from "../_components/motion-kit";
 
 type Me = {
   studentProfile: { careerPath: string | null } | null;
@@ -112,7 +113,10 @@ export default function StudentDashboardPage() {
               boxShadow: careerPath ? `0 10px 0 ${careerPath.shadowColor}` : undefined,
             }}
           >
-            <div className="relative z-10 max-w-xl">
+            <div className="absolute inset-0 opacity-20 surface-detective" />
+            <div className="relative z-10 grid gap-5 sm:grid-cols-[auto_1fr] sm:items-start">
+              <DetectiveAvatar name={user?.name ?? "Siswa"} />
+              <div className="max-w-xl">
               <span className="inline-flex items-center gap-2 rounded-full bg-white/18 px-3 py-2 text-sm font-black">
                 {careerPath ? (
                   <>
@@ -153,7 +157,7 @@ export default function StudentDashboardPage() {
               ) : null}
               {active ? (
                 <button
-                  className="mt-6 inline-flex items-center gap-2 rounded-[8px] bg-white px-5 py-4 font-heading font-black text-[#15803d] shadow-[0_6px_0_#d9f99d] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-70"
+                  className="light-trail mt-6 inline-flex items-center gap-2 rounded-[8px] bg-white px-5 py-4 font-heading font-black text-[#15803d] shadow-[0_6px_0_#d9f99d] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-70"
                   disabled={starting}
                   onClick={() => handleStartOrContinue(active)}
                   type="button"
@@ -181,6 +185,16 @@ export default function StudentDashboardPage() {
                   <ArrowRight size={18} />
                 </a>
               ) : null}
+              <div className="mt-5 max-w-md">
+                <MentorDialogue>
+                  {active
+                    ? "Fokus ke satu misi dulu. Progress kamu aman, jadi kerjakan pelan-pelan."
+                    : careerPath
+                      ? "Pilih dunia belajar yang paling menarik. Setiap dunia akan membuka petunjuk fondasi baru."
+                      : "Pilih jalur cita-cita supaya misi belajar terasa lebih dekat dengan dirimu."}
+                </MentorDialogue>
+              </div>
+              </div>
             </div>
           </motion.div>
 
@@ -222,10 +236,17 @@ export default function StudentDashboardPage() {
           </div>
 
           {worldsLoading ? (
-            <div className="grid place-items-center py-10">
-              <Loader2 className="animate-spin text-slate-400" size={28} />
-            </div>
+            <LoadingEvidence label="Menghubungkan node dunia belajar..." />
           ) : worlds.length > 0 ? (
+            <div className="mb-5 grid gap-3 sm:grid-cols-4">
+              <MissionMapNode active label="Mulai" />
+              <MissionMapNode complete={completedCount > 0} label="Fondasi" />
+              <MissionMapNode locked={completedCount < 1} label="Power" />
+              <MissionMapNode locked={completedCount < 2} label="Karya" />
+            </div>
+          ) : null}
+
+          {worldsLoading ? null : worlds.length > 0 ? (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {worlds.map((world) => (
                 <WorldCard key={world.id} world={world} />
@@ -262,15 +283,13 @@ export default function StudentDashboardPage() {
           </div>
 
           {loading ? (
-            <div className="grid place-items-center py-10">
-              <Loader2 className="animate-spin text-slate-400" size={28} />
-            </div>
+            <LoadingEvidence label="Menyusun daftar asesmen dan misi..." />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {assignments.map((assignment, index) => (
                 <motion.div
                   animate={{ opacity: 1, y: 0 }}
-                  className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm"
+                  className="interactive-card rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm"
                   initial={{ opacity: 0, y: 18 }}
                   key={assignment.id}
                   transition={{ delay: index * 0.06 }}

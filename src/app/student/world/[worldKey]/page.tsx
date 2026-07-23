@@ -3,12 +3,13 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowRight, Loader2, MapPinned, Sparkles } from "lucide-react";
+import { ArrowRight, MapPinned, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { CurrentCase, DETECTIVE_WORLD_KEY, TodayMission, WorldSummary } from "@/lib/types";
 import { StudentShell } from "../../_components/student-shell";
 import { XpBar } from "../../_components/xp-bar";
+import { LoadingEvidence, MentorDialogue } from "../../_components/motion-kit";
 
 export default function WorldHomePage() {
   const params = useParams<{ worldKey: string }>();
@@ -67,8 +68,8 @@ export default function WorldHomePage() {
   if (loading) {
     return (
       <StudentShell>
-        <div className="grid min-h-[60vh] place-items-center">
-          <Loader2 className="animate-spin text-slate-400" size={32} />
+        <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+          <LoadingEvidence label={isCaseWorld ? "Menyusun papan analisis kasus..." : "Membangun misi hari ini..."} />
         </div>
       </StudentShell>
     );
@@ -78,9 +79,22 @@ export default function WorldHomePage() {
     return (
       <StudentShell>
         <section className="mx-auto max-w-3xl px-4 py-10 text-center sm:px-6">
-          <p className="rounded-[8px] border border-slate-200 bg-white p-8 font-bold text-slate-500 shadow-sm">
-            {error ?? "Dunia tidak ditemukan."}
-          </p>
+          <div className="rounded-[8px] border border-slate-200 bg-white p-8 shadow-sm">
+            <Sparkles className="mx-auto text-[#f9c74f]" size={34} />
+            <p className="mt-4 font-heading text-2xl font-black text-[#172033]">
+              Dunia belum bisa dibuka.
+            </p>
+            <p className="mt-2 font-bold leading-7 text-slate-500">
+              {error ?? "Dunia tidak ditemukan."} Progresmu tetap aman.
+            </p>
+            <Link
+              className="mt-5 inline-flex items-center gap-2 rounded-[8px] bg-[#2563eb] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#1e40af]"
+              href="/student/dashboard"
+            >
+              Kembali ke Dashboard
+              <ArrowRight size={18} />
+            </Link>
+          </div>
         </section>
       </StudentShell>
     );
@@ -99,17 +113,27 @@ export default function WorldHomePage() {
           className="relative overflow-hidden rounded-[8px] bg-[#6d28d9] p-5 text-white shadow-[0_10px_0_#4c1d95] sm:p-7"
           initial={{ opacity: 0, y: 16 }}
         >
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/18 px-3 py-2 text-sm font-black">
-            <Sparkles size={17} />
-            {world.characterClass}
-          </span>
-          <h1 className="font-heading mt-4 text-3xl font-black leading-tight sm:text-5xl">
-            {world.name}
-          </h1>
-          <p className="mt-3 max-w-lg font-bold leading-7 text-white/88">
-            {world.themeDescription}
-          </p>
-          <div className="mt-6 max-w-xs rounded-[8px] bg-white/10 p-4">
+          <div className="absolute inset-0 surface-detective opacity-20" />
+          <div className="relative z-10">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/18 px-3 py-2 text-sm font-black">
+              <Sparkles size={17} />
+              {world.characterClass}
+            </span>
+            <h1 className="font-heading mt-4 text-3xl font-black leading-tight sm:text-5xl">
+              {world.name}
+            </h1>
+            <p className="mt-3 max-w-lg font-bold leading-7 text-white/88">
+              {world.themeDescription}
+            </p>
+            <div className="mt-5 max-w-md">
+              <MentorDialogue>
+                {isCaseWorld
+                  ? "Baca bukti pelan-pelan. Tugasmu bukan menebak, tapi menemukan hubungan yang masuk akal."
+                  : "Misi hari ini pendek. Fokus ke satu kompetensi dulu, lalu lihat XP bergerak."}
+              </MentorDialogue>
+            </div>
+          </div>
+          <div className="relative z-10 mt-6 max-w-xs rounded-[8px] bg-white/10 p-4">
             <XpBar
               level={world.worldLevel}
               levelLabel="Level Dunia"
@@ -149,7 +173,7 @@ export default function WorldHomePage() {
             {isCaseWorld ? (
               caseDone ? (
                 <Link
-                  className="inline-flex items-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
+                  className="light-trail inline-flex items-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
                   href={`/student/world/${worldKey}/kasus/hasil`}
                 >
                   Lihat Hasil Kasus
@@ -157,7 +181,7 @@ export default function WorldHomePage() {
                 </Link>
               ) : (
                 <Link
-                  className="inline-flex items-center gap-2 rounded-[8px] bg-[#6d28d9] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#4c1d95] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
+                  className="light-trail inline-flex items-center gap-2 rounded-[8px] bg-[#6d28d9] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#4c1d95] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
                   href={`/student/world/${worldKey}/kasus`}
                 >
                   {caseInProgress ? "Lanjutkan Kasus" : "Mulai Kasus Hari Ini"}
@@ -166,7 +190,7 @@ export default function WorldHomePage() {
               )
             ) : missionDone ? (
               <Link
-                className="inline-flex items-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
+                className="light-trail inline-flex items-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
                 href={`/student/world/${worldKey}/misi/hasil`}
               >
                 Lihat Hasil Misi
@@ -174,7 +198,7 @@ export default function WorldHomePage() {
               </Link>
             ) : (
               <Link
-                className="inline-flex items-center gap-2 rounded-[8px] bg-[#6d28d9] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#4c1d95] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
+                className="light-trail inline-flex items-center gap-2 rounded-[8px] bg-[#6d28d9] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#4c1d95] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
                 href={`/student/world/${worldKey}/misi`}
               >
                 {missionInProgress ? "Lanjutkan Misi" : "Mulai Misi Hari Ini"}

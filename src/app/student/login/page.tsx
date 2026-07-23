@@ -13,7 +13,7 @@ type LoginMethod = "email" | "code";
 
 export default function StudentLoginPage() {
   const router = useRouter();
-  const [method, setMethod] = useState<LoginMethod>("email");
+  const [method, setMethod] = useState<LoginMethod>("code");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -78,7 +78,7 @@ export default function StudentLoginPage() {
             <span className="font-heading text-xl font-black">BaleBelajar</span>
           </Link>
 
-          <div className="book-buddy mx-auto mt-10 max-w-[250px]">
+          <div className="book-buddy mx-auto mt-6 max-w-[180px] sm:mt-10 sm:max-w-[250px]">
             <div className="relative aspect-square rounded-[28px] bg-white/18">
               <div className="absolute inset-x-[18%] top-[18%] h-[62%] rounded-[24px] bg-white shadow-[0_10px_0_#bbf7d0]" />
               <div className="absolute left-[31%] top-[38%] size-7 rounded-full bg-[#172033]" />
@@ -88,10 +88,10 @@ export default function StudentLoginPage() {
           </div>
 
           <h1 className="font-heading mt-8 text-3xl font-black leading-tight">
-            Masuk dengan email, lalu lanjutkan misi belajar.
+            Masuk pakai kode peserta, lalu lanjutkan misi belajar.
           </h1>
           <p className="mt-3 font-bold leading-7 text-white/86">
-            Punya kode peserta dari sekolah? Bisa dipakai juga di bawah.
+            Kode dari guru adalah jalur tercepat. Email dan Google tetap bisa dipakai.
           </p>
         </div>
 
@@ -108,22 +108,22 @@ export default function StudentLoginPage() {
             <button
               className={[
                 "rounded-[6px] py-2 font-heading font-black transition",
-                method === "email" ? "bg-white text-[#22c55e] shadow-sm" : "text-slate-500",
-              ].join(" ")}
-              onClick={() => setMethod("email")}
-              type="button"
-            >
-              Email
-            </button>
-            <button
-              className={[
-                "rounded-[6px] py-2 font-heading font-black transition",
                 method === "code" ? "bg-white text-[#22c55e] shadow-sm" : "text-slate-500",
               ].join(" ")}
               onClick={() => setMethod("code")}
               type="button"
             >
               Kode Peserta
+            </button>
+            <button
+              className={[
+                "rounded-[6px] py-2 font-heading font-black transition",
+                method === "email" ? "bg-white text-[#22c55e] shadow-sm" : "text-slate-500",
+              ].join(" ")}
+              onClick={() => setMethod("email")}
+              type="button"
+            >
+              Email
             </button>
           </div>
 
@@ -159,7 +159,7 @@ export default function StudentLoginPage() {
               ) : null}
 
               <button
-                className="flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_7px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-70"
+                className="light-trail flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_7px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-70"
                 disabled={loading}
                 type="submit"
               >
@@ -174,11 +174,13 @@ export default function StudentLoginPage() {
                 <span className="mb-2 block text-sm font-black text-slate-600">
                   Kode peserta
                 </span>
-                <span className="flex items-center gap-3 rounded-[8px] border-2 border-slate-200 px-4 py-4 shadow-[0_6px_0_#e2e8f0]">
+                <span className="flex items-center gap-3 rounded-[8px] border-2 border-[#bbf7d0] bg-[#f0fdf4] px-4 py-4 shadow-[0_6px_0_#bbf7d0]">
                   <KeyRound className="text-[#22c55e]" size={22} />
                   <input
                     className="w-full border-0 bg-transparent font-heading text-xl font-black uppercase tracking-[0.08em] outline-none"
-                    onChange={(event) => setParticipantCode(event.target.value)}
+                    autoCapitalize="characters"
+                    autoComplete="one-time-code"
+                    onChange={(event) => setParticipantCode(event.target.value.toUpperCase())}
                     placeholder="KODE PESERTA"
                     required
                     value={participantCode}

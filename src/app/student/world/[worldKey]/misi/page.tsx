@@ -9,6 +9,7 @@ import { apiFetch } from "@/lib/api";
 import { MissionSubmitResult, TodayMission } from "@/lib/types";
 import { StudentShell } from "../../../_components/student-shell";
 import { MasteryBadge } from "../../../_components/mastery-badge";
+import { LoadingEvidence, MentorDialogue } from "../../../_components/motion-kit";
 
 export default function MissionRunnerPage() {
   const params = useParams<{ worldKey: string }>();
@@ -101,8 +102,8 @@ export default function MissionRunnerPage() {
   if (loading) {
     return (
       <StudentShell>
-        <div className="grid min-h-[60vh] place-items-center">
-          <Loader2 className="animate-spin text-slate-400" size={32} />
+        <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+          <LoadingEvidence label="Misi sedang disusun untukmu..." />
         </div>
       </StudentShell>
     );
@@ -112,9 +113,19 @@ export default function MissionRunnerPage() {
     return (
       <StudentShell>
         <section className="mx-auto max-w-3xl px-4 py-10 text-center sm:px-6">
-          <p className="rounded-[8px] border border-slate-200 bg-white p-8 font-bold text-slate-500 shadow-sm">
-            {error}
-          </p>
+          <div className="rounded-[8px] border border-slate-200 bg-white p-8 shadow-sm">
+            <Sparkles className="mx-auto text-[#f9c74f]" size={34} />
+            <p className="mt-4 font-heading text-2xl font-black">Misi belum bisa dibuka.</p>
+            <p className="mt-2 font-bold leading-7 text-slate-500">
+              {error} Progresmu tetap aman.
+            </p>
+            <Link
+              className="mt-5 inline-flex rounded-[8px] bg-[#2563eb] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#1e40af]"
+              href={`/student/world/${worldKey}`}
+            >
+              Kembali ke Dunia
+            </Link>
+          </div>
         </section>
       </StudentShell>
     );
@@ -205,11 +216,16 @@ export default function MissionRunnerPage() {
             {mission.mission.title}
           </span>
           <p className="mt-3 font-bold leading-6 text-white/90">{mission.mission.narrative}</p>
+          <div className="mt-4">
+            <MentorDialogue>
+              Pilih jawaban terbaik. Kalau ragu, cari petunjuk di kalimat soal sebelum lanjut.
+            </MentorDialogue>
+          </div>
         </motion.div>
 
         {error ? (
-          <p className="mt-4 rounded-[8px] border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-600">
-            {error}
+          <p className="mt-4 rounded-[8px] border border-[#fed7aa] bg-[#fff7ed] p-3 text-sm font-bold text-[#c2410c]">
+            {error} Coba kirim ulang saat koneksi stabil.
           </p>
         ) : null}
 
@@ -217,7 +233,7 @@ export default function MissionRunnerPage() {
           {mission.activities.map((activity, index) => (
             <motion.div
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm"
+              className="interactive-card rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm"
               initial={{ opacity: 0, y: 16 }}
               key={activity.id}
               transition={{ delay: index * 0.05 }}
@@ -231,7 +247,7 @@ export default function MissionRunnerPage() {
                   return (
                     <button
                       className={[
-                        "rounded-[8px] border-2 px-4 py-3 text-left font-bold transition",
+                        "min-h-12 rounded-[8px] border-2 px-4 py-3 text-left font-bold transition focus:outline-none focus:ring-4 focus:ring-[#ddd6fe]",
                         selected
                           ? "border-[#6d28d9] bg-[#f5f3ff] text-[#4c1d95]"
                           : "border-slate-200 bg-white text-slate-600 hover:border-slate-300",
@@ -251,7 +267,7 @@ export default function MissionRunnerPage() {
         </div>
 
         <button
-          className="mt-6 inline-flex items-center gap-2 rounded-[8px] bg-[#22c55e] px-6 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-60"
+          className="light-trail mt-6 inline-flex items-center gap-2 rounded-[8px] bg-[#22c55e] px-6 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-60"
           disabled={submitting}
           onClick={handleSubmit}
           type="button"

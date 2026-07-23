@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, ChartNoAxesColumn, Home, Loader2, Star, UserRound } from "lucide-react";
+import { BookOpen, ChartNoAxesColumn, Home, Star, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import { GameProfileSummary } from "@/lib/types";
 import { RoleSwitcher } from "@/components/role-switcher";
+import { LoadingEvidence } from "./motion-kit";
 
 const navItems = [
   { href: "/student/dashboard", label: "Beranda", icon: Home },
@@ -29,8 +30,8 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
 
   if (!ready) {
     return (
-      <main className="grid min-h-screen place-items-center">
-        <Loader2 className="animate-spin text-slate-400" size={32} />
+      <main className="grid min-h-screen place-items-center px-4">
+        <LoadingEvidence label="Mentor menyiapkan ruang belajarmu..." />
       </main>
     );
   }
@@ -50,7 +51,7 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
 
           <div className="flex shrink-0 items-center gap-2">
             {user ? <RoleSwitcher user={user} /> : null}
-            <div className="flex items-center gap-2 rounded-full bg-[#fff7ed] px-3 py-2 text-sm font-black text-[#c2410c]">
+            <div className="mission-node-active flex items-center gap-2 rounded-full bg-[#fff7ed] px-3 py-2 text-sm font-black text-[#c2410c]">
               <Star size={17} fill="#f9c74f" />
               {streakCurrent ?? 0} hari
             </div>
@@ -69,7 +70,7 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
             return (
               <Link
                 className={[
-                  "flex flex-col items-center justify-center gap-1 rounded-[8px] px-2 py-2 text-xs font-black",
+                  "relative flex min-h-14 flex-col items-center justify-center gap-1 rounded-[8px] px-2 py-2 text-xs font-black transition focus:outline-none focus:ring-4 focus:ring-[#bfdbfe]",
                   active ? "bg-[#eff6ff] text-[#2563eb]" : "text-slate-500",
                 ].join(" ")}
                 href={item.href}
@@ -77,6 +78,7 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
               >
                 <Icon size={20} />
                 {item.label}
+                {active ? <span className="absolute inset-x-5 bottom-1 h-1 rounded-full bg-[#2563eb]" /> : null}
               </Link>
             );
           })}
@@ -114,7 +116,10 @@ export function ProgressBar({
 }) {
   return (
     <div className="h-4 overflow-hidden rounded-full bg-slate-100">
-      <div className={`h-full rounded-full ${color}`} style={{ width: `${value}%` }} />
+      <div
+        className={`progress-reveal h-full rounded-full ${color}`}
+        style={{ "--progress-width": `${value}%` } as React.CSSProperties}
+      />
     </div>
   );
 }
