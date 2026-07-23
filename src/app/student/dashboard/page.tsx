@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, BookOpen, ClipboardCheck, Loader2, Play, Sparkles, Target } from "lucide-react";
+import { ArrowRight, BookOpen, ClipboardCheck, Compass, Loader2, Play, RefreshCw, Sparkles, Target } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { getStoredUser } from "@/lib/auth";
@@ -40,11 +40,26 @@ export default function StudentDashboardPage() {
   const router = useRouter();
   const [assignments, setAssignments] = useState<StudentAssignment[]>([]);
   const [worlds, setWorlds] = useState<WorldSummary[]>([]);
+  const [worldsLoading, setWorldsLoading] = useState(true);
+  const [worldsError, setWorldsError] = useState(false);
   const [careerPathId, setCareerPathId] = useState<string | null>(null);
+  const [careerPathLoading, setCareerPathLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const user = getStoredUser();
   const careerPath = getCareerPathConfig(careerPathId);
+
+  function loadWorlds() {
+    setWorldsLoading(true);
+    setWorldsError(false);
+    apiFetch<WorldSummary[]>("/student/worlds")
+      .then(({ data }) => setWorlds(data))
+      .catch(() => {
+        setWorlds([]);
+        setWorldsError(true);
+      })
+      .finally(() => setWorldsLoading(false));
+  }
 
   useEffect(() => {
     apiFetch<StudentAssignment[]>("/student/assessments")
@@ -52,13 +67,12 @@ export default function StudentDashboardPage() {
       .catch(() => setAssignments([]))
       .finally(() => setLoading(false));
 
-    apiFetch<WorldSummary[]>("/student/worlds")
-      .then(({ data }) => setWorlds(data))
-      .catch(() => setWorlds([]));
+    loadWorlds();
 
     apiFetch<Me>("/auth/me")
       .then(({ data }) => setCareerPathId(data.studentProfile?.careerPath ?? null))
-      .catch(() => setCareerPathId(null));
+      .catch(() => setCareerPathId(null))
+      .finally(() => setCareerPathLoading(false));
   }, []);
 
   const active = assignments.find((a) => a.status === "ASSIGNED" || a.status === "STARTED");
@@ -120,7 +134,9 @@ export default function StudentDashboardPage() {
                   ? careerPath.tagline
                   : active
                     ? `Asesmen "${active.assessment.title}" siap dikerjakan. Kerjakan dengan tenang; jawaban akan tersimpan otomatis.`
-                    : "Ayo mulai misi belajarmu hari ini."}
+                    : !careerPathLoading && !careerPath
+                      ? "Sebelum mulai, pilih dulu jalur cita-citamu supaya misimu terasa seperti petualangan."
+                      : "Ayo mulai misi belajarmu hari ini."}
               </p>
               {active ? (
                 <div className="mt-5 grid gap-2 text-sm font-bold text-white/90 sm:grid-cols-3">
@@ -146,6 +162,24 @@ export default function StudentDashboardPage() {
                   {active.status === "STARTED" ? "Lanjutkan Asesmen" : "Mulai Asesmen"}
                   <Play size={18} fill="#15803d" />
                 </button>
+              ) : !careerPathLoading && !careerPath ? (
+                <Link
+                  className="mt-6 inline-flex items-center gap-2 rounded-[8px] bg-white px-5 py-4 font-heading font-black text-[#15803d] shadow-[0_6px_0_#d9f99d] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
+                  href="/student/onboarding"
+                >
+                  <Compass size={18} />
+                  Pilih Jalur Belajar
+                  <ArrowRight size={18} />
+                </Link>
+              ) : worlds.length > 0 ? (
+                <a
+                  className="mt-6 inline-flex items-center gap-2 rounded-[8px] bg-white px-5 py-4 font-heading font-black text-[#15803d] shadow-[0_6px_0_#d9f99d] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
+                  href="#dunia-belajar"
+                >
+                  <Compass size={18} />
+                  Jelajahi Dunia Belajar
+                  <ArrowRight size={18} />
+                </a>
               ) : null}
             </div>
           </motion.div>
@@ -177,23 +211,44 @@ export default function StudentDashboardPage() {
           </motion.div>
         </div>
 
-        {worlds.length > 0 ? (
-          <section className="mt-8">
-            <div className="mb-4">
-              <p className="text-sm font-black uppercase text-[#6d28d9]">
-                BaleVerse
-              </p>
-              <h2 className="font-heading text-2xl font-black">
-                Pilih Dunia
-              </h2>
+        <section className="mt-8" id="dunia-belajar">
+          <div className="mb-4">
+            <p className="text-sm font-black uppercase text-[#6d28d9]">
+              BaleVerse
+            </p>
+            <h2 className="font-heading text-2xl font-black">
+              Pilih Dunia
+            </h2>
+          </div>
+
+          {worldsLoading ? (
+            <div className="grid place-items-center py-10">
+              <Loader2 className="animate-spin text-slate-400" size={28} />
             </div>
+          ) : worlds.length > 0 ? (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {worlds.map((world) => (
                 <WorldCard key={world.id} world={world} />
               ))}
             </div>
-          </section>
-        ) : null}
+          ) : (
+            <div className="rounded-[8px] border border-slate-200 bg-white p-6 text-center shadow-sm">
+              <p className="font-bold text-slate-500">
+                {worldsError
+                  ? "Dunia belajar gagal dimuat. Periksa koneksi internet kamu."
+                  : "Dunia belajar belum tersedia untuk akunmu saat ini. Coba muat ulang beberapa saat lagi."}
+              </p>
+              <button
+                className="mt-4 inline-flex items-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-4 py-3 font-heading font-black text-slate-700 transition hover:-translate-y-0.5"
+                onClick={loadWorlds}
+                type="button"
+              >
+                <RefreshCw size={16} />
+                Muat Ulang
+              </button>
+            </div>
+          )}
+        </section>
 
         {loading || assignments.length > 0 ? (
         <section className="mt-8">
