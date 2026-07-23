@@ -342,3 +342,110 @@ export function rankLabel(rank: BaleRank): string {
   };
   return map[rank];
 }
+
+// ---------------------------------------------------------------------------
+// BaleDetective: dunia Detectivia, Case Mission (kasus investigasi berbasis
+// bukti + pertanyaan penalaran, dievaluasi deterministik lewat keyword).
+// ---------------------------------------------------------------------------
+
+export const DETECTIVE_WORLD_KEY = "detectivia";
+
+export type CaseEvidenceRelevance = "RELEVANT" | "PARTIAL" | "DISTRACTOR";
+export type CaseEvidenceStrength = "HIGH" | "MEDIUM" | "LOW";
+export type CaseConfidenceDeclaration = "HIGH" | "MEDIUM" | "LOW" | "INSUFFICIENT_EVIDENCE";
+export type CaseAttemptStatus = "IN_PROGRESS" | "SUBMITTED";
+export type CaseAssignmentStatus = "ASSIGNED" | "STARTED" | "COMPLETED" | "EXPIRED";
+
+export type CaseEvidenceItem = {
+  id: string;
+  orderNumber: number;
+  type: string;
+  content: string;
+  relevance: CaseEvidenceRelevance;
+  sourceStrength: CaseEvidenceStrength;
+};
+
+export type CaseQuestionSkill = { id: string; name: string };
+
+export type CaseQuestionItem = {
+  id: string;
+  orderNumber: number;
+  prompt: string;
+  skill: CaseQuestionSkill;
+  answerText: string | null;
+  score?: number;
+};
+
+export type CurrentCase = {
+  assignmentId: string;
+  worldId: string;
+  status: CaseAssignmentStatus;
+  case: { id: string; title: string; openingStory: string; estimatedMinutes: number };
+  attempt: { id: string; status: CaseAttemptStatus } | null;
+  evidence: CaseEvidenceItem[];
+  questions: CaseQuestionItem[];
+};
+
+export type CaseSubmitResultQuestion = {
+  questionId: string;
+  prompt?: string;
+  skill?: CaseQuestionSkill;
+  answerText: string | null;
+  score: number;
+  matchedKeywords: string[];
+  missingKeywords: string[];
+  expectedReasoning?: string;
+};
+
+export type CaseSubmitResult = {
+  attemptId: string;
+  overallScore: number;
+  xpGained: number;
+  gameProfile: {
+    accountLevel: number;
+    accountXp: number;
+    accountLeveledUp: boolean;
+    worldXp?: number;
+    worldLevel?: number;
+    worldLeveledUp?: boolean;
+  };
+  questions: CaseSubmitResultQuestion[];
+};
+
+export type CaseResultQuestion = {
+  questionId: string;
+  prompt: string;
+  skill: CaseQuestionSkill;
+  answerText: string | null;
+  score: number;
+  matchedKeywords: string[];
+  expectedReasoning: string;
+};
+
+export type CaseResultView = {
+  attemptId: string;
+  title: string;
+  overallScore: number;
+  conclusionText: string | null;
+  confidenceLevel: CaseConfidenceDeclaration | null;
+  questions: CaseResultQuestion[];
+};
+
+export function confidenceDeclarationLabel(level: CaseConfidenceDeclaration): string {
+  const map: Record<CaseConfidenceDeclaration, string> = {
+    HIGH: "Yakin Tinggi",
+    MEDIUM: "Cukup Yakin",
+    LOW: "Kurang Yakin",
+    INSUFFICIENT_EVIDENCE: "Bukti Belum Cukup",
+  };
+  return map[level];
+}
+
+export function evidenceRelevanceLabel(relevance: CaseEvidenceRelevance): string {
+  const map: Record<CaseEvidenceRelevance, string> = {
+    RELEVANT: "Relevan",
+    PARTIAL: "Sebagian Relevan",
+    DISTRACTOR: "Pengecoh",
+  };
+  return map[relevance];
+}

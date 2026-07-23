@@ -6,42 +6,63 @@ import { useParams } from "next/navigation";
 import { ArrowRight, Loader2, MapPinned, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
-import { TodayMission, WorldSummary } from "@/lib/types";
+import { CurrentCase, DETECTIVE_WORLD_KEY, TodayMission, WorldSummary } from "@/lib/types";
 import { StudentShell } from "../../_components/student-shell";
 import { XpBar } from "../../_components/xp-bar";
 
 export default function WorldHomePage() {
   const params = useParams<{ worldKey: string }>();
   const worldKey = params.worldKey;
+  const isCaseWorld = worldKey === DETECTIVE_WORLD_KEY;
+
   const [world, setWorld] = useState<WorldSummary | null>(null);
   const [mission, setMission] = useState<TodayMission | null>(null);
+  const [currentCase, setCurrentCase] = useState<CurrentCase | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([
-      apiFetch<WorldSummary[]>("/student/worlds"),
-      apiFetch<TodayMission>("/student/missions/today", { query: { worldKey } }),
-    ])
-      .then(([worldsRes, missionRes]) => {
-        if (cancelled) return;
-        const found = worldsRes.data.find((item) => item.key === worldKey) ?? null;
-        setWorld(found);
-        setMission(missionRes.data);
-      })
-      .catch(() => {
-        if (!cancelled) setError("Dunia tidak ditemukan atau belum ada misi aktif.");
-      })
-      .finally(() => {
+    async function load() {
+      try {
+        const { data: worldsData } = await apiFetch<WorldSummary[]>("/student/worlds");
+        const found = worldsData.find((item) => item.key === worldKey) ?? null;
+
+        if (isCaseWorld) {
+          const { data } = await apiFetch<CurrentCase>("/student/cases/current", {
+            query: { worldKey },
+          });
+          if (cancelled) return;
+          setWorld(found);
+          setCurrentCase(data);
+        } else {
+          const { data } = await apiFetch<TodayMission>("/student/missions/today", {
+            query: { worldKey },
+          });
+          if (cancelled) return;
+          setWorld(found);
+          setMission(data);
+        }
+      } catch {
+        if (!cancelled) {
+          setError(
+            isCaseWorld
+              ? "Dunia tidak ditemukan atau belum ada kasus aktif."
+              : "Dunia tidak ditemukan atau belum ada misi aktif.",
+          );
+        }
+      } finally {
         if (!cancelled) setLoading(false);
-      });
+      }
+    }
+
+    void load();
 
     return () => {
       cancelled = true;
     };
-  }, [worldKey]);
+  }, [worldKey, isCaseWorld]);
 
   if (loading) {
     return (
@@ -53,7 +74,7 @@ export default function WorldHomePage() {
     );
   }
 
-  if (error || !world || !mission) {
+  if (error || !world || (isCaseWorld ? !currentCase : !mission)) {
     return (
       <StudentShell>
         <section className="mx-auto max-w-3xl px-4 py-10 text-center sm:px-6">
@@ -65,8 +86,10 @@ export default function WorldHomePage() {
     );
   }
 
-  const missionDone = mission.attempt?.status === "SUBMITTED" || mission.attempt?.status === "AUTO_SUBMITTED";
-  const missionInProgress = mission.attempt?.status === "IN_PROGRESS";
+  const missionDone = mission?.attempt?.status === "SUBMITTED" || mission?.attempt?.status === "AUTO_SUBMITTED";
+  const missionInProgress = mission?.attempt?.status === "IN_PROGRESS";
+  const caseDone = currentCase?.attempt?.status === "SUBMITTED";
+  const caseInProgress = currentCase?.attempt?.status === "IN_PROGRESS";
 
   return (
     <StudentShell>
@@ -102,15 +125,46 @@ export default function WorldHomePage() {
           initial={{ opacity: 0, y: 16 }}
           transition={{ delay: 0.08 }}
         >
-          <p className="text-sm font-black uppercase text-[#6d28d9]">Misi Hari Ini</p>
-          <h2 className="font-heading text-2xl font-black">{mission.mission.title}</h2>
-          <p className="mt-3 font-bold leading-6 text-slate-600">{mission.mission.narrative}</p>
-          <p className="mt-3 text-sm font-bold text-slate-400">
-            Kompetensi fokus: {mission.mission.competency.name} - sekitar {mission.mission.estimatedMinutes} menit
-          </p>
+          {isCaseWorld && currentCase ? (
+            <>
+              <p className="text-sm font-black uppercase text-[#6d28d9]">Kasus Hari Ini</p>
+              <h2 className="font-heading text-2xl font-black">{currentCase.case.title}</h2>
+              <p className="mt-3 font-bold leading-6 text-slate-600">{currentCase.case.openingStory}</p>
+              <p className="mt-3 text-sm font-bold text-slate-400">
+                {currentCase.questions.length} pertanyaan penalaran - sekitar {currentCase.case.estimatedMinutes} menit
+              </p>
+            </>
+          ) : mission ? (
+            <>
+              <p className="text-sm font-black uppercase text-[#6d28d9]">Misi Hari Ini</p>
+              <h2 className="font-heading text-2xl font-black">{mission.mission.title}</h2>
+              <p className="mt-3 font-bold leading-6 text-slate-600">{mission.mission.narrative}</p>
+              <p className="mt-3 text-sm font-bold text-slate-400">
+                Kompetensi fokus: {mission.mission.competency.name} - sekitar {mission.mission.estimatedMinutes} menit
+              </p>
+            </>
+          ) : null}
 
           <div className="mt-6 flex flex-wrap gap-3">
-            {missionDone ? (
+            {isCaseWorld ? (
+              caseDone ? (
+                <Link
+                  className="inline-flex items-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
+                  href={`/student/world/${worldKey}/kasus/hasil`}
+                >
+                  Lihat Hasil Kasus
+                  <ArrowRight size={18} />
+                </Link>
+              ) : (
+                <Link
+                  className="inline-flex items-center gap-2 rounded-[8px] bg-[#6d28d9] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#4c1d95] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
+                  href={`/student/world/${worldKey}/kasus`}
+                >
+                  {caseInProgress ? "Lanjutkan Kasus" : "Mulai Kasus Hari Ini"}
+                  <ArrowRight size={18} />
+                </Link>
+              )
+            ) : missionDone ? (
               <Link
                 className="inline-flex items-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
                 href={`/student/world/${worldKey}/misi/hasil`}
