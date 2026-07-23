@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
 import { GameProfileSummary } from "@/lib/types";
+import { RoleSwitcher } from "@/components/role-switcher";
 
 const navItems = [
   { href: "/student/dashboard", label: "Beranda", icon: Home },
@@ -16,7 +17,7 @@ const navItems = [
 
 export function StudentShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { ready } = useRequireAuth(["STUDENT"], "/student/login");
+  const { ready, user } = useRequireAuth(["STUDENT"], "/student/login");
   const [streakCurrent, setStreakCurrent] = useState<number | null>(null);
 
   useEffect(() => {
@@ -47,9 +48,12 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
             </span>
           </Link>
 
-          <div className="flex shrink-0 items-center gap-2 rounded-full bg-[#fff7ed] px-3 py-2 text-sm font-black text-[#c2410c]">
-            <Star size={17} fill="#f9c74f" />
-            {streakCurrent ?? 0} hari
+          <div className="flex shrink-0 items-center gap-2">
+            {user ? <RoleSwitcher user={user} /> : null}
+            <div className="flex items-center gap-2 rounded-full bg-[#fff7ed] px-3 py-2 text-sm font-black text-[#c2410c]">
+              <Star size={17} fill="#f9c74f" />
+              {streakCurrent ?? 0} hari
+            </div>
           </div>
         </div>
       </header>

@@ -12,6 +12,7 @@ export type AuthUser = {
   email?: string;
   avatarUrl?: string;
   role: UserRole;
+  roles: UserRole[];
   schoolId?: string;
   teacherProfileId?: string;
   studentProfileId?: string;
@@ -79,6 +80,30 @@ export async function loginWithGoogle(idToken: string) {
   });
   storeSession(data.accessToken, data.user);
   return { user: data.user, isNewUser: data.isNewUser };
+}
+
+export async function switchRole(role: UserRole) {
+  const { data } = await apiFetch<AuthResponse>("/auth/switch-role", {
+    method: "POST",
+    body: { role },
+  });
+  storeSession(data.accessToken, data.user);
+  return data.user;
+}
+
+export async function addRole(role: UserRole) {
+  const { data } = await apiFetch<{ roles: UserRole[] }>("/auth/roles", {
+    method: "POST",
+    body: { role },
+  });
+  const current = getStoredUser();
+  if (current) {
+    window.localStorage.setItem(
+      USER_KEY,
+      JSON.stringify({ ...current, roles: data.roles }),
+    );
+  }
+  return data.roles;
 }
 
 export function logout() {

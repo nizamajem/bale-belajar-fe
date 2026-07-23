@@ -2,14 +2,25 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, CalendarDays, GraduationCap, IdCard, Loader2, LucideIcon, School as SchoolIcon } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarDays,
+  GraduationCap,
+  IdCard,
+  Loader2,
+  LucideIcon,
+  Presentation,
+  School as SchoolIcon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, ApiError } from "@/lib/api";
+import { addRole, UserRole } from "@/lib/auth";
 import { StudentShell } from "../_components/student-shell";
 
 type Me = {
   id: string;
   name: string;
+  roles: UserRole[];
   studentProfile: {
     id: string;
     participantCode: string | null;
@@ -23,13 +34,31 @@ type Me = {
 export default function StudentProfilePage() {
   const [me, setMe] = useState<Me | null>(null);
   const [loading, setLoading] = useState(true);
+  const [addingRole, setAddingRole] = useState(false);
+  const [roleError, setRoleError] = useState<string | null>(null);
+
+  function loadMe() {
+    return apiFetch<Me>("/auth/me")
+      .then(({ data }) => setMe(data))
+      .catch(() => setMe(null));
+  }
 
   useEffect(() => {
-    apiFetch<Me>("/auth/me")
-      .then(({ data }) => setMe(data))
-      .catch(() => setMe(null))
-      .finally(() => setLoading(false));
+    loadMe().finally(() => setLoading(false));
   }, []);
+
+  async function handleAddTeacherRole() {
+    setAddingRole(true);
+    setRoleError(null);
+    try {
+      await addRole("TEACHER");
+      await loadMe();
+    } catch (err) {
+      setRoleError(err instanceof ApiError ? err.message : "Gagal menambah peran Guru. Coba lagi.");
+    } finally {
+      setAddingRole(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -113,6 +142,41 @@ export default function StudentProfilePage() {
             </Link>
           </div>
         </motion.div>
+
+        {me && !me.roles.includes("TEACHER") ? (
+          <motion.div
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-5 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm"
+            initial={{ opacity: 0, y: 12 }}
+            transition={{ delay: 0.14 }}
+          >
+            <div className="flex items-center gap-3">
+              <Presentation className="text-[#2563eb]" size={24} />
+              <div>
+                <p className="text-sm font-black uppercase text-slate-400">Peran tambahan</p>
+                <p className="font-heading text-lg font-black">Ingin juga jadi Guru?</p>
+              </div>
+            </div>
+            <p className="mt-3 text-sm font-bold leading-6 text-slate-500">
+              Kamu bisa punya peran Guru di akun yang sama dan berpindah kapan saja lewat
+              menu di header. {school ? "" : "Hubungkan akun ke sekolah dulu supaya bisa ditambahkan."}
+            </p>
+            {roleError ? (
+              <p className="mt-3 rounded-[8px] bg-red-50 px-3 py-2 text-sm font-bold text-red-600">
+                {roleError}
+              </p>
+            ) : null}
+            <button
+              className="mt-4 inline-flex items-center gap-2 rounded-[8px] bg-[#2563eb] px-4 py-3 font-heading font-black text-white shadow-[0_5px_0_#1d4ed8] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-60"
+              disabled={addingRole || !school}
+              onClick={handleAddTeacherRole}
+              type="button"
+            >
+              {addingRole ? <Loader2 className="animate-spin" size={16} /> : <Presentation size={16} />}
+              Tambah Peran Guru
+            </button>
+          </motion.div>
+        ) : null}
       </section>
     </StudentShell>
   );

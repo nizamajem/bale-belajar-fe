@@ -16,6 +16,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { logout, useRequireAuth } from "@/lib/auth";
+import { RoleSwitcher } from "@/components/role-switcher";
 
 type Role = "admin" | "teacher";
 
@@ -130,6 +131,7 @@ export function DashboardShell({
               </h1>
             </div>
             <div className="flex items-center gap-3">
+              <RoleSwitcher user={user} />
               <button className="grid size-10 place-items-center rounded-[8px] border border-slate-200 bg-white text-slate-600 shadow-sm">
                 <Bell size={19} />
               </button>
