@@ -7,9 +7,14 @@ import { ArrowRight, BookOpen, ClipboardCheck, Loader2, Play, Sparkles, Target }
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { getStoredUser } from "@/lib/auth";
+import { getCareerPathConfig } from "@/lib/career-paths";
 import { StudentAssignment, WorldSummary } from "@/lib/types";
 import { ProgressBar, StudentShell } from "../_components/student-shell";
 import { WorldCard } from "../_components/world-card";
+
+type Me = {
+  studentProfile: { careerPath: string | null } | null;
+};
 
 const toneByStatus = {
   ASSIGNED: "bg-[#fef3c7] text-[#92400e]",
@@ -35,9 +40,11 @@ export default function StudentDashboardPage() {
   const router = useRouter();
   const [assignments, setAssignments] = useState<StudentAssignment[]>([]);
   const [worlds, setWorlds] = useState<WorldSummary[]>([]);
+  const [careerPathId, setCareerPathId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const user = getStoredUser();
+  const careerPath = getCareerPathConfig(careerPathId);
 
   useEffect(() => {
     apiFetch<StudentAssignment[]>("/student/assessments")
@@ -48,6 +55,10 @@ export default function StudentDashboardPage() {
     apiFetch<WorldSummary[]>("/student/worlds")
       .then(({ data }) => setWorlds(data))
       .catch(() => setWorlds([]));
+
+    apiFetch<Me>("/auth/me")
+      .then(({ data }) => setCareerPathId(data.studentProfile?.careerPath ?? null))
+      .catch(() => setCareerPathId(null));
   }, []);
 
   const active = assignments.find((a) => a.status === "ASSIGNED" || a.status === "STARTED");
@@ -80,21 +91,36 @@ export default function StudentDashboardPage() {
         <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
           <motion.div
             animate={{ opacity: 1, y: 0 }}
-            className="relative overflow-hidden rounded-[8px] bg-[#22c55e] p-5 text-white shadow-[0_10px_0_#129447] sm:p-7"
+            className="relative overflow-hidden rounded-[8px] p-5 text-white shadow-[0_10px_0_#129447] sm:p-7"
             initial={{ opacity: 0, y: 16 }}
+            style={{
+              background: careerPath?.gradient ?? "#22c55e",
+              boxShadow: careerPath ? `0 10px 0 ${careerPath.shadowColor}` : undefined,
+            }}
           >
             <div className="relative z-10 max-w-xl">
               <span className="inline-flex items-center gap-2 rounded-full bg-white/18 px-3 py-2 text-sm font-black">
-                <Sparkles size={17} />
-                {active ? "Misi hari ini siap" : "Belum ada misi aktif"}
+                {careerPath ? (
+                  <>
+                    <span>{careerPath.emoji}</span>
+                    {careerPath.title}
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={17} />
+                    {active ? "Misi hari ini siap" : "Belum ada misi aktif"}
+                  </>
+                )}
               </span>
               <h1 className="font-heading mt-4 text-3xl font-black leading-tight sm:text-5xl">
                 Halo, {user?.name ?? "Siswa"}.
               </h1>
               <p className="mt-4 max-w-lg font-bold leading-7 text-white/88">
-                {active
-                  ? `Asesmen "${active.assessment.title}" siap dikerjakan. Kerjakan dengan tenang; jawaban akan tersimpan otomatis.`
-                  : "Belum ada asesmen yang ditugaskan untukmu saat ini. Cek lagi nanti."}
+                {careerPath
+                  ? careerPath.tagline
+                  : active
+                    ? `Asesmen "${active.assessment.title}" siap dikerjakan. Kerjakan dengan tenang; jawaban akan tersimpan otomatis.`
+                    : "Ayo mulai misi belajarmu hari ini."}
               </p>
               {active ? (
                 <div className="mt-5 grid gap-2 text-sm font-bold text-white/90 sm:grid-cols-3">
@@ -169,6 +195,7 @@ export default function StudentDashboardPage() {
           </section>
         ) : null}
 
+        {loading || assignments.length > 0 ? (
         <section className="mt-8">
           <div className="mb-4">
             <p className="text-sm font-black uppercase text-[#22c55e]">
@@ -183,10 +210,6 @@ export default function StudentDashboardPage() {
             <div className="grid place-items-center py-10">
               <Loader2 className="animate-spin text-slate-400" size={28} />
             </div>
-          ) : assignments.length === 0 ? (
-            <p className="rounded-[8px] border border-slate-200 bg-white p-8 text-center font-bold text-slate-500 shadow-sm">
-              Belum ada asesmen yang ditugaskan. Jika guru sudah membagikan asesmen, pastikan kode peserta yang digunakan sudah benar.
-            </p>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {assignments.map((assignment, index) => (
@@ -220,6 +243,7 @@ export default function StudentDashboardPage() {
             </div>
           )}
         </section>
+        ) : null}
 
         {lastSubmitted?.attempts?.[0] ? (
           <Link
