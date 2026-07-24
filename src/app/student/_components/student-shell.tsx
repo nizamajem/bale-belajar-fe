@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, ChartNoAxesColumn, Home, Star, UserRound } from "lucide-react";
+import { BookOpen, Compass, Home, MapPinned, Star, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { useRequireAuth } from "@/lib/auth";
@@ -12,7 +12,9 @@ import { LoadingEvidence } from "./motion-kit";
 
 const navItems = [
   { href: "/student/dashboard", label: "Beranda", icon: Home },
-  { href: "/student/history", label: "Hasil", icon: ChartNoAxesColumn },
+  { href: "/student/dashboard#dunia", label: "Dunia", icon: Compass },
+  { href: "/student/dashboard#misi", label: "Misi", icon: Star },
+  { href: "/student/growth-map", label: "Rank", icon: MapPinned },
   { href: "/student/profile", label: "Profil", icon: UserRound },
 ];
 
@@ -62,9 +64,11 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
       {children}
 
       <nav className="fixed inset-x-3 bottom-3 z-40 rounded-[8px] border border-slate-200 bg-white/95 p-2 shadow-2xl backdrop-blur md:hidden">
-        <div className="grid grid-cols-3 gap-1">
+        <div className="grid grid-cols-5 gap-1">
           {navItems.map((item) => {
-            const active = pathname === item.href;
+            const active =
+              pathname === item.href ||
+              (item.href === "/student/dashboard" && pathname === "/student/dashboard");
             const Icon = item.icon;
 
             return (
