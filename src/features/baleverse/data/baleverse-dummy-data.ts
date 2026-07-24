@@ -36,6 +36,7 @@ export interface LearningWorld {
   id: WorldId;
   name: string;
   subject: string;
+  simplePurpose: string;
   characterClass: string;
   level: number;
   xp: number;
@@ -71,6 +72,7 @@ export const baleverseWorlds: LearningWorld[] = [
     id: "numeria",
     name: "Numeria",
     subject: "Matematika",
+    simplePurpose: "Belajar angka lewat jembatan, pola, dan teka-teki logika.",
     characterClass: "Arsitek Logika",
     level: 18,
     xp: 62,
@@ -108,6 +110,7 @@ export const baleverseWorlds: LearningWorld[] = [
     id: "kodex",
     name: "KodeX",
     subject: "Informatika",
+    simplePurpose: "Belajar cara berpikir komputer lewat kota variabel dan instruksi.",
     characterClass: "Penjelajah Kode",
     level: 11,
     xp: 44,
@@ -145,6 +148,7 @@ export const baleverseWorlds: LearningWorld[] = [
     id: "detectivia",
     name: "Detectivia",
     subject: "Deteksi dan Logika",
+    simplePurpose: "Belajar berpikir teliti lewat petunjuk, urutan kejadian, dan bukti.",
     characterClass: "Bale Sleuth",
     level: 7,
     xp: 38,
@@ -198,10 +202,10 @@ export const journeyStages: JourneyStage[] = [
 ];
 
 export const quickActions: QuickAction[] = [
-  { label: "Tanya Bale", description: "Minta petunjuk singkat." },
-  { label: "Cek Paham", description: "Uji satu konsep cepat." },
-  { label: "Pindai Materi", description: "Cari bagian penting." },
-  { label: "Kuis Kilat", description: "Latihan 3 menit." },
+  { label: "Tanya Bale", description: "Kalau bingung, minta petunjuk." },
+  { label: "Cek Paham", description: "Tes cepat: sudah paham atau belum." },
+  { label: "Pindai Materi", description: "Cari bagian penting dari materi." },
+  { label: "Kuis Kilat", description: "Latihan singkat sebelum lanjut." },
 ];
 
 export const learningCircle: LearningCircleItem[] = [
