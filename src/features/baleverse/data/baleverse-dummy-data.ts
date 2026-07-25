@@ -93,7 +93,7 @@ export const baleverseWorlds: LearningWorld[] = [
       activities: 5,
       xpReward: 30,
       balePowerReward: 15,
-      href: "/student/world/numeria",
+      href: "/student/missions/first-mission",
     },
     skills: [
       { name: "Pola Persamaan", value: 62, description: "Mulai stabil" },
@@ -131,7 +131,7 @@ export const baleverseWorlds: LearningWorld[] = [
       activities: 4,
       xpReward: 25,
       balePowerReward: 12,
-      href: "/student/world/kodex",
+      href: "/student/missions/first-mission",
     },
     skills: [
       { name: "Logika IF", value: 44, description: "Sedang naik" },
@@ -169,7 +169,7 @@ export const baleverseWorlds: LearningWorld[] = [
       activities: 6,
       xpReward: 35,
       balePowerReward: 18,
-      href: "/student/world/detectivia",
+      href: "/student/missions/first-mission",
     },
     skills: [
       { name: "Observasi", value: 52, description: "Bukti makin rapi" },

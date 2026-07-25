@@ -147,6 +147,40 @@ canvas {
   }
 }
 
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(2deg);
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) translateY(16px);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.06) translateY(-3px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg) translateX(78px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(78px) rotate(-360deg);
+  }
+}
+
 .book-buddy {
   animation: bob 3.2s ease-in-out infinite;
 }
@@ -208,6 +242,26 @@ canvas {
 
 .mission-node-active {
   animation: node-pulse 2.2s ease-in-out infinite;
+}
+
+.game-float {
+  animation: float-slow 4s ease-in-out infinite;
+}
+
+.game-pop {
+  animation: pop-in 0.5s ease-out both;
+}
+
+.game-orbit {
+  animation: orbit 9s linear infinite;
+}
+
+.game-grid-surface {
+  background-image:
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.2), transparent 18%),
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: auto, 28px 28px, 28px 28px;
 }
 
 .interactive-card {

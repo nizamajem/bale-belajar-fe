@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, KeyRound, Loader2, Mail, Sparkles } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { GoogleAuthButton } from "@/components/google-auth-button";
+import { loginDummyStudent } from "@/features/auth/services/auth-dummy-service";
 import { ApiError } from "@/lib/api";
 import { dashboardPathForRole, login, loginWithGoogle, studentLogin } from "@/lib/auth";
 
@@ -22,6 +23,7 @@ export default function StudentLoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [dummyLoading, setDummyLoading] = useState(false);
 
   async function handleEmailSubmit(event: FormEvent) {
     event.preventDefault();
@@ -60,6 +62,17 @@ export default function StudentLoginPage() {
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Gagal masuk dengan Google. Silakan coba lagi.");
       setGoogleLoading(false);
+    }
+  }
+
+  async function handleDummyLogin() {
+    setError(null);
+    setDummyLoading(true);
+    try {
+      await loginDummyStudent();
+      router.push("/student/dashboard");
+    } finally {
+      setDummyLoading(false);
     }
   }
 
@@ -224,9 +237,19 @@ export default function StudentLoginPage() {
             />
           )}
 
+          <button
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-[8px] border-2 border-[#bbf7d0] bg-[#f0fdf4] px-4 py-4 font-heading font-black text-[#166534] transition hover:-translate-y-0.5 active:translate-y-1 disabled:opacity-70"
+            disabled={dummyLoading}
+            onClick={handleDummyLogin}
+            type="button"
+          >
+            {dummyLoading ? <Loader2 className="animate-spin" size={19} /> : <Sparkles size={19} />}
+            Coba akun siswa dummy
+          </button>
+
           <p className="mt-5 text-center text-sm font-bold text-slate-400">
             Belum punya akun?{" "}
-            <Link className="text-[#6d28d9] hover:underline" href="/daftar">
+            <Link className="text-[#6d28d9] hover:underline" href="/register/student">
               Daftar sekarang
             </Link>
           </p>

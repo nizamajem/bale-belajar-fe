@@ -17,6 +17,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { getOnboardingState } from "@/features/onboarding/services/onboarding-dummy-service";
 import {
   baleverseWorlds,
   journeyStages,
@@ -31,7 +32,9 @@ type BaleVerseDashboardProps = {
 };
 
 export function BaleVerseDashboard({ studentName }: BaleVerseDashboardProps) {
-  const [activeWorldId, setActiveWorldId] = useState<WorldId>("detectivia");
+  const [activeWorldId, setActiveWorldId] = useState<WorldId>(
+    () => getOnboardingState().world ?? "detectivia",
+  );
   const [noticeOpen, setNoticeOpen] = useState(false);
   const [lockedHint, setLockedHint] = useState<string | null>(null);
   const [equippedPowers, setEquippedPowers] = useState<string[]>(["Focus Lens"]);
@@ -157,19 +160,22 @@ function HeroMissionCard({ studentName, world }: { studentName: string; world: L
       transition={{ duration: 0.26 }}
     >
       <div className="absolute inset-0 surface-detective opacity-20" />
+      <div className="pointer-events-none absolute -right-4 bottom-4 hidden w-56 opacity-35 lg:block">
+        <WorldFigure world={world} size="large" />
+      </div>
       <div className="relative z-10 max-w-2xl">
         <span className="inline-flex items-center gap-2 rounded-full bg-white/18 px-3 py-2 text-sm font-black">
           <Sparkles size={17} />
-          Yang paling penting
+          Main Quest
         </span>
         <h2 className="font-heading mt-4 text-3xl font-black leading-tight sm:text-5xl">
-          Hai {studentName}, lanjutkan misi ini dulu.
+          Hai {studentName}, lanjut level ini.
         </h2>
         <p className="mt-3 max-w-xl font-bold leading-7 text-white/88">
-          Dashboard ini sederhana: pilih dunia, kerjakan misi singkat, lalu lihat progresmu naik.
+          Pilih dunia. Kerjakan misi. Ambil reward.
         </p>
         <div className="mt-5 rounded-[8px] border border-white/16 bg-white/12 p-4">
-          <p className="text-sm font-black uppercase text-white/70">Misi sekarang di {world.currentArea}</p>
+          <p className="text-sm font-black uppercase text-white/70">{world.currentArea}</p>
           <h3 className="font-heading mt-1 text-2xl font-black">{world.mission.title}</h3>
           <div className="mt-3 grid gap-2 text-sm font-black text-white/90 sm:grid-cols-3">
             <span className="rounded-[8px] bg-white/12 px-3 py-2">{world.mission.durationMinutes} menit</span>
@@ -178,7 +184,7 @@ function HeroMissionCard({ studentName, world }: { studentName: string; world: L
           </div>
         </div>
         <div className="mt-4 grid gap-2 text-sm font-bold text-white/88 sm:grid-cols-3">
-          {["1. Klik lanjut", "2. Jawab pelan-pelan", "3. Lihat progres"].map((step) => (
+          {["Start", "Challenge", "Reward"].map((step) => (
             <span className="rounded-[8px] bg-black/10 px-3 py-2" key={step}>{step}</span>
           ))}
         </div>
