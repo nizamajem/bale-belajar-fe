@@ -67,6 +67,173 @@ export interface LearningCircleItem {
   message: string;
 }
 
+export interface DetectiveCurriculumModule {
+  id: string;
+  phase: string;
+  title: string;
+  goal: string;
+  materials: string[];
+  practice: string[];
+  aiUse: string;
+  status: StageStatus;
+  estimatedDays: number;
+}
+
+export const detectiveCurriculum: DetectiveCurriculumModule[] = [
+  {
+    id: "detective-profile",
+    phase: "Profil Detektif",
+    title: "Kenali gaya berpikirmu",
+    goal: "Siswa tahu kebiasaan belajarnya: cepat menebak, teliti membaca, atau butuh contoh lebih banyak.",
+    materials: [
+      "Cara membaca instruksi tanpa buru-buru",
+      "Bedanya fakta, opini, dan asumsi",
+      "Cara mencatat petunjuk kecil yang sering terlewat",
+    ],
+    practice: [
+      "Pilih fakta dari cerita pendek",
+      "Tandai kalimat yang masih asumsi",
+      "Refleksi: bagian mana yang paling sering bikin salah",
+    ],
+    aiUse: "AI membaca pola jawaban awal dan memberi rekomendasi jalur: mulai dari observasi, kronologi, atau verifikasi.",
+    status: "completed",
+    estimatedDays: 1,
+  },
+  {
+    id: "observation",
+    phase: "Fondasi 1",
+    title: "Observasi bukti",
+    goal: "Siswa mampu menemukan informasi penting dari teks, gambar, tabel, atau percakapan.",
+    materials: [
+      "Apa itu bukti relevan",
+      "Cara memilah detail penting dan detail pengalih",
+      "Teknik scan: siapa, apa, kapan, di mana, mengapa, bagaimana",
+    ],
+    practice: [
+      "Cari 5 petunjuk dari satu cerita kasus",
+      "Pisahkan bukti kuat dan bukti lemah",
+      "Susun kartu bukti berdasarkan kategori",
+    ],
+    aiUse: "AI menandai jenis bukti yang sering terlewat dan menyarankan materi ulang yang paling pendek.",
+    status: "current",
+    estimatedDays: 3,
+  },
+  {
+    id: "chronology",
+    phase: "Fondasi 2",
+    title: "Kronologi kejadian",
+    goal: "Siswa mampu menyusun urutan kejadian dan melihat bagian yang belum lengkap.",
+    materials: [
+      "Urutan waktu dan hubungan sebab-akibat",
+      "Cara membaca kata penanda waktu",
+      "Cara membuat timeline kasus",
+    ],
+    practice: [
+      "Susun 6 kejadian acak menjadi timeline",
+      "Cari kejadian yang mustahil terjadi duluan",
+      "Lengkapi timeline dengan bukti pendukung",
+    ],
+    aiUse: "AI mengecek urutan yang dibuat siswa dan menjelaskan titik yang tidak konsisten.",
+    status: "locked",
+    estimatedDays: 4,
+  },
+  {
+    id: "logic",
+    phase: "Fondasi 3",
+    title: "Logika kesimpulan",
+    goal: "Siswa tidak hanya menjawab, tapi bisa menjelaskan alasan dari bukti menuju kesimpulan.",
+    materials: [
+      "Premis dan kesimpulan sederhana",
+      "Pola jika-maka dalam kasus",
+      "Kesalahan umum: lompat kesimpulan",
+    ],
+    practice: [
+      "Pilih kesimpulan yang paling didukung bukti",
+      "Tulis alasan dalam 2 kalimat",
+      "Bandingkan dua hipotesis",
+    ],
+    aiUse: "AI memberi feedback apakah alasan siswa sudah berbasis bukti atau masih berupa tebakan.",
+    status: "locked",
+    estimatedDays: 5,
+  },
+  {
+    id: "interview",
+    phase: "Skill Detektif",
+    title: "Wawancara dan pertanyaan tajam",
+    goal: "Siswa belajar membuat pertanyaan yang menggali informasi, bukan pertanyaan yang mengarahkan jawaban.",
+    materials: [
+      "Pertanyaan terbuka vs tertutup",
+      "Cara mendengar jawaban saksi",
+      "Cara mencatat inkonsistensi tanpa menuduh",
+    ],
+    practice: [
+      "Pilih pertanyaan terbaik untuk saksi",
+      "Tandai jawaban yang tidak konsisten",
+      "Buat 3 pertanyaan lanjutan",
+    ],
+    aiUse: "AI menyarankan pertanyaan lanjutan berdasarkan informasi yang belum tergali.",
+    status: "locked",
+    estimatedDays: 4,
+  },
+  {
+    id: "verification",
+    phase: "Skill Detektif",
+    title: "Verifikasi dan anti-hoaks",
+    goal: "Siswa mampu mengecek klaim, sumber, dan bukti sebelum percaya pada satu jawaban.",
+    materials: [
+      "Cara membedakan klaim dan bukti",
+      "Sumber primer dan sumber sekunder",
+      "Checklist verifikasi sederhana",
+    ],
+    practice: [
+      "Cek klaim dari potongan berita",
+      "Pilih sumber paling dapat dipercaya",
+      "Berikan label: valid, meragukan, atau belum cukup bukti",
+    ],
+    aiUse: "AI memberi daftar bagian yang perlu dicek ulang, bukan langsung memberi jawaban final.",
+    status: "locked",
+    estimatedDays: 5,
+  },
+  {
+    id: "ethics",
+    phase: "Etika",
+    title: "Etika seorang detektif",
+    goal: "Siswa paham bahwa investigasi harus adil, menghargai privasi, dan tidak asal menuduh.",
+    materials: [
+      "Praduga tak bersalah",
+      "Privasi dan batas bertanya",
+      "Cara menyampaikan kesimpulan dengan hati-hati",
+    ],
+    practice: [
+      "Pilih tindakan yang etis dalam skenario kasus",
+      "Ubah kalimat tuduhan menjadi kalimat berbasis bukti",
+      "Buat laporan singkat yang tidak menyudutkan",
+    ],
+    aiUse: "AI memeriksa nada laporan agar tidak menuduh tanpa bukti.",
+    status: "locked",
+    estimatedDays: 2,
+  },
+  {
+    id: "capstone",
+    phase: "Kasus Besar",
+    title: "Pecahkan kasus lengkap",
+    goal: "Siswa menggabungkan observasi, kronologi, logika, wawancara, verifikasi, dan etika dalam satu proyek.",
+    materials: [
+      "Template papan bukti",
+      "Template timeline investigasi",
+      "Template laporan final",
+    ],
+    practice: [
+      "Kumpulkan bukti dari beberapa sumber",
+      "Bangun timeline dan hipotesis",
+      "Tulis laporan final beserta alasan",
+    ],
+    aiUse: "AI menjadi reviewer: memberi skor kejelasan, bukti yang kurang, dan rekomendasi modul penguatan.",
+    status: "locked",
+    estimatedDays: 7,
+  },
+];
+
 export const baleverseWorlds: LearningWorld[] = [
   {
     id: "numeria",
@@ -148,8 +315,8 @@ export const baleverseWorlds: LearningWorld[] = [
     id: "detectivia",
     name: "Detectivia",
     subject: "Deteksi dan Logika",
-    simplePurpose: "Belajar berpikir teliti lewat petunjuk, urutan kejadian, dan bukti.",
-    characterClass: "Bale Sleuth",
+    simplePurpose: "Jalur belajar untuk calon detektif: pahami materi, bongkar contoh kasus, baru latihan dengan analisis AI.",
+    characterClass: "Calon Detektif",
     level: 7,
     xp: 38,
     nextLevelXp: 100,
@@ -164,9 +331,9 @@ export const baleverseWorlds: LearningWorld[] = [
       text: "#4c1d95",
     },
     mission: {
-      title: "Susun Kronologi Bukti",
-      durationMinutes: 15,
-      activities: 6,
+      title: "Materi 1: Observasi Bukti",
+      durationMinutes: 18,
+      activities: 4,
       xpReward: 35,
       balePowerReward: 18,
       href: "/student/missions/first-mission",

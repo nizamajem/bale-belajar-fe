@@ -61,19 +61,19 @@ export const firstMissions: Record<FirstWorldId, DummyFirstMission> = {
   detectivia: {
     id: "first-mission",
     worldId: "detectivia",
-    title: "Susun Kronologi Bukti",
-    story: "Ada tiga petunjuk tercecer. Tugasmu menyusun kejadian paling masuk akal.",
-    concept: "Detektif belajar dari bukti, bukan tebakan. Urutan waktu membantu membuat kesimpulan.",
+    title: "Materi 1: Observasi Bukti",
+    story: "Sebelum memecahkan kasus, calon detektif harus belajar membaca petunjuk tanpa buru-buru menebak.",
+    concept: "Detektif bekerja dari bukti. Langkah pertama adalah membedakan fakta, asumsi, dan detail pengalih. Setelah paham materi, baru masuk latihan kasus.",
     rewardXp: 35,
     rewardPower: 18,
     activities: [
       {
         id: "d1",
-        prompt: "Petunjuk mana yang paling penting untuk menyusun kronologi?",
+        prompt: "Dalam kasus detektif, mana yang termasuk fakta paling kuat?",
         options: [
-          { id: "a", label: "Warna ruangan", feedback: "Bisa berguna, tapi belum menunjukkan urutan.", correct: false },
-          { id: "b", label: "Waktu kejadian", feedback: "Benar. Waktu membantu menyusun urutan.", correct: true },
-          { id: "c", label: "Nama kota", feedback: "Ini konteks, bukan urutan kejadian.", correct: false },
+          { id: "a", label: "Aku merasa pelakunya orang itu", feedback: "Ini asumsi karena belum ada bukti pendukung.", correct: false },
+          { id: "b", label: "Kamera mencatat pintu terbuka pukul 07.10", feedback: "Benar. Ini fakta karena spesifik dan punya sumber bukti.", correct: true },
+          { id: "c", label: "Ruangan itu terlihat mencurigakan", feedback: "Ini kesan, belum cukup jadi fakta.", correct: false },
         ],
       },
     ],

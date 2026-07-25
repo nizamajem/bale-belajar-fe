@@ -20,6 +20,8 @@ import { useMemo, useState } from "react";
 import { getOnboardingState } from "@/features/onboarding/services/onboarding-dummy-service";
 import {
   baleverseWorlds,
+  detectiveCurriculum,
+  DetectiveCurriculumModule,
   journeyStages,
   learningCircle,
   LearningWorld,
@@ -71,6 +73,8 @@ export function BaleVerseDashboard({ studentName }: BaleVerseDashboardProps) {
         <HeroMissionCard studentName={studentName} world={activeWorld} />
         <BaleHeroCard world={activeWorld} />
       </div>
+
+      {activeWorld.id === "detectivia" ? <DetectiveCurriculumRoadmap /> : null}
 
       <QuickActionGrid />
 
@@ -150,6 +154,8 @@ function DashboardHeader({ onToggleNotifications }: { onToggleNotifications: () 
 }
 
 function HeroMissionCard({ studentName, world }: { studentName: string; world: LearningWorld }) {
+  const isDetective = world.id === "detectivia";
+
   return (
     <motion.article
       animate={{ opacity: 1, y: 0 }}
@@ -166,13 +172,15 @@ function HeroMissionCard({ studentName, world }: { studentName: string; world: L
       <div className="relative z-10 max-w-2xl">
         <span className="inline-flex items-center gap-2 rounded-full bg-white/18 px-3 py-2 text-sm font-black">
           <Sparkles size={17} />
-          Main Quest
+          {isDetective ? "Jalur Belajar" : "Main Quest"}
         </span>
         <h2 className="font-heading mt-4 text-3xl font-black leading-tight sm:text-5xl">
-          Hai {studentName}, lanjut level ini.
+          {isDetective ? `Hai ${studentName}, mulai seperti detektif.` : `Hai ${studentName}, lanjut level ini.`}
         </h2>
         <p className="mt-3 max-w-xl font-bold leading-7 text-white/88">
-          Pilih dunia. Kerjakan misi. Ambil reward.
+          {isDetective
+            ? "Pahami materi, bedah contoh kasus, lalu latihan. AI akan membaca hasilmu dan menyarankan langkah berikutnya."
+            : "Pilih dunia. Kerjakan misi. Ambil reward."}
         </p>
         <div className="mt-5 rounded-[8px] border border-white/16 bg-white/12 p-4">
           <p className="text-sm font-black uppercase text-white/70">{world.currentArea}</p>
@@ -184,7 +192,7 @@ function HeroMissionCard({ studentName, world }: { studentName: string; world: L
           </div>
         </div>
         <div className="mt-4 grid gap-2 text-sm font-bold text-white/88 sm:grid-cols-3">
-          {["Start", "Challenge", "Reward"].map((step) => (
+          {(isDetective ? ["Materi", "Contoh Kasus", "Latihan + Analisis AI"] : ["Start", "Challenge", "Reward"]).map((step) => (
             <span className="rounded-[8px] bg-black/10 px-3 py-2" key={step}>{step}</span>
           ))}
         </div>
@@ -193,7 +201,7 @@ function HeroMissionCard({ studentName, world }: { studentName: string; world: L
           href={world.mission.href}
           style={{ color: world.theme.text }}
         >
-          Lanjutkan Misi
+          {isDetective ? "Mulai Materi" : "Lanjutkan Misi"}
           <ArrowRight size={18} />
         </Link>
       </div>
@@ -226,6 +234,109 @@ function BaleHeroCard({ world }: { world: LearningWorld }) {
         <Stat label="Rank" value={world.rank.split(" ")[0]} />
       </div>
     </motion.aside>
+  );
+}
+
+function DetectiveCurriculumRoadmap() {
+  const currentModule = detectiveCurriculum.find((module) => module.status === "current") ?? detectiveCurriculum[0];
+
+  return (
+    <section className="mt-5 rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <div className="grid gap-4 lg:grid-cols-[0.78fr_1.22fr]">
+        <div className="rounded-[8px] bg-[#172033] p-5 text-white">
+          <p className="text-sm font-black uppercase text-[#facc15]">Kurikulum Detektif</p>
+          <h2 className="font-heading mt-2 text-3xl font-black leading-tight">
+            Jadi detektif itu belajar dulu, baru pecahkan kasus.
+          </h2>
+          <p className="mt-3 font-bold leading-7 text-white/78">
+            BaleBelajar menyusun perjalanan dari profil belajar, materi inti, contoh kasus,
+            latihan, sampai rekomendasi AI. AI tidak menggantikan belajar; AI membantu membaca
+            pola salah dan memilih materi berikutnya.
+          </p>
+          <div className="mt-5 rounded-[8px] border border-white/14 bg-white/10 p-4">
+            <p className="text-xs font-black uppercase text-white/55">Sedang dibuka</p>
+            <p className="font-heading mt-1 text-xl font-black">{currentModule.title}</p>
+            <p className="mt-2 text-sm font-bold leading-6 text-white/74">{currentModule.goal}</p>
+          </div>
+        </div>
+
+        <div className="grid gap-3">
+          {detectiveCurriculum.map((module, index) => (
+            <CurriculumModuleCard index={index + 1} key={module.id} module={module} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CurriculumModuleCard({
+  index,
+  module,
+}: {
+  index: number;
+  module: DetectiveCurriculumModule;
+}) {
+  const locked = module.status === "locked";
+  const current = module.status === "current";
+
+  return (
+    <article
+      className={[
+        "rounded-[8px] border-2 p-4 transition",
+        current && "mission-node-active border-[#bfdbfe] bg-[#eff6ff]",
+        module.status === "completed" && "border-[#bbf7d0] bg-[#f0fdf4]",
+        locked && "border-slate-200 bg-[#f8fafc]",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <div className="flex items-start gap-3">
+        <span
+          className={[
+            "grid size-10 shrink-0 place-items-center rounded-[8px] font-heading font-black",
+            locked ? "bg-slate-200 text-slate-500" : "bg-[#172033] text-white",
+          ].join(" ")}
+        >
+          {locked ? <Lock size={18} /> : index}
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-xs font-black uppercase text-[#6d28d9]">{module.phase}</p>
+            <span className="rounded-full bg-white px-2 py-1 text-[11px] font-black text-slate-500 shadow-sm">
+              {module.estimatedDays} hari
+            </span>
+          </div>
+          <h3 className="font-heading mt-1 text-xl font-black text-[#172033]">{module.title}</h3>
+          <p className="mt-1 text-sm font-bold leading-6 text-slate-600">{module.goal}</p>
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <CurriculumList title="Materi dulu" items={module.materials} />
+        <CurriculumList title="Baru latihan" items={module.practice} />
+        <div className="rounded-[8px] bg-white p-3 shadow-sm">
+          <p className="text-xs font-black uppercase text-[#2563eb]">Peran AI</p>
+          <p className="mt-2 text-sm font-bold leading-6 text-slate-600">{module.aiUse}</p>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function CurriculumList({ items, title }: { items: string[]; title: string }) {
+  return (
+    <div className="rounded-[8px] bg-white p-3 shadow-sm">
+      <p className="text-xs font-black uppercase text-[#22c55e]">{title}</p>
+      <ul className="mt-2 space-y-2">
+        {items.map((item) => (
+          <li className="flex gap-2 text-sm font-bold leading-5 text-slate-600" key={item}>
+            <Check className="mt-0.5 shrink-0 text-[#22c55e]" size={15} />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

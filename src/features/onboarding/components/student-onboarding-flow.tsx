@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -16,10 +15,7 @@ import { useMemo, useState } from "react";
 import {
   avatarAccessories,
   avatarBases,
-  avatarBodies,
   avatarColors,
-  avatarHeights,
-  avatarSkinTones,
   AvatarColorId,
   firstWorlds,
   gradeChoices,
@@ -34,18 +30,6 @@ import {
   saveOnboardingState,
 } from "../services/onboarding-dummy-service";
 import { OnboardingShell } from "./onboarding-shell";
-
-const BlockAvatar3D = dynamic(
-  () => import("./block-avatar-3d").then((mod) => mod.BlockAvatar3D),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="grid h-full min-h-80 place-items-center rounded-[8px] bg-white/10 text-sm font-black text-white/70">
-        Menyiapkan preview 3D...
-      </div>
-    ),
-  },
-);
 
 type Step =
   | "profile"
@@ -429,9 +413,6 @@ function AvatarStep({
   const [base, setBase] = useState(state.avatar?.base ?? "detektif");
   const [color, setColor] = useState(state.avatar?.color ?? "green");
   const [accessory, setAccessory] = useState(state.avatar?.accessory ?? "lens");
-  const [skinTone, setSkinTone] = useState(state.avatar?.skinTone ?? "sawo");
-  const [height, setHeight] = useState(state.avatar?.height ?? "normal");
-  const [body, setBody] = useState(state.avatar?.body ?? "normal");
   const [name, setName] = useState(heroName);
   const selectedBase = useMemo(
     () => avatarBases.find((item) => item.id === base) ?? avatarBases[0],
@@ -441,42 +422,58 @@ function AvatarStep({
     () => avatarColors.find((item) => item.id === color) ?? avatarColors[0],
     [color],
   );
-  const selectedSkinTone = useMemo(
-    () => avatarSkinTones.find((item) => item.id === skinTone) ?? avatarSkinTones[0],
-    [skinTone],
+  const selectedAccessory = useMemo(
+    () => avatarAccessories.find((item) => item.id === accessory) ?? avatarAccessories[0],
+    [accessory],
   );
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
       <div className="game-pop overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-sm">
-        <div className="game-grid-surface relative min-h-[520px] overflow-hidden bg-[linear-gradient(180deg,#9bd6ff_0%,#dff7df_48%,#70bd5f_100%)] px-4 py-6 text-white">
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.5),transparent_58%)]" />
+        <div
+          className="game-grid-surface relative min-h-[430px] overflow-hidden px-4 py-6 text-white"
+          style={{ background: `linear-gradient(135deg, ${selectedColor.shadow}, ${selectedColor.hex})` }}
+        >
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.36),transparent_62%)]" />
           <div className="absolute left-5 top-5 rounded-full bg-[#172033]/75 px-3 py-1 text-xs font-black uppercase">
-            Character Preview
+            Preview Ringan
           </div>
-          <div className="absolute right-5 top-5 rounded-full bg-white/80 px-3 py-1 text-xs font-black text-[#172033]">
-            Idle 3D
+          <div className="absolute right-5 top-5 rounded-full bg-white/85 px-3 py-1 text-xs font-black text-[#172033]">
+            2D Animatif
           </div>
-          <BlockAvatar3D
-            accessory={accessory}
-            base={base}
-            body={body}
-            color={selectedColor.hex}
-            height={height}
-            shadow={selectedColor.shadow}
-            skinTone={selectedSkinTone.hex}
-          />
+          <div className="relative z-10 mx-auto flex min-h-[360px] max-w-sm flex-col items-center justify-center">
+            <DetectiveHeroIllustration
+              accessory={selectedAccessory.label}
+              base={selectedBase.label}
+              color={selectedColor.hex}
+            />
+            <div className="mt-5 rounded-[8px] bg-white/14 p-4 text-center backdrop-blur">
+              <p className="font-heading text-2xl font-black">{name}</p>
+              <p className="mt-1 text-sm font-bold text-white/82">
+                {selectedBase.label} - {selectedBase.vibe}
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="p-4 text-center">
-          <p className="font-heading text-2xl font-black">{name}</p>
-          <p className="mt-1 text-sm font-bold text-slate-500">
-            {selectedBase.label} - {selectedBase.vibe}
-          </p>
+        <div className="grid gap-3 p-4 sm:grid-cols-3">
+          {[
+            ["1", "Belajar materi", "Pahami konsep kasus dulu."],
+            ["2", "Lihat contoh", "Bongkar cara berpikirnya."],
+            ["3", "Baru latihan", "AI analisis hasilmu."],
+          ].map(([number, title, description]) => (
+            <div className="rounded-[8px] bg-[#f8fafc] p-3" key={title}>
+              <span className="grid size-8 place-items-center rounded-[8px] bg-[#172033] font-heading font-black text-white">
+                {number}
+              </span>
+              <p className="mt-2 font-heading font-black">{title}</p>
+              <p className="mt-1 text-xs font-bold leading-5 text-slate-500">{description}</p>
+            </div>
+          ))}
         </div>
       </div>
       <div className="rounded-[8px] border border-slate-200 bg-[#172033] p-4 text-white shadow-[0_9px_0_#020617] sm:p-5">
         <p className="font-heading text-2xl font-black">Tentukan karakter</p>
-        <p className="mt-1 text-sm font-bold text-white/62">Klik panah untuk ganti bagian.</p>
+        <p className="mt-1 text-sm font-bold text-white/62">Pilih identitas belajar. Tidak berat, tidak pakai 3D.</p>
         <label className="block">
           <span className="mb-2 mt-5 block text-sm font-black text-white/70">Nama karakter</span>
           <input
@@ -487,16 +484,20 @@ function AvatarStep({
         </label>
         <div className="mt-4 space-y-3">
           <CycleRow label="Base" options={avatarBases} value={base} onChange={setBase} />
-          <CycleRow label="Warna Kulit" options={avatarSkinTones} value={skinTone} onChange={setSkinTone} />
-          <CycleRow label="Tinggi" options={avatarHeights} value={height} onChange={setHeight} />
-          <CycleRow label="Badan" options={avatarBodies} value={body} onChange={setBody} />
           <ColorPalette value={color} onChange={setColor} />
           <CycleRow label="Item" options={avatarAccessories} value={accessory} onChange={setAccessory} />
+          <div className="rounded-[8px] border border-white/12 bg-white/8 p-3">
+            <p className="text-xs font-black uppercase text-white/55">Role belajar</p>
+            <p className="mt-1 font-heading text-lg font-black">Detektif belajar dari bukti, bukan tebak-tebakan.</p>
+            <p className="mt-1 text-sm font-bold leading-6 text-white/68">
+              Setelah ini kamu akan masuk peta kurikulum: materi, contoh kasus, latihan, lalu rekomendasi AI.
+            </p>
+          </div>
         </div>
         <button
           className="mt-5 flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_7px_0_#129447] transition active:translate-y-1 active:shadow-none disabled:opacity-60"
           disabled={loading}
-          onClick={() => onSubmit({ base, color, accessory, skinTone, height, body, heroName: name })}
+          onClick={() => onSubmit({ base, color, accessory, heroName: name })}
           type="button"
         >
           {loading ? <Loader2 className="animate-spin" size={18} /> : null}
@@ -538,6 +539,47 @@ function ColorPalette({
             </button>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+function DetectiveHeroIllustration({
+  accessory,
+  base,
+  color,
+}: {
+  accessory: string;
+  base: string;
+  color: string;
+}) {
+  return (
+    <div className="hero-idle relative h-64 w-52">
+      <div className="absolute left-1/2 top-5 h-20 w-28 -translate-x-1/2 rounded-t-[28px] bg-[#172033] shadow-[0_7px_0_rgba(2,6,23,0.35)]" />
+      <div className="absolute left-1/2 top-16 h-20 w-24 -translate-x-1/2 rounded-[24px] bg-[#f7c7a4] shadow-inner">
+        <span className="absolute left-5 top-8 size-3 rounded-full bg-[#172033]" />
+        <span className="absolute right-5 top-8 size-3 rounded-full bg-[#172033]" />
+        <span className="absolute left-1/2 top-12 h-2 w-8 -translate-x-1/2 rounded-full border-b-4 border-[#172033]" />
+      </div>
+      <div className="absolute left-1/2 top-2 h-8 w-40 -translate-x-1/2 rounded-full bg-[#172033]" />
+      <div
+        className="absolute left-1/2 top-32 h-24 w-32 -translate-x-1/2 rounded-[22px] shadow-[0_9px_0_rgba(2,6,23,0.26)]"
+        style={{ backgroundColor: color }}
+      >
+        <div className="absolute left-4 top-4 h-12 w-7 rounded-b-[10px] bg-white/20" />
+        <div className="absolute right-4 top-4 h-12 w-7 rounded-b-[10px] bg-white/20" />
+        <span className="absolute left-1/2 top-5 h-14 w-1 -translate-x-1/2 rounded-full bg-white/45" />
+      </div>
+      <div className="hero-arm absolute left-5 top-36 h-20 w-7 origin-top rounded-full bg-[#f7c7a4]" />
+      <div className="hero-arm absolute right-5 top-36 h-20 w-7 origin-top rounded-full bg-[#f7c7a4]" />
+      <div className="absolute bottom-2 left-14 h-16 w-8 rounded-b-[12px] bg-[#172033]" />
+      <div className="absolute bottom-2 right-14 h-16 w-8 rounded-b-[12px] bg-[#172033]" />
+      <div className="accessory-pop absolute right-5 top-24 grid size-16 place-items-center rounded-full border-[6px] border-[#facc15] bg-white/15">
+        <Search className="text-[#facc15]" size={30} />
+      </div>
+      <div className="absolute bottom-0 left-1/2 h-4 w-40 -translate-x-1/2 rounded-full bg-black/18 blur-sm" />
+      <div className="absolute -bottom-10 left-1/2 w-64 -translate-x-1/2 rounded-[8px] bg-white/14 px-3 py-2 text-center text-xs font-black text-white/80">
+        {base} + {accessory}
       </div>
     </div>
   );
