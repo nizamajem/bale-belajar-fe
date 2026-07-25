@@ -240,6 +240,21 @@ export type WorldCurriculum = {
   modules: CurriculumModuleSummary[];
 };
 
+export type AdaptivePlan = {
+  world: { key: string; name: string; characterClass: string };
+  nextAction: "START_MODULE" | "NEXT_MODULE" | "REMEDIAL";
+  title: string;
+  message: string;
+  targetModule: CurriculumModuleSummary | null;
+  mastery: {
+    competency: { id: string; code: string; name: string };
+    masteryScore: number;
+    status: LearningMasteryStatus;
+    confidence: ConfidenceLevel;
+    evidenceCount: number;
+  } | null;
+};
+
 export type BaleRank =
   | "TUNAS"
   | "PERINTIS"

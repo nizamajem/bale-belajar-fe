@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getStoredUser } from "@/lib/auth";
 import { apiFetch } from "@/lib/api";
 import {
+  AdaptivePlan,
   CurrentCase,
   DETECTIVE_WORLD_KEY,
   GameProfileSummary,
@@ -20,6 +21,7 @@ export default function StudentDashboardPage() {
   const [profile, setProfile] = useState<GameProfileSummary | null>(null);
   const [currentCase, setCurrentCase] = useState<CurrentCase | null>(null);
   const [curriculum, setCurriculum] = useState<WorldCurriculum | null>(null);
+  const [adaptivePlan, setAdaptivePlan] = useState<AdaptivePlan | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,11 +30,18 @@ export default function StudentDashboardPage() {
 
     async function load() {
       try {
-        const [{ data: worldData }, { data: gameProfile }, { data: caseData }, { data: curriculumData }] = await Promise.all([
+        const [
+          { data: worldData },
+          { data: gameProfile },
+          { data: caseData },
+          { data: curriculumData },
+          { data: adaptiveData },
+        ] = await Promise.all([
           apiFetch<WorldSummary[]>("/student/worlds"),
           apiFetch<GameProfileSummary>("/student/game-profile"),
           apiFetch<CurrentCase>("/student/cases/current", { query: { worldKey: DETECTIVE_WORLD_KEY } }),
           apiFetch<WorldCurriculum>(`/student/worlds/${DETECTIVE_WORLD_KEY}/curriculum`),
+          apiFetch<AdaptivePlan>(`/student/worlds/${DETECTIVE_WORLD_KEY}/adaptive-plan`),
         ]);
 
         if (cancelled) return;
@@ -40,6 +49,7 @@ export default function StudentDashboardPage() {
         setProfile(gameProfile);
         setCurrentCase(caseData);
         setCurriculum(curriculumData);
+        setAdaptivePlan(adaptiveData);
       } catch {
         if (!cancelled) setError("Dashboard belum bisa memuat data dari server.");
       } finally {
@@ -70,6 +80,12 @@ export default function StudentDashboardPage() {
           <p className="mt-2 font-bold leading-6 text-slate-500">
             Pilih satu jalur. Belajar materi dulu, lihat contoh, lalu tes.
           </p>
+          <Link
+            className="mt-3 inline-flex items-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-4 py-3 font-heading font-black text-slate-700 shadow-[0_5px_0_#d8e2ef]"
+            href="/student/careers"
+          >
+            Lihat Semua Cita-Cita
+          </Link>
         </div>
 
         {loading ? (
@@ -92,15 +108,26 @@ export default function StudentDashboardPage() {
               <article className="rounded-[8px] bg-[#172033] p-5 text-white shadow-[0_9px_0_#020617] sm:p-6">
                 <span className="inline-flex items-center gap-2 rounded-full bg-white/14 px-3 py-2 text-sm font-black">
                   <Search size={17} />
-                  Testing Kurikulum
+                  {adaptivePlan?.nextAction === "REMEDIAL" ? "Remedial Pintar" : "Testing Kurikulum"}
                 </span>
                 <h2 className="font-heading mt-4 text-3xl font-black leading-tight">
-                  Detectivia: belajar jadi detektif dari dasar.
+                  {adaptivePlan?.title ?? "Detectivia: belajar jadi detektif dari dasar."}
                 </h2>
                 <p className="mt-3 font-bold leading-7 text-white/80">
-                  Materi singkat, contoh jawaban, lalu tes penalaran. Kalau salah, skill yang lemah
-                  akan muncul lagi di tes berikutnya dengan kasus baru.
+                  {adaptivePlan?.message ??
+                    "Materi singkat, contoh jawaban, lalu tes penalaran. Kalau salah, skill yang lemah akan muncul lagi di tes berikutnya dengan kasus baru."}
                 </p>
+                {adaptivePlan?.targetModule ? (
+                  <div className="mt-4 rounded-[8px] bg-white/10 p-4">
+                    <p className="text-xs font-black uppercase text-white/60">Target sekarang</p>
+                    <p className="font-heading mt-1 text-xl font-black">{adaptivePlan.targetModule.title}</p>
+                    {adaptivePlan.mastery ? (
+                      <p className="mt-1 text-sm font-bold text-white/72">
+                        Mastery {Math.round(adaptivePlan.mastery.masteryScore)}% - {adaptivePlan.mastery.status}
+                      </p>
+                    ) : null}
+                  </div>
+                ) : null}
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-3">
                   {["Materi", "Contoh", "Tes"].map((step, index) => (

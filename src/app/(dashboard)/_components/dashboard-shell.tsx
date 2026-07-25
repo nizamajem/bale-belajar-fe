@@ -13,6 +13,7 @@ import {
   LogOut,
   School,
   Settings,
+  SplitSquareVertical,
   UsersRound,
 } from "lucide-react";
 import { logout, useRequireAuth } from "@/lib/auth";
@@ -26,6 +27,7 @@ const nav = {
     { href: "/admin/schools", label: "Sekolah", icon: School },
     { href: "/admin/students", label: "Siswa", icon: UsersRound },
     { href: "/admin/assessments", label: "Asesmen", icon: ClipboardList },
+    { href: "/admin/curriculum", label: "Kurikulum", icon: SplitSquareVertical },
     { href: "/admin/analytics", label: "Analitik", icon: BarChart3 },
     { href: "/admin/settings", label: "Pengaturan", icon: Settings },
   ],

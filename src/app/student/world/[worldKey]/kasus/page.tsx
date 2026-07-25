@@ -33,6 +33,7 @@ export default function CaseRunnerPage() {
   const [conclusionText, setConclusionText] = useState("");
   const [confidenceLevel, setConfidenceLevel] = useState<CaseConfidenceDeclaration | null>(null);
   const [phase, setPhase] = useState<"learn" | "case-study" | "example" | "test">("learn");
+  const [mentorHint, setMentorHint] = useState(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<CaseSubmitResult | null>(null);
@@ -394,6 +395,24 @@ export default function CaseRunnerPage() {
 
         {phase === "test" ? (
           <>
+
+        <div className="mt-6 rounded-[8px] border border-[#bfdbfe] bg-[#eff6ff] p-4">
+          <p className="font-heading font-black text-[#1e40af]">AI Mentor Aman</p>
+          <p className="mt-1 text-sm font-bold leading-6 text-[#1d4ed8]">
+            {[
+              "Mulai dari bukti yang waktunya paling jelas. Jangan pilih jawaban karena terasa mencurigakan.",
+              "Pisahkan dulu: fakta kuat, fakta sebagian, dan dugaan. Setelah itu baru tulis kesimpulan.",
+              "Kalau belum cukup bukti, tulis 'belum cukup bukti' dan jelaskan data apa yang masih perlu dicek.",
+            ][mentorHint]}
+          </p>
+          <button
+            className="mt-3 rounded-[8px] bg-white px-4 py-2 font-heading font-black text-[#2563eb] shadow-sm"
+            onClick={() => setMentorHint((current) => (current + 1) % 3)}
+            type="button"
+          >
+            Hint berikutnya
+          </button>
+        </div>
 
         <div className="mt-6 flex items-center gap-2">
           <Search className="text-[#6d28d9]" size={20} />

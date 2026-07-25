@@ -79,6 +79,9 @@ export default function CaseResultPage() {
     );
   }
 
+  const strong = result.questions.filter((question) => question.score >= PASS_THRESHOLD);
+  const weak = result.questions.filter((question) => question.score < PASS_THRESHOLD);
+
   return (
     <StudentShell>
       <section className="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:py-8">
@@ -102,6 +105,32 @@ export default function CaseResultPage() {
               {confidenceDeclarationLabel(result.confidenceLevel)}
             </p>
           ) : null}
+        </div>
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <ResultMetric label="Kuat" value={`${strong.length} skill`} tone="green" />
+          <ResultMetric label="Perlu Ulang" value={`${weak.length} skill`} tone="red" />
+          <ResultMetric label="Next Study" value={weak.length ? "5 menit" : "Naik level"} tone="blue" />
+        </div>
+
+        <div className="mt-5 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-sm font-black uppercase text-[#2563eb]">Skill Radar</p>
+          <div className="mt-4 space-y-3">
+            {result.questions.map((question) => (
+              <div key={question.questionId}>
+                <div className="mb-1 flex justify-between gap-3 text-sm font-black">
+                  <span>{question.skill.name}</span>
+                  <span>{Math.round(question.score)}%</span>
+                </div>
+                <div className="h-3 overflow-hidden rounded-full bg-slate-100">
+                  <div
+                    className={["h-full rounded-full", question.score >= PASS_THRESHOLD ? "bg-[#22c55e]" : "bg-[#f97316]"].join(" ")}
+                    style={{ width: `${Math.max(4, Math.min(100, question.score))}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {result.nextRecommendation ? (
@@ -170,5 +199,27 @@ export default function CaseResultPage() {
         </div>
       </section>
     </StudentShell>
+  );
+}
+
+function ResultMetric({
+  label,
+  tone,
+  value,
+}: {
+  label: string;
+  tone: "blue" | "green" | "red";
+  value: string;
+}) {
+  const tones = {
+    blue: "bg-[#eff6ff] text-[#2563eb]",
+    green: "bg-[#f0fdf4] text-[#16a34a]",
+    red: "bg-[#fff1f2] text-[#e11d48]",
+  };
+  return (
+    <div className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm">
+      <p className={`inline-flex rounded-full px-3 py-1 text-xs font-black ${tones[tone]}`}>{label}</p>
+      <p className="font-heading mt-3 text-2xl font-black">{value}</p>
+    </div>
   );
 }
