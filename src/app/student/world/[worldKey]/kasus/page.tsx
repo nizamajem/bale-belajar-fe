@@ -32,6 +32,7 @@ export default function CaseRunnerPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [conclusionText, setConclusionText] = useState("");
   const [confidenceLevel, setConfidenceLevel] = useState<CaseConfidenceDeclaration | null>(null);
+  const [phase, setPhase] = useState<"learn" | "example" | "test">("learn");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<CaseSubmitResult | null>(null);
@@ -229,6 +230,67 @@ export default function CaseRunnerPage() {
           </p>
         ) : null}
 
+        {phase !== "test" ? (
+          <div className="mt-6 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+            {phase === "learn" ? (
+              <>
+                <p className="text-sm font-black uppercase text-[#6d28d9]">1. Materi</p>
+                <h2 className="font-heading mt-1 text-2xl font-black">
+                  {currentCase.lessonPlan?.title ?? "Baca bukti dengan teliti"}
+                </h2>
+                <p className="mt-2 font-bold leading-6 text-slate-600">
+                  {currentCase.lessonPlan?.simpleGoal ??
+                    "Sebelum menjawab, pahami dulu mana fakta, asumsi, dan petunjuk pengecoh."}
+                </p>
+                <div className="mt-4 grid gap-3">
+                  {(currentCase.lessonPlan?.learnSteps ?? []).map((step, index) => (
+                    <div className="rounded-[8px] bg-[#f8fafc] p-4" key={step.title}>
+                      <p className="font-heading font-black">
+                        {index + 1}. {step.title}
+                      </p>
+                      <p className="mt-1 text-sm font-bold leading-6 text-slate-600">{step.body}</p>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#6d28d9] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#4c1d95] sm:w-auto"
+                  onClick={() => setPhase("example")}
+                  type="button"
+                >
+                  Lihat Contoh Jawaban
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-sm font-black uppercase text-[#6d28d9]">2. Contoh</p>
+                <h2 className="font-heading mt-1 text-2xl font-black">Cara berpikir detektif</h2>
+                <div className="mt-4 rounded-[8px] bg-[#f8fafc] p-4">
+                  <p className="text-xs font-black uppercase text-slate-400">Kasus contoh</p>
+                  <p className="mt-2 font-bold leading-6 text-slate-700">
+                    {currentCase.lessonPlan?.exampleCase.story}
+                  </p>
+                </div>
+                <div className="mt-3 rounded-[8px] border border-[#bbf7d0] bg-[#f0fdf4] p-4">
+                  <p className="text-xs font-black uppercase text-[#15803d]">Jawaban bagus</p>
+                  <p className="mt-2 font-bold leading-6 text-[#166534]">
+                    {currentCase.lessonPlan?.exampleCase.goodAnswer}
+                  </p>
+                </div>
+                <button
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] sm:w-auto"
+                  onClick={() => setPhase("test")}
+                  type="button"
+                >
+                  Mulai Tes
+                </button>
+              </>
+            )}
+          </div>
+        ) : null}
+
+        {phase === "test" ? (
+          <>
+
         <div className="mt-6 flex items-center gap-2">
           <Search className="text-[#6d28d9]" size={20} />
           <h2 className="font-heading text-xl font-black">Papan Bukti</h2>
@@ -349,6 +411,8 @@ export default function CaseRunnerPage() {
           {submitting ? <Loader2 className="animate-spin" size={18} /> : null}
           Selesaikan Kasus
         </button>
+          </>
+        ) : null}
       </section>
     </StudentShell>
   );

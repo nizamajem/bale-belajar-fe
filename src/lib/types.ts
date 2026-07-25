@@ -381,6 +381,13 @@ export type CurrentCase = {
   worldId: string;
   status: CaseAssignmentStatus;
   case: { id: string; title: string; openingStory: string; estimatedMinutes: number };
+  lessonPlan?: {
+    title: string;
+    simpleGoal: string;
+    learnSteps: { title: string; body: string }[];
+    exampleCase: { story: string; goodAnswer: string };
+    testRules: string[];
+  };
   attempt: { id: string; status: CaseAttemptStatus } | null;
   evidence: CaseEvidenceItem[];
   questions: CaseQuestionItem[];
@@ -429,6 +436,12 @@ export type CaseResultView = {
   conclusionText: string | null;
   confidenceLevel: CaseConfidenceDeclaration | null;
   questions: CaseResultQuestion[];
+  nextRecommendation?: {
+    canRetakeSameCase: boolean;
+    title: string;
+    message: string;
+    focusSkills: string[];
+  };
 };
 
 export function confidenceDeclarationLabel(level: CaseConfidenceDeclaration): string {

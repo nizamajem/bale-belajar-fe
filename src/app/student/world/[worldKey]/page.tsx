@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowRight, MapPinned, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, CheckCircle2, MapPinned, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { CurrentCase, DETECTIVE_WORLD_KEY, TodayMission, WorldSummary } from "@/lib/types";
@@ -150,14 +150,7 @@ export default function WorldHomePage() {
           transition={{ delay: 0.08 }}
         >
           {isCaseWorld && currentCase ? (
-            <>
-              <p className="text-sm font-black uppercase text-[#6d28d9]">Kasus Hari Ini</p>
-              <h2 className="font-heading text-2xl font-black">{currentCase.case.title}</h2>
-              <p className="mt-3 font-bold leading-6 text-slate-600">{currentCase.case.openingStory}</p>
-              <p className="mt-3 text-sm font-bold text-slate-400">
-                {currentCase.questions.length} pertanyaan penalaran - sekitar {currentCase.case.estimatedMinutes} menit
-              </p>
-            </>
+            <DetectiveSimplePlan currentCase={currentCase} />
           ) : mission ? (
             <>
               <p className="text-sm font-black uppercase text-[#6d28d9]">Misi Hari Ini</p>
@@ -216,5 +209,42 @@ export default function WorldHomePage() {
         </motion.div>
       </section>
     </StudentShell>
+  );
+}
+
+function DetectiveSimplePlan({ currentCase }: { currentCase: CurrentCase }) {
+  return (
+    <div>
+      <p className="text-sm font-black uppercase text-[#6d28d9]">Hari ini</p>
+      <h2 className="font-heading text-2xl font-black">Belajar jadi detektif dari dasar</h2>
+      <p className="mt-2 font-bold leading-6 text-slate-600">
+        {currentCase.lessonPlan?.simpleGoal ?? currentCase.case.openingStory}
+      </p>
+
+      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        {[
+          ["1", "Materi", "Pahami konsep dulu.", BookOpen],
+          ["2", "Contoh", "Lihat cara jawab.", Sparkles],
+          ["3", "Tes", `${currentCase.questions.length} soal penalaran.`, CheckCircle2],
+        ].map(([number, title, description, Icon]) => (
+          <div className="rounded-[8px] bg-[#f8fafc] p-4" key={String(title)}>
+            <span className="grid size-10 place-items-center rounded-[8px] bg-[#172033] font-heading font-black text-white">
+              {String(number)}
+            </span>
+            <Icon className="mt-4 text-[#6d28d9]" size={20} />
+            <p className="font-heading mt-2 text-lg font-black">{String(title)}</p>
+            <p className="mt-1 text-sm font-bold leading-5 text-slate-500">{String(description)}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-5 rounded-[8px] border border-[#ddd6fe] bg-[#f5f3ff] p-4">
+        <p className="font-heading font-black text-[#4c1d95]">Kalau jawaban salah bagaimana?</p>
+        <p className="mt-1 text-sm font-bold leading-6 text-[#5b21b6]">
+          Tidak langsung dihukum. Skill yang lemah akan ditandai, lalu muncul lagi di tes berikutnya
+          dengan kasus baru. Jadi anak belajar ulang bagian yang perlu, bukan mengulang semuanya.
+        </p>
+      </div>
+    </div>
   );
 }

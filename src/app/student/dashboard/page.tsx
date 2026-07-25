@@ -1,15 +1,158 @@
 "use client";
 
+import Link from "next/link";
+import { ArrowRight, BookOpen, Loader2, Search, Star, Zap } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { getStoredUser } from "@/lib/auth";
-import { BaleVerseDashboard } from "@/features/baleverse/components/baleverse-dashboard";
+import { apiFetch } from "@/lib/api";
+import { CurrentCase, DETECTIVE_WORLD_KEY, GameProfileSummary, WorldSummary } from "@/lib/types";
 import { StudentShell } from "../_components/student-shell";
 
 export default function StudentDashboardPage() {
   const user = getStoredUser();
+  const [worlds, setWorlds] = useState<WorldSummary[]>([]);
+  const [profile, setProfile] = useState<GameProfileSummary | null>(null);
+  const [currentCase, setCurrentCase] = useState<CurrentCase | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const [{ data: worldData }, { data: gameProfile }, { data: caseData }] = await Promise.all([
+          apiFetch<WorldSummary[]>("/student/worlds"),
+          apiFetch<GameProfileSummary>("/student/game-profile"),
+          apiFetch<CurrentCase>("/student/cases/current", { query: { worldKey: DETECTIVE_WORLD_KEY } }),
+        ]);
+
+        if (cancelled) return;
+        setWorlds(worldData);
+        setProfile(gameProfile);
+        setCurrentCase(caseData);
+      } catch {
+        if (!cancelled) setError("Dashboard belum bisa memuat data dari server.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const detectivia = useMemo(
+    () => worlds.find((world) => world.key === DETECTIVE_WORLD_KEY),
+    [worlds],
+  );
 
   return (
     <StudentShell>
-      <BaleVerseDashboard studentName={user?.name ?? "Siswa"} />
+      <section className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:py-8">
+        <div className="mb-5">
+          <p className="text-sm font-black uppercase text-[#2563eb]">Beranda Siswa</p>
+          <h1 className="font-heading text-3xl font-black leading-tight text-[#172033]">
+            Hai {user?.name ?? "Siswa"}, mau belajar apa hari ini?
+          </h1>
+          <p className="mt-2 font-bold leading-6 text-slate-500">
+            Pilih satu jalur. Belajar materi dulu, lihat contoh, lalu tes.
+          </p>
+        </div>
+
+        {loading ? (
+          <div className="grid min-h-64 place-items-center rounded-[8px] bg-white shadow-sm">
+            <Loader2 className="animate-spin text-slate-400" size={32} />
+          </div>
+        ) : error ? (
+          <div className="rounded-[8px] border border-[#fed7aa] bg-[#fff7ed] p-5 font-bold text-[#c2410c]">
+            {error}
+          </div>
+        ) : (
+          <>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <SmallStat icon={<Star size={18} />} label="Streak" value={`${profile?.streakCurrent ?? 0} hari`} />
+              <SmallStat icon={<Zap size={18} />} label="Daya Bale" value={String(profile?.dayaBale ?? 0)} />
+              <SmallStat icon={<BookOpen size={18} />} label="Level" value={String(profile?.accountLevel ?? 1)} />
+            </div>
+
+            <div className="mt-5 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+              <article className="rounded-[8px] bg-[#172033] p-5 text-white shadow-[0_9px_0_#020617] sm:p-6">
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/14 px-3 py-2 text-sm font-black">
+                  <Search size={17} />
+                  Testing Kurikulum
+                </span>
+                <h2 className="font-heading mt-4 text-3xl font-black leading-tight">
+                  Detectivia: belajar jadi detektif dari dasar.
+                </h2>
+                <p className="mt-3 font-bold leading-7 text-white/80">
+                  Materi singkat, contoh jawaban, lalu tes penalaran. Kalau salah, skill yang lemah
+                  akan muncul lagi di tes berikutnya dengan kasus baru.
+                </p>
+
+                <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                  {["Materi", "Contoh", "Tes"].map((step, index) => (
+                    <div className="rounded-[8px] bg-white/10 p-3" key={step}>
+                      <span className="grid size-8 place-items-center rounded-[8px] bg-white font-heading font-black text-[#172033]">
+                        {index + 1}
+                      </span>
+                      <p className="mt-2 font-heading font-black">{step}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <Link
+                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] sm:w-auto"
+                  href="/student/world/detectivia"
+                >
+                  Mulai Detectivia
+                  <ArrowRight size={18} />
+                </Link>
+              </article>
+
+              <aside className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+                <p className="text-sm font-black uppercase text-[#6d28d9]">Dari Backend</p>
+                <h2 className="font-heading mt-1 text-2xl font-black">
+                  {detectivia?.name ?? "Detectivia"}
+                </h2>
+                <p className="mt-2 font-bold leading-6 text-slate-600">
+                  {currentCase?.lessonPlan?.simpleGoal ?? detectivia?.themeDescription}
+                </p>
+                <div className="mt-4 rounded-[8px] bg-[#f8fafc] p-4">
+                  <p className="text-xs font-black uppercase text-slate-400">Tes aktif</p>
+                  <p className="mt-1 font-heading text-lg font-black">
+                    {currentCase?.case.title ?? "Kasus hari ini"}
+                  </p>
+                  <p className="mt-1 text-sm font-bold text-slate-500">
+                    {currentCase?.questions.length ?? 0} soal - sekitar {currentCase?.case.estimatedMinutes ?? 0} menit
+                  </p>
+                </div>
+              </aside>
+            </div>
+          </>
+        )}
+      </section>
     </StudentShell>
+  );
+}
+
+function SmallStat({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex items-center gap-2 text-[#2563eb]">{icon}</div>
+      <p className="font-heading mt-3 text-2xl font-black">{value}</p>
+      <p className="text-sm font-bold text-slate-500">{label}</p>
+    </div>
   );
 }

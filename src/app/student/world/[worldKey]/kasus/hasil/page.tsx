@@ -104,6 +104,27 @@ export default function CaseResultPage() {
           ) : null}
         </div>
 
+        {result.nextRecommendation ? (
+          <div className="mt-5 rounded-[8px] border border-[#ddd6fe] bg-[#f5f3ff] p-5 shadow-sm">
+            <p className="text-sm font-black uppercase text-[#6d28d9]">Langkah berikutnya</p>
+            <h2 className="font-heading mt-1 text-xl font-black text-[#4c1d95]">
+              {result.nextRecommendation.title}
+            </h2>
+            <p className="mt-2 font-bold leading-6 text-[#5b21b6]">
+              {result.nextRecommendation.message}
+            </p>
+            {result.nextRecommendation.focusSkills.length > 0 ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {result.nextRecommendation.focusSkills.map((skill) => (
+                  <span className="rounded-full bg-white px-3 py-2 text-xs font-black text-[#4c1d95] shadow-sm" key={skill}>
+                    Ulang: {skill}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
         <div className="mt-5 space-y-3">
           {result.questions.map((question, index) => (
             <div className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm" key={question.questionId}>
