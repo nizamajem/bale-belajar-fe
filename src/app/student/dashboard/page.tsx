@@ -5,7 +5,13 @@ import { ArrowRight, BookOpen, Loader2, Search, Star, Zap } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { getStoredUser } from "@/lib/auth";
 import { apiFetch } from "@/lib/api";
-import { CurrentCase, DETECTIVE_WORLD_KEY, GameProfileSummary, WorldSummary } from "@/lib/types";
+import {
+  CurrentCase,
+  DETECTIVE_WORLD_KEY,
+  GameProfileSummary,
+  WorldCurriculum,
+  WorldSummary,
+} from "@/lib/types";
 import { StudentShell } from "../_components/student-shell";
 
 export default function StudentDashboardPage() {
@@ -13,6 +19,7 @@ export default function StudentDashboardPage() {
   const [worlds, setWorlds] = useState<WorldSummary[]>([]);
   const [profile, setProfile] = useState<GameProfileSummary | null>(null);
   const [currentCase, setCurrentCase] = useState<CurrentCase | null>(null);
+  const [curriculum, setCurriculum] = useState<WorldCurriculum | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,16 +28,18 @@ export default function StudentDashboardPage() {
 
     async function load() {
       try {
-        const [{ data: worldData }, { data: gameProfile }, { data: caseData }] = await Promise.all([
+        const [{ data: worldData }, { data: gameProfile }, { data: caseData }, { data: curriculumData }] = await Promise.all([
           apiFetch<WorldSummary[]>("/student/worlds"),
           apiFetch<GameProfileSummary>("/student/game-profile"),
           apiFetch<CurrentCase>("/student/cases/current", { query: { worldKey: DETECTIVE_WORLD_KEY } }),
+          apiFetch<WorldCurriculum>(`/student/worlds/${DETECTIVE_WORLD_KEY}/curriculum`),
         ]);
 
         if (cancelled) return;
         setWorlds(worldData);
         setProfile(gameProfile);
         setCurrentCase(caseData);
+        setCurriculum(curriculumData);
       } catch {
         if (!cancelled) setError("Dashboard belum bisa memuat data dari server.");
       } finally {
@@ -132,6 +141,39 @@ export default function StudentDashboardPage() {
                 </div>
               </aside>
             </div>
+
+            {curriculum?.modules.length ? (
+              <section className="mt-5 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+                <p className="text-sm font-black uppercase text-[#6d28d9]">Peta Karier</p>
+                <h2 className="font-heading mt-1 text-2xl font-black">
+                  Jalur menjadi {curriculum.characterClass}
+                </h2>
+                <div className="mt-4 grid gap-3">
+                  {curriculum.modules.map((module) => (
+                    <div className="rounded-[8px] bg-[#f8fafc] p-4" key={module.id}>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="grid size-8 place-items-center rounded-[8px] bg-[#172033] font-heading font-black text-white">
+                          {module.orderNumber}
+                        </span>
+                        <p className="font-heading text-lg font-black">{module.title}</p>
+                      </div>
+                      <p className="mt-2 text-sm font-bold leading-6 text-slate-600">{module.simpleGoal}</p>
+                      <div className="mt-3 flex flex-wrap gap-2 text-xs font-black">
+                        <span className="rounded-full bg-white px-3 py-2 text-slate-500">
+                          {module.lessons.length} materi
+                        </span>
+                        <span className="rounded-full bg-white px-3 py-2 text-slate-500">
+                          {module.caseStudies.length} studi kasus
+                        </span>
+                        <span className="rounded-full bg-white px-3 py-2 text-slate-500">
+                          {module.estimatedMinutes} menit
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ) : null}
           </>
         )}
       </section>

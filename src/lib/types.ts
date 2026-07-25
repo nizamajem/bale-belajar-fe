@@ -192,6 +192,54 @@ export type WorldSummary = {
   worldXp: number;
 };
 
+export type CurriculumLesson = {
+  id: string;
+  type: string;
+  title: string;
+  body: string;
+  examples: string[];
+  items: string[];
+  orderNumber: number;
+};
+
+export type CurriculumModuleSummary = {
+  id: string;
+  slug: string;
+  title: string;
+  simpleGoal: string;
+  bigIdea?: string | null;
+  orderNumber: number;
+  estimatedMinutes: number;
+  competency?: { id: string; code: string; name: string } | null;
+  lessons: CurriculumLesson[];
+  caseStudies: {
+    id: string;
+    title: string;
+    story: string;
+    analysisSteps: string[];
+    commonMistake: string;
+    orderNumber: number;
+  }[];
+  remedialRules: {
+    id: string;
+    minScoreExclusive: number;
+    recommendationTitle: string;
+    recommendationMessage: string;
+    actionType: string;
+    competency?: { id: string; code: string; name: string } | null;
+  }[];
+};
+
+export type WorldCurriculum = {
+  id: string;
+  key: string;
+  name: string;
+  characterClass: string;
+  themeDescription?: string | null;
+  subject: { id: string; code: string; name: string };
+  modules: CurriculumModuleSummary[];
+};
+
 export type BaleRank =
   | "TUNAS"
   | "PERINTIS"
