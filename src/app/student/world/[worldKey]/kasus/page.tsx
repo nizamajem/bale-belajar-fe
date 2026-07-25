@@ -32,7 +32,7 @@ export default function CaseRunnerPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [conclusionText, setConclusionText] = useState("");
   const [confidenceLevel, setConfidenceLevel] = useState<CaseConfidenceDeclaration | null>(null);
-  const [phase, setPhase] = useState<"learn" | "example" | "test">("learn");
+  const [phase, setPhase] = useState<"learn" | "case-study" | "example" | "test">("learn");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<CaseSubmitResult | null>(null);
@@ -242,6 +242,14 @@ export default function CaseRunnerPage() {
                   {currentCase.lessonPlan?.simpleGoal ??
                     "Sebelum menjawab, pahami dulu mana fakta, asumsi, dan petunjuk pengecoh."}
                 </p>
+                {currentCase.lessonPlan?.bigIdea ? (
+                  <div className="mt-4 rounded-[8px] border border-[#ddd6fe] bg-[#f5f3ff] p-4">
+                    <p className="text-xs font-black uppercase text-[#6d28d9]">Ide utama</p>
+                    <p className="mt-1 text-sm font-bold leading-6 text-[#5b21b6]">
+                      {currentCase.lessonPlan.bigIdea}
+                    </p>
+                  </div>
+                ) : null}
                 <div className="mt-4 grid gap-3">
                   {(currentCase.lessonPlan?.learnSteps ?? []).map((step, index) => (
                     <div className="rounded-[8px] bg-[#f8fafc] p-4" key={step.title}>
@@ -249,6 +257,61 @@ export default function CaseRunnerPage() {
                         {index + 1}. {step.title}
                       </p>
                       <p className="mt-1 text-sm font-bold leading-6 text-slate-600">{step.body}</p>
+                      {step.example ? (
+                        <p className="mt-2 rounded-[8px] bg-white p-3 text-sm font-bold leading-6 text-slate-500">
+                          Contoh: {step.example}
+                        </p>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+                {currentCase.lessonPlan?.professionalHabits?.length ? (
+                  <div className="mt-4 rounded-[8px] bg-[#ecfeff] p-4">
+                    <p className="font-heading font-black text-[#155e75]">Kebiasaan detektif profesional</p>
+                    <ul className="mt-2 space-y-2">
+                      {currentCase.lessonPlan.professionalHabits.map((habit) => (
+                        <li className="flex gap-2 text-sm font-bold leading-5 text-[#155e75]" key={habit}>
+                          <span className="mt-1 size-2 shrink-0 rounded-full bg-[#06b6d4]" />
+                          <span>{habit}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                <button
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#6d28d9] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#4c1d95] sm:w-auto"
+                  onClick={() => setPhase("case-study")}
+                  type="button"
+                >
+                  Lanjut ke Studi Kasus
+                </button>
+              </>
+            ) : phase === "case-study" ? (
+              <>
+                <p className="text-sm font-black uppercase text-[#6d28d9]">2. Studi Kasus</p>
+                <h2 className="font-heading mt-1 text-2xl font-black">Latih cara membaca kasus</h2>
+                <p className="mt-2 font-bold leading-6 text-slate-600">
+                  Baca contoh ini pelan-pelan. Perhatikan mana fakta kuat, mana dugaan, dan mana yang belum cukup bukti.
+                </p>
+                <div className="mt-4 space-y-4">
+                  {(currentCase.lessonPlan?.caseStudies ?? []).map((study) => (
+                    <div className="rounded-[8px] border border-slate-200 bg-[#f8fafc] p-4" key={study.title}>
+                      <p className="font-heading text-lg font-black">{study.title}</p>
+                      <p className="mt-2 text-sm font-bold leading-6 text-slate-700">{study.story}</p>
+                      <div className="mt-3 rounded-[8px] bg-white p-3">
+                        <p className="text-xs font-black uppercase text-[#22c55e]">Cara analisis</p>
+                        <ul className="mt-2 space-y-2">
+                          {study.analysisSteps.map((step) => (
+                            <li className="flex gap-2 text-sm font-bold leading-5 text-slate-600" key={step}>
+                              <span className="mt-1 size-2 shrink-0 rounded-full bg-[#22c55e]" />
+                              <span>{step}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <p className="mt-3 rounded-[8px] bg-[#fff7ed] p-3 text-sm font-bold leading-6 text-[#c2410c]">
+                        Kesalahan umum: {study.commonMistake}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -257,12 +320,12 @@ export default function CaseRunnerPage() {
                   onClick={() => setPhase("example")}
                   type="button"
                 >
-                  Lihat Contoh Jawaban
+                  Lihat Contoh Jawaban Lengkap
                 </button>
               </>
             ) : (
               <>
-                <p className="text-sm font-black uppercase text-[#6d28d9]">2. Contoh</p>
+                <p className="text-sm font-black uppercase text-[#6d28d9]">3. Contoh</p>
                 <h2 className="font-heading mt-1 text-2xl font-black">Cara berpikir detektif</h2>
                 <div className="mt-4 rounded-[8px] bg-[#f8fafc] p-4">
                   <p className="text-xs font-black uppercase text-slate-400">Kasus contoh</p>
@@ -276,6 +339,47 @@ export default function CaseRunnerPage() {
                     {currentCase.lessonPlan?.exampleCase.goodAnswer}
                   </p>
                 </div>
+                {currentCase.lessonPlan?.exampleCase.answerFormula ? (
+                  <div className="mt-3 rounded-[8px] border border-[#bfdbfe] bg-[#eff6ff] p-4">
+                    <p className="text-xs font-black uppercase text-[#2563eb]">Rumus jawaban</p>
+                    <p className="mt-2 font-heading text-lg font-black text-[#1e40af]">
+                      {currentCase.lessonPlan.exampleCase.answerFormula}
+                    </p>
+                  </div>
+                ) : null}
+                {currentCase.lessonPlan?.exampleCase.badAnswer ? (
+                  <div className="mt-3 rounded-[8px] border border-[#fecaca] bg-[#fef2f2] p-4">
+                    <p className="text-xs font-black uppercase text-[#dc2626]">Contoh yang perlu dihindari</p>
+                    <p className="mt-2 text-sm font-bold leading-6 text-[#991b1b]">
+                      {currentCase.lessonPlan.exampleCase.badAnswer}
+                    </p>
+                  </div>
+                ) : null}
+                {currentCase.lessonPlan?.investigationChecklist?.length ? (
+                  <div className="mt-3 rounded-[8px] bg-[#f8fafc] p-4">
+                    <p className="font-heading font-black">Checklist sebelum tes</p>
+                    <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                      {currentCase.lessonPlan.investigationChecklist.map((item) => (
+                        <p className="rounded-[8px] bg-white p-3 text-sm font-bold leading-5 text-slate-600" key={item}>
+                          {item}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+                {currentCase.lessonPlan?.testRubric?.length ? (
+                  <div className="mt-3 rounded-[8px] bg-[#f0fdf4] p-4">
+                    <p className="font-heading font-black text-[#166534]">Jawabanmu dinilai dari</p>
+                    <ul className="mt-2 space-y-2">
+                      {currentCase.lessonPlan.testRubric.map((item) => (
+                        <li className="flex gap-2 text-sm font-bold leading-5 text-[#166534]" key={item}>
+                          <span className="mt-1 size-2 shrink-0 rounded-full bg-[#22c55e]" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
                 <button
                   className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] sm:w-auto"
                   onClick={() => setPhase("test")}

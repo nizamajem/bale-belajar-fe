@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowRight, BookOpen, CheckCircle2, MapPinned, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, CheckCircle2, MapPinned, Search, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { CurrentCase, DETECTIVE_WORLD_KEY, TodayMission, WorldSummary } from "@/lib/types";
@@ -221,11 +221,12 @@ function DetectiveSimplePlan({ currentCase }: { currentCase: CurrentCase }) {
         {currentCase.lessonPlan?.simpleGoal ?? currentCase.case.openingStory}
       </p>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+      <div className="mt-5 grid gap-3 sm:grid-cols-4">
         {[
           ["1", "Materi", "Pahami konsep dulu.", BookOpen],
-          ["2", "Contoh", "Lihat cara jawab.", Sparkles],
-          ["3", "Tes", `${currentCase.questions.length} soal penalaran.`, CheckCircle2],
+          ["2", "Studi Kasus", "Bedah kasus contoh.", Search],
+          ["3", "Contoh", "Lihat cara jawab.", Sparkles],
+          ["4", "Tes", `${currentCase.questions.length} soal penalaran.`, CheckCircle2],
         ].map(([number, title, description, Icon]) => (
           <div className="rounded-[8px] bg-[#f8fafc] p-4" key={String(title)}>
             <span className="grid size-10 place-items-center rounded-[8px] bg-[#172033] font-heading font-black text-white">

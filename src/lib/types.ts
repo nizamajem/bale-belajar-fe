@@ -384,8 +384,27 @@ export type CurrentCase = {
   lessonPlan?: {
     title: string;
     simpleGoal: string;
-    learnSteps: { title: string; body: string }[];
-    exampleCase: { story: string; goodAnswer: string };
+    bigIdea?: string;
+    learnSteps: { title: string; body: string; example?: string }[];
+    professionalHabits?: string[];
+    caseStudies?: {
+      title: string;
+      story: string;
+      analysisSteps: string[];
+      commonMistake: string;
+    }[];
+    exampleCase: {
+      story: string;
+      goodAnswer: string;
+      answerFormula?: string;
+      badAnswer?: string;
+    };
+    investigationChecklist?: string[];
+    testRubric?: string[];
+    masteryPath?: {
+      currentModule: string;
+      nextModules: string[];
+    };
     testRules: string[];
   };
   attempt: { id: string; status: CaseAttemptStatus } | null;
