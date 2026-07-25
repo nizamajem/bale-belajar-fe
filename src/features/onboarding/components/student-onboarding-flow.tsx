@@ -1,13 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   Check,
   GraduationCap,
   Loader2,
-  Palette,
   Search,
   Sparkles,
   Trophy,
@@ -30,6 +30,18 @@ import {
   saveOnboardingState,
 } from "../services/onboarding-dummy-service";
 import { OnboardingShell } from "./onboarding-shell";
+
+const BlockAvatar3D = dynamic(
+  () => import("./block-avatar-3d").then((mod) => mod.BlockAvatar3D),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="grid h-full min-h-80 place-items-center rounded-[8px] bg-white/10 text-sm font-black text-white/70">
+        Menyiapkan preview 3D...
+      </div>
+    ),
+  },
+);
 
 type Step =
   | "profile"
@@ -414,19 +426,28 @@ function AvatarStep({
   const [color, setColor] = useState(state.avatar?.color ?? "green");
   const [accessory, setAccessory] = useState(state.avatar?.accessory ?? "lens");
   const [name, setName] = useState(heroName);
-  const colorClass = useMemo(
-    () => avatarColors.find((item) => item.id === color)?.className ?? "bg-[#22c55e]",
+  const selectedBase = useMemo(
+    () => avatarBases.find((item) => item.id === base) ?? avatarBases[0],
+    [base],
+  );
+  const selectedColor = useMemo(
+    () => avatarColors.find((item) => item.id === color) ?? avatarColors[0],
     [color],
   );
 
   return (
-    <div className="grid gap-4 md:grid-cols-[0.85fr_1.15fr]">
-      <div className="game-pop rounded-[8px] border border-slate-200 bg-white p-5 text-center shadow-sm">
-        <div className={`game-float mx-auto grid size-40 place-items-center rounded-[8px] ${colorClass} text-white shadow-[0_10px_0_rgba(15,23,42,0.18)]`}>
-          <Palette size={42} />
+    <div className="grid gap-4 lg:grid-cols-[0.78fr_1.22fr]">
+      <div className="game-pop rounded-[8px] border border-slate-200 bg-white p-4 text-center shadow-sm sm:p-5">
+        <div className="game-grid-surface relative overflow-hidden rounded-[8px] bg-[#172033] px-4 py-6 text-white">
+          <div className="absolute left-4 top-4 rounded-full bg-white/12 px-3 py-1 text-xs font-black uppercase">
+            Preview Hero
+          </div>
+          <BlockAvatar3D accessory={accessory} base={base} color={selectedColor.hex} shadow={selectedColor.shadow} />
         </div>
         <p className="font-heading mt-4 text-2xl font-black">{name}</p>
-        <p className="mt-1 text-sm font-bold text-slate-500">{base} + {accessory}</p>
+        <p className="mt-1 text-sm font-bold text-slate-500">
+          {selectedBase.label} - {selectedBase.vibe}
+        </p>
       </div>
       <div className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
         <label className="block">
@@ -437,9 +458,9 @@ function AvatarStep({
             value={name}
           />
         </label>
-        <Picker label="Base" items={avatarBases} value={base} onChange={setBase} />
-        <Picker label="Warna" items={avatarColors} value={color} onChange={setColor} />
-        <Picker label="Aksesori" items={avatarAccessories} value={accessory} onChange={setAccessory} />
+        <BasePicker value={base} onChange={setBase} />
+        <ColorPicker value={color} onChange={setColor} />
+        <AccessoryPicker value={accessory} onChange={setAccessory} />
         <button
           className="mt-5 flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_7px_0_#129447] transition active:translate-y-1 active:shadow-none disabled:opacity-60"
           disabled={loading}
@@ -454,25 +475,81 @@ function AvatarStep({
   );
 }
 
-function Picker<T extends string>({
-  items,
-  label,
+function BasePicker({
   onChange,
   value,
 }: {
-  items: { id: T; label: string }[];
-  label: string;
-  onChange: (value: T) => void;
-  value: T;
+  onChange: (value: typeof avatarBases[number]["id"]) => void;
+  value: typeof avatarBases[number]["id"];
 }) {
   return (
     <div className="mt-4">
-      <p className="mb-2 text-sm font-black text-slate-600">{label}</p>
-      <div className="grid gap-2 sm:grid-cols-3">
-        {items.map((item) => (
+      <p className="mb-2 text-sm font-black text-slate-600">Base hero</p>
+      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+        {avatarBases.map((item) => (
           <button
             className={[
-              "rounded-[8px] border-2 px-3 py-3 text-left text-sm font-black transition",
+              "rounded-[8px] border-2 px-3 py-3 text-left transition",
+              value === item.id ? "border-[#22c55e] bg-[#f0fdf4]" : "border-slate-200 bg-white",
+            ].join(" ")}
+            key={item.id}
+            onClick={() => onChange(item.id)}
+            type="button"
+          >
+            <span className="font-heading text-sm font-black">{item.label}</span>
+            <span className="mt-1 block text-xs font-bold leading-4 text-slate-500">{item.vibe}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ColorPicker({
+  onChange,
+  value,
+}: {
+  onChange: (value: typeof avatarColors[number]["id"]) => void;
+  value: typeof avatarColors[number]["id"];
+}) {
+  return (
+    <div className="mt-4">
+      <p className="mb-2 text-sm font-black text-slate-600">Warna kostum</p>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {avatarColors.map((item) => (
+          <button
+            className={[
+              "rounded-[8px] border-2 bg-white p-2 text-left transition",
+              value === item.id ? "border-[#22c55e]" : "border-slate-200",
+            ].join(" ")}
+            key={item.id}
+            onClick={() => onChange(item.id)}
+            type="button"
+          >
+            <span className={`block h-10 rounded-[8px] ${item.className} shadow-[0_4px_0_rgba(15,23,42,0.16)]`} />
+            <span className="mt-2 block text-xs font-black text-slate-600">{item.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AccessoryPicker({
+  onChange,
+  value,
+}: {
+  onChange: (value: typeof avatarAccessories[number]["id"]) => void;
+  value: typeof avatarAccessories[number]["id"];
+}) {
+  return (
+    <div className="mt-4">
+      <p className="mb-2 text-sm font-black text-slate-600">Item hero</p>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {avatarAccessories.map((item) => (
+          <button
+            className={[
+              "min-h-14 rounded-[8px] border-2 px-3 py-3 text-left text-sm font-black transition",
               value === item.id ? "border-[#22c55e] bg-[#f0fdf4]" : "border-slate-200 bg-white",
             ].join(" ")}
             key={item.id}

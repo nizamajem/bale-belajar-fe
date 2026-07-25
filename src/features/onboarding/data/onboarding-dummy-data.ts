@@ -17,9 +17,9 @@ export type LearningGoalId =
 
 export type FirstWorldId = "numeria" | "kodex" | "detectivia";
 
-export type AvatarBaseId = "buku" | "kompas" | "detektif";
+export type AvatarBaseId = "buku" | "kompas" | "detektif" | "robot" | "dokter" | "arsitek";
 export type AvatarColorId = "green" | "blue" | "purple" | "amber";
-export type AvatarAccessoryId = "lens" | "cap" | "spark";
+export type AvatarAccessoryId = "none" | "lens" | "cap" | "spark" | "badge" | "backpack";
 
 export type StudentOnboardingState = {
   nickname?: string;
@@ -99,23 +99,29 @@ export const firstWorlds: {
   },
 ];
 
-export const avatarBases: { id: AvatarBaseId; label: string }[] = [
-  { id: "buku", label: "Penjelajah Buku" },
-  { id: "kompas", label: "Navigator Misi" },
-  { id: "detektif", label: "Detektif Cilik" },
+export const avatarBases: { id: AvatarBaseId; label: string; vibe: string }[] = [
+  { id: "buku", label: "Penjelajah Buku", vibe: "Ramah dan penasaran" },
+  { id: "kompas", label: "Navigator Misi", vibe: "Suka menjelajah" },
+  { id: "detektif", label: "Detektif Cilik", vibe: "Teliti cari petunjuk" },
+  { id: "robot", label: "Robot Kode", vibe: "Logis dan fokus" },
+  { id: "dokter", label: "Dokter Muda", vibe: "Peduli dan observan" },
+  { id: "arsitek", label: "Arsitek Angka", vibe: "Rapi membangun pola" },
 ];
 
-export const avatarColors: { id: AvatarColorId; label: string; className: string }[] = [
-  { id: "green", label: "Hijau Bale", className: "bg-[#22c55e]" },
-  { id: "blue", label: "Biru Kode", className: "bg-[#2563eb]" },
-  { id: "purple", label: "Ungu Detektif", className: "bg-[#6d28d9]" },
-  { id: "amber", label: "Kuning Fokus", className: "bg-[#f59e0b]" },
+export const avatarColors: { id: AvatarColorId; label: string; className: string; hex: string; shadow: string }[] = [
+  { id: "green", label: "Hijau Bale", className: "bg-[#22c55e]", hex: "#22c55e", shadow: "#129447" },
+  { id: "blue", label: "Biru Kode", className: "bg-[#2563eb]", hex: "#2563eb", shadow: "#1e40af" },
+  { id: "purple", label: "Ungu Detektif", className: "bg-[#6d28d9]", hex: "#6d28d9", shadow: "#4c1d95" },
+  { id: "amber", label: "Kuning Fokus", className: "bg-[#f59e0b]", hex: "#f59e0b", shadow: "#b45309" },
 ];
 
 export const avatarAccessories: { id: AvatarAccessoryId; label: string }[] = [
+  { id: "none", label: "Polos" },
   { id: "lens", label: "Lensa" },
   { id: "cap", label: "Topi" },
   { id: "spark", label: "Spark" },
+  { id: "badge", label: "Badge" },
+  { id: "backpack", label: "Tas" },
 ];
 
 export const placementQuestions = [

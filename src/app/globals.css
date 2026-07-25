@@ -181,6 +181,41 @@ canvas {
   }
 }
 
+@keyframes hero-idle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+}
+
+@keyframes hero-arm {
+  0%,
+  100% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(-12deg);
+  }
+}
+
+@keyframes accessory-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) rotate(-18deg);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.12) rotate(4deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
 .book-buddy {
   animation: bob 3.2s ease-in-out infinite;
 }
@@ -262,6 +297,18 @@ canvas {
     linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
   background-size: auto, 28px 28px, 28px 28px;
+}
+
+.hero-idle {
+  animation: hero-idle 3.2s ease-in-out infinite;
+}
+
+.hero-arm {
+  animation: hero-arm 2.8s ease-in-out infinite;
+}
+
+.accessory-pop {
+  animation: accessory-pop 0.32s ease-out both;
 }
 
 .interactive-card {
