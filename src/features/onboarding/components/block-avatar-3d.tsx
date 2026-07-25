@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
 import {
   AvatarAccessoryId,
   AvatarBaseId,
@@ -18,6 +19,66 @@ type BlockAvatar3DProps = {
   shadow: string;
   skinTone: string;
 };
+
+const skinByBase: Record<AvatarBaseId, string> = {
+  arsitek: "skaterMaleA.png",
+  buku: "skaterFemaleA.png",
+  detektif: "criminalMaleA.png",
+  dokter: "skaterFemaleA.png",
+  kompas: "skaterMaleA.png",
+  robot: "cyborgFemaleA.png",
+};
+
+const assetRoot = "/models/kenney-protagonists";
+
+function addModelAccessory(
+  model: THREE.Group,
+  accessory: AvatarAccessoryId,
+  amberMaterial: THREE.Material,
+  blueMaterial: THREE.Material,
+  blackMaterial: THREE.Material,
+) {
+  if (accessory === "none") return;
+
+  if (accessory === "lens") {
+    const lens = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.035, 16, 42), amberMaterial);
+    lens.position.set(0.35, 74, 13.5);
+    lens.rotation.y = 0.08;
+    model.add(lens);
+    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.35, 10), amberMaterial);
+    handle.position.set(0.55, 73.75, 13.55);
+    handle.rotation.z = -0.75;
+    model.add(handle);
+  }
+
+  if (accessory === "cap") {
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.28, 0.8), blueMaterial);
+    cap.position.set(0, 75.25, 0);
+    model.add(cap);
+    const brim = new THREE.Mesh(new THREE.BoxGeometry(1.28, 0.08, 0.48), blueMaterial);
+    brim.position.set(0, 75.08, 0.38);
+    model.add(brim);
+  }
+
+  if (accessory === "spark") {
+    const spark = new THREE.Mesh(new THREE.OctahedronGeometry(0.28), amberMaterial);
+    spark.position.set(1.0, 75.1, 0.2);
+    model.add(spark);
+  }
+
+  if (accessory === "badge") {
+    const badge = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.05, 24), amberMaterial);
+    badge.position.set(0.45, 72.7, 12.4);
+    badge.rotation.x = Math.PI / 2;
+    model.add(badge);
+  }
+
+  if (accessory === "backpack") {
+    const pack = new THREE.Mesh(new THREE.BoxGeometry(0.65, 1.0, 0.3), blackMaterial);
+    pack.position.set(-0.55, 72.2, -0.55);
+    model.add(pack);
+  }
+}
 
 export function BlockAvatar3D({
   accessory,
@@ -38,6 +99,8 @@ export function BlockAvatar3D({
 
     let frameId = 0;
     let renderer: THREE.WebGLRenderer;
+    let activeModel: THREE.Group | null = null;
+    let mixer: THREE.AnimationMixer | null = null;
 
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -242,6 +305,55 @@ export function BlockAvatar3D({
       avatar.add(pack);
     }
 
+    const fbxLoader = new FBXLoader();
+    const textureLoader = new THREE.TextureLoader();
+    const selectedSkin = `${assetRoot}/Skins/${skinByBase[base]}`;
+
+    textureLoader.load(selectedSkin, (texture) => {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      fbxLoader.load(
+        `${assetRoot}/Model/characterMedium.fbx`,
+        (model) => {
+          avatar.visible = false;
+          activeModel = model;
+          activeModel.scale.setScalar(0.024);
+          activeModel.position.set(0, -1.72, 0);
+          activeModel.rotation.y = 0;
+          const modelScaleY = height === "pendek" ? 0.9 : height === "tinggi" ? 1.08 : 1;
+          const modelScaleXZ = bodyType === "slim" ? 0.9 : bodyType === "strong" ? 1.08 : 1;
+          activeModel.scale.set(0.024 * modelScaleXZ, 0.024 * modelScaleY, 0.024 * modelScaleXZ);
+
+          const texturedMaterial = new THREE.MeshStandardMaterial({
+            map: texture,
+            roughness: 0.55,
+            metalness: 0.02,
+          });
+
+          activeModel.traverse((object) => {
+            if (object instanceof THREE.Mesh) {
+              object.castShadow = true;
+              object.receiveShadow = true;
+              object.material = texturedMaterial;
+            }
+          });
+
+          addModelAccessory(activeModel, accessory, amberMaterial, blueMaterial, blackMaterial);
+          scene.add(activeModel);
+
+          fbxLoader.load(`${assetRoot}/Animations/idle.fbx`, (idle) => {
+            if (!activeModel || idle.animations.length === 0) return;
+            mixer = new THREE.AnimationMixer(activeModel);
+            const action = mixer.clipAction(idle.animations[0]);
+            action.play();
+          });
+        },
+        undefined,
+        () => {
+          avatar.visible = true;
+        },
+      );
+    });
+
     function resize() {
       const width = host.clientWidth || 320;
       const height = host.clientHeight || 320;
@@ -257,10 +369,15 @@ export function BlockAvatar3D({
     const clock = new THREE.Clock();
     function animate() {
       const elapsed = clock.getElapsedTime();
+      const delta = clock.getDelta();
       avatar.rotation.y = Math.sin(elapsed * 0.65) * 0.34;
       avatar.position.y = Math.sin(elapsed * 1.4) * 0.08;
       leftArm.rotation.z = -0.24 + Math.sin(elapsed * 1.8) * 0.12;
       rightArm.rotation.z = 0.24 - Math.sin(elapsed * 1.8) * 0.12;
+      if (activeModel) {
+        activeModel.rotation.y = Math.sin(elapsed * 0.4) * 0.22;
+      }
+      mixer?.update(delta);
       renderer.render(scene, camera);
       frameId = requestAnimationFrame(animate);
     }
