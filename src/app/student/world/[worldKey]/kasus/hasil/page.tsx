@@ -87,9 +87,10 @@ export default function CaseResultPage() {
       <section className="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:py-8">
         <motion.div
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-[8px] bg-[#22c55e] p-6 text-white shadow-[0_10px_0_#129447]"
+          className="relative overflow-hidden rounded-[8px] bg-[#22c55e] p-6 text-white shadow-[0_10px_0_#129447]"
           initial={{ opacity: 0, y: 16 }}
         >
+          <Confetti />
           <span className="inline-flex items-center gap-2 rounded-full bg-white/18 px-3 py-2 text-sm font-black">
             <Trophy size={17} />
             {result.title}
@@ -111,6 +112,12 @@ export default function CaseResultPage() {
           <ResultMetric label="Sudah paham" value={`${strong.length} bagian`} tone="green" />
           <ResultMetric label="Latihan ulang" value={`${weak.length} bagian`} tone="red" />
           <ResultMetric label="Berikutnya" value={weak.length ? "5 menit" : "Naik tingkat"} tone="blue" />
+        </div>
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <Badge title="Pembaca Bukti" unlocked={strong.length > 0} />
+          <Badge title="Penyusun Alasan" unlocked={result.overallScore >= 60} />
+          <Badge title="Detektif Teliti" unlocked={weak.length === 0} />
         </div>
 
         <div className="mt-5 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
@@ -203,6 +210,34 @@ export default function CaseResultPage() {
         </div>
       </section>
     </StudentShell>
+  );
+}
+
+function Badge({ title, unlocked }: { title: string; unlocked: boolean }) {
+  return (
+    <div className={`rounded-[8px] border p-4 shadow-sm ${unlocked ? "border-[#bbf7d0] bg-[#f0fdf4]" : "border-slate-200 bg-white"}`}>
+      <p className="text-sm font-black uppercase text-[#2563eb]">{unlocked ? "Badge" : "Terkunci"}</p>
+      <p className="font-heading mt-2 font-black">{title}</p>
+      <p className="mt-1 text-xs font-bold text-slate-500">{unlocked ? "Terbuka" : "Belum terbuka"}</p>
+    </div>
+  );
+}
+
+function Confetti() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0">
+      {["#f9c74f", "#2563eb", "#6d28d9", "#ffffff", "#06b6d4"].map((color, index) => (
+        <span
+          className="confetti-piece"
+          key={color}
+          style={{
+            background: color,
+            left: `${18 + index * 16}%`,
+            animationDelay: `${index * 0.18}s`,
+          }}
+        />
+      ))}
+    </div>
   );
 }
 

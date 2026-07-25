@@ -153,6 +153,12 @@ export default function WelcomePage() {
               Coba sebagai Siswa
               <ArrowRight size={18} />
             </Link>
+            <Link className="inline-flex min-h-12 items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_7px_0_#d8e2ef]" href="/demo/detective">
+              Lihat Demo
+            </Link>
+            <Link className="inline-flex min-h-12 items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_7px_0_#d8e2ef]" href="/sales/one-pager">
+              Proposal Singkat
+            </Link>
             <Link className="inline-flex min-h-12 items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_7px_0_#d8e2ef]" href="#pilot">
               Jadwalkan Pilot Sekolah
             </Link>
@@ -259,13 +265,28 @@ export default function WelcomePage() {
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <div className="grid gap-4 md:grid-cols-3">
           {[
-            ["Untuk sekolah", "Membantu guru membaca kebutuhan belajar siswa tanpa menunggu rekap manual."],
-            ["Untuk bimbel", "Membuat latihan terasa lebih personal dan punya alasan yang jelas."],
-            ["Untuk komunitas", "Cocok untuk program literasi, logika, dan eksplorasi cita-cita."],
-          ].map(([title, text]) => (
-            <div className="rounded-[8px] bg-[#172033] p-5 text-white" key={title}>
-              <p className="font-heading text-xl font-black">{title}</p>
-              <p className="mt-2 text-sm font-bold leading-6 text-white/70">{text}</p>
+            {
+              title: "Untuk sekolah",
+              text: "Membantu guru membaca kebutuhan belajar siswa tanpa menunggu rekap manual.",
+              href: "/demo/report",
+            },
+            {
+              title: "Untuk orang tua",
+              text: "Ringkasan anak dibuat sederhana: sudah kuat apa, perlu latihan apa, dan saran 7 hari.",
+              href: "/parent/preview",
+            },
+            {
+              title: "Untuk komunitas",
+              text: "Cocok untuk program literasi, logika, dan eksplorasi cita-cita.",
+              href: "/demo/detective",
+            },
+          ].map((audience) => (
+            <div className="rounded-[8px] bg-[#172033] p-5 text-white" key={audience.title}>
+              <p className="font-heading text-xl font-black">{audience.title}</p>
+              <p className="mt-2 text-sm font-bold leading-6 text-white/70">{audience.text}</p>
+              <Link className="mt-4 inline-flex font-heading font-black text-[#f9c74f]" href={audience.href}>
+                Lihat contoh
+              </Link>
             </div>
           ))}
         </div>

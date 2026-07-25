@@ -133,10 +133,6 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="mt-auto space-y-3">
-            <div className="mission-node-active flex items-center gap-2 rounded-[8px] bg-[#fff7ed] px-4 py-3 text-sm font-black text-[#c2410c]">
-              <Star size={17} fill="#f9c74f" />
-              Rajin {streakCurrent ?? 0} hari
-            </div>
             <button
               className="flex w-full items-center gap-3 rounded-[8px] px-4 py-3 text-left font-heading font-black text-slate-500 transition hover:bg-slate-50"
               onClick={handleLogout}
@@ -170,6 +166,10 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
 
             <div className="flex shrink-0 items-center gap-2">
               {user ? <RoleSwitcher user={user} /> : null}
+              <div className="mission-node-active hidden items-center gap-2 rounded-full bg-[#fff7ed] px-3 py-2 text-sm font-black text-[#c2410c] sm:flex">
+                <Star size={17} fill="#f9c74f" />
+                {streakCurrent ?? 0} hari
+              </div>
               <Link
                 aria-label="Buka profil"
                 className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-black text-slate-600 shadow-sm sm:inline-flex"
@@ -180,10 +180,6 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
                 </span>
                 <span className="max-w-24 truncate">{user?.name ?? "Profil"}</span>
               </Link>
-              <div className="mission-node-active hidden items-center gap-2 rounded-full bg-[#fff7ed] px-3 py-2 text-sm font-black text-[#c2410c] sm:flex">
-                <Star size={17} fill="#f9c74f" />
-                {streakCurrent ?? 0} hari
-              </div>
               <Link
                 aria-label="Buka profil"
                 className="grid size-10 place-items-center rounded-[8px] border border-slate-200 bg-white text-[#2563eb] shadow-sm sm:hidden"

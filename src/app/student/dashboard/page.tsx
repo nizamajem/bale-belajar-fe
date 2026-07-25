@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BookOpen, Loader2, Search, Star, Zap } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, Loader2, Search, Star, Trophy, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
 import { getStoredUser } from "@/lib/auth";
 import { apiFetch } from "@/lib/api";
 import {
@@ -11,13 +11,11 @@ import {
   DETECTIVE_WORLD_KEY,
   GameProfileSummary,
   WorldCurriculum,
-  WorldSummary,
 } from "@/lib/types";
 import { StudentShell } from "../_components/student-shell";
 
 export default function StudentDashboardPage() {
   const user = getStoredUser();
-  const [worlds, setWorlds] = useState<WorldSummary[]>([]);
   const [profile, setProfile] = useState<GameProfileSummary | null>(null);
   const [currentCase, setCurrentCase] = useState<CurrentCase | null>(null);
   const [curriculum, setCurriculum] = useState<WorldCurriculum | null>(null);
@@ -31,13 +29,11 @@ export default function StudentDashboardPage() {
     async function load() {
       try {
         const [
-          { data: worldData },
           { data: gameProfile },
           { data: caseData },
           { data: curriculumData },
           { data: adaptiveData },
         ] = await Promise.all([
-          apiFetch<WorldSummary[]>("/student/worlds"),
           apiFetch<GameProfileSummary>("/student/game-profile"),
           apiFetch<CurrentCase>("/student/cases/current", { query: { worldKey: DETECTIVE_WORLD_KEY } }),
           apiFetch<WorldCurriculum>(`/student/worlds/${DETECTIVE_WORLD_KEY}/curriculum`),
@@ -45,7 +41,6 @@ export default function StudentDashboardPage() {
         ]);
 
         if (cancelled) return;
-        setWorlds(worldData);
         setProfile(gameProfile);
         setCurrentCase(caseData);
         setCurriculum(curriculumData);
@@ -64,30 +59,9 @@ export default function StudentDashboardPage() {
     };
   }, []);
 
-  const detectivia = useMemo(
-    () => worlds.find((world) => world.key === DETECTIVE_WORLD_KEY),
-    [worlds],
-  );
-
   return (
     <StudentShell>
       <section className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:py-8">
-        <div className="mb-5">
-          <p className="text-sm font-black uppercase text-[#2563eb]">Beranda</p>
-          <h1 className="font-heading text-3xl font-black leading-tight text-[#172033]">
-            Hai {user?.name ?? "Siswa"}, mau belajar apa hari ini?
-          </h1>
-          <p className="mt-2 font-bold leading-6 text-slate-500">
-            Pilih satu jalur. Belajar materi dulu, lihat contoh, lalu tes.
-          </p>
-          <Link
-            className="mt-3 inline-flex items-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-4 py-3 font-heading font-black text-slate-700 shadow-[0_5px_0_#d8e2ef]"
-            href="/student/careers"
-          >
-            Lihat pilihan impian
-          </Link>
-        </div>
-
         {loading ? (
           <div className="grid min-h-64 place-items-center rounded-[8px] bg-white shadow-sm">
             <Loader2 className="animate-spin text-slate-400" size={32} />
@@ -98,65 +72,67 @@ export default function StudentDashboardPage() {
           </div>
         ) : (
           <>
-            <div className="grid gap-3 sm:grid-cols-3">
-              <SmallStat icon={<Star size={18} />} label="Streak" value={`${profile?.streakCurrent ?? 0} hari`} />
-              <SmallStat icon={<Zap size={18} />} label="Daya Bale" value={String(profile?.dayaBale ?? 0)} />
-              <SmallStat icon={<BookOpen size={18} />} label="Tingkat" value={String(profile?.accountLevel ?? 1)} />
-            </div>
-
-            <div className="mt-5 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-              <article className="rounded-[8px] bg-[#172033] p-5 text-white shadow-[0_9px_0_#020617] sm:p-6">
+            <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+              <article className="relative overflow-hidden rounded-[8px] bg-[#172033] p-5 text-white shadow-[0_9px_0_#020617] sm:p-6">
+                <div className="absolute right-5 top-5 hidden sm:block">
+                  <div className="detective-avatar scale-[0.58] origin-top-right" />
+                </div>
                 <span className="inline-flex items-center gap-2 rounded-full bg-white/14 px-3 py-2 text-sm font-black">
                   <Search size={17} />
-                  {adaptivePlan?.nextAction === "REMEDIAL" ? "Latihan ulang" : "Belajar hari ini"}
+                  Petualangan hari ini
                 </span>
-                <h2 className="font-heading mt-4 text-3xl font-black leading-tight">
-                  {adaptivePlan?.title ?? "Mau jadi detektif? Mulai dari dasar dulu."}
+                <h1 className="font-heading mt-4 max-w-xl text-4xl font-black leading-tight">
+                  Hai {user?.name ?? "Siswa"}, mulai dari kasus detektif dulu.
+                </h1>
+                <p className="mt-3 max-w-xl font-bold leading-7 text-white/80">
+                  Baca materi pendek, lihat contoh, lalu jawab kasus. Setelah selesai, kamu langsung tahu bagian yang sudah paham dan yang perlu latihan ulang.
+                </p>
+
+                <Link
+                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] sm:w-auto"
+                  href="/student/world/detectivia/kasus"
+                >
+                  Mulai Petualangan Hari Ini
+                  <ArrowRight size={18} />
+                </Link>
+
+                <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                  {[
+                    ["1", "Baca", "Pahami materi"],
+                    ["2", "Lihat", "Contoh jawaban"],
+                    ["3", "Jawab", "Cek kemampuan"],
+                  ].map(([number, title, text]) => (
+                    <div className="rounded-[8px] bg-white/10 p-3" key={title}>
+                      <span className="grid size-8 place-items-center rounded-[8px] bg-white font-heading font-black text-[#172033]">
+                        {number}
+                      </span>
+                      <p className="mt-2 font-heading font-black">{title}</p>
+                      <p className="text-sm font-bold text-white/65">{text}</p>
+                    </div>
+                  ))}
+                </div>
+              </article>
+
+              <aside className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+                <p className="text-sm font-black uppercase text-[#6d28d9]">Kamu sedang di</p>
+                <h2 className="font-heading mt-1 text-3xl font-black">
+                  Dunia Detektif
                 </h2>
-                <p className="mt-3 font-bold leading-7 text-white/80">
+                <p className="mt-2 font-bold leading-6 text-slate-600">
                   {adaptivePlan?.message ??
-                    "Baca materi singkat, lihat contoh jawaban, lalu coba kasus. Kalau salah, bagian yang belum paham akan muncul lagi di latihan berikutnya."}
+                    "Belajar membaca bukti, menyusun alasan, lalu membuat kesimpulan yang adil."}
                 </p>
                 {adaptivePlan?.targetModule ? (
-                  <div className="mt-4 rounded-[8px] bg-white/10 p-4">
-                    <p className="text-xs font-black uppercase text-white/60">Belajar sekarang</p>
+                  <div className="mt-4 rounded-[8px] bg-[#f8fafc] p-4">
+                    <p className="text-xs font-black uppercase text-slate-400">Belajar sekarang</p>
                     <p className="font-heading mt-1 text-xl font-black">{adaptivePlan.targetModule.title}</p>
                     {adaptivePlan.mastery ? (
-                      <p className="mt-1 text-sm font-bold text-white/72">
+                      <p className="mt-1 text-sm font-bold text-slate-500">
                         Tingkat paham {Math.round(adaptivePlan.mastery.masteryScore)}%
                       </p>
                     ) : null}
                   </div>
                 ) : null}
-
-                <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                  {["Materi", "Contoh", "Tes"].map((step, index) => (
-                    <div className="rounded-[8px] bg-white/10 p-3" key={step}>
-                      <span className="grid size-8 place-items-center rounded-[8px] bg-white font-heading font-black text-[#172033]">
-                        {index + 1}
-                      </span>
-                      <p className="mt-2 font-heading font-black">{step}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <Link
-                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] sm:w-auto"
-                  href="/student/world/detectivia"
-                >
-                  Mulai Dunia Detektif
-                  <ArrowRight size={18} />
-                </Link>
-              </article>
-
-              <aside className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
-                <p className="text-sm font-black uppercase text-[#6d28d9]">Dunia aktif</p>
-                <h2 className="font-heading mt-1 text-2xl font-black">
-                  {detectivia?.name ?? "Detectivia"}
-                </h2>
-                <p className="mt-2 font-bold leading-6 text-slate-600">
-                  {currentCase?.lessonPlan?.simpleGoal ?? detectivia?.themeDescription}
-                </p>
                 <div className="mt-4 rounded-[8px] bg-[#f8fafc] p-4">
                   <p className="text-xs font-black uppercase text-slate-400">Latihan aktif</p>
                   <p className="mt-1 font-heading text-lg font-black">
@@ -168,6 +144,31 @@ export default function StudentDashboardPage() {
                 </div>
               </aside>
             </div>
+
+            <section className="mt-5 grid gap-3 sm:grid-cols-3">
+              <SmallStat icon={<Star size={18} />} label="Rajin belajar" value={`${profile?.streakCurrent ?? 0} hari`} />
+              <SmallStat icon={<Zap size={18} />} label="Poin tenaga" value={String(profile?.dayaBale ?? 0)} />
+              <SmallStat icon={<Trophy size={18} />} label="Tingkat akun" value={String(profile?.accountLevel ?? 1)} />
+            </section>
+
+            <section className="mt-5 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-black uppercase text-[#2563eb]">Pilih jalur lain</p>
+                  <h2 className="font-heading text-2xl font-black">Mau coba impian lain nanti?</h2>
+                  <p className="mt-1 text-sm font-bold text-slate-500">
+                    Detektif aktif dulu sebagai jalur contoh. Jalur lain akan dibuka bertahap.
+                  </p>
+                </div>
+                <Link
+                  className="inline-flex items-center justify-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-4 py-3 font-heading font-black text-slate-700 shadow-[0_5px_0_#d8e2ef]"
+                  href="/student/careers"
+                >
+                  Lihat pilihan impian
+                  <ArrowRight size={17} />
+                </Link>
+              </div>
+            </section>
 
             {curriculum?.modules.length ? (
               <section className="mt-5 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
