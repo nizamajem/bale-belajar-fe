@@ -42,42 +42,58 @@ function addModelAccessory(
 
   if (accessory === "lens") {
     const lens = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.035, 16, 42), amberMaterial);
-    lens.position.set(0.35, 74, 13.5);
+    lens.position.set(0.38, 0.64, 0.52);
     lens.rotation.y = 0.08;
     model.add(lens);
     const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.35, 10), amberMaterial);
-    handle.position.set(0.55, 73.75, 13.55);
+    handle.position.set(0.55, 0.42, 0.54);
     handle.rotation.z = -0.75;
     model.add(handle);
   }
 
   if (accessory === "cap") {
-    const cap = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.28, 0.8), blueMaterial);
-    cap.position.set(0, 75.25, 0);
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.18, 0.72), blueMaterial);
+    cap.position.set(0, 1.42, 0.02);
     model.add(cap);
-    const brim = new THREE.Mesh(new THREE.BoxGeometry(1.28, 0.08, 0.48), blueMaterial);
-    brim.position.set(0, 75.08, 0.38);
+    const brim = new THREE.Mesh(new THREE.BoxGeometry(1.08, 0.06, 0.32), blueMaterial);
+    brim.position.set(0, 1.32, 0.35);
     model.add(brim);
   }
 
   if (accessory === "spark") {
-    const spark = new THREE.Mesh(new THREE.OctahedronGeometry(0.28), amberMaterial);
-    spark.position.set(1.0, 75.1, 0.2);
+    const spark = new THREE.Mesh(new THREE.OctahedronGeometry(0.18), amberMaterial);
+    spark.position.set(0.85, 1.35, 0.25);
     model.add(spark);
   }
 
   if (accessory === "badge") {
-    const badge = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.05, 24), amberMaterial);
-    badge.position.set(0.45, 72.7, 12.4);
+    const badge = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.04, 24), amberMaterial);
+    badge.position.set(0.28, 0.1, 0.52);
     badge.rotation.x = Math.PI / 2;
     model.add(badge);
   }
 
   if (accessory === "backpack") {
-    const pack = new THREE.Mesh(new THREE.BoxGeometry(0.65, 1.0, 0.3), blackMaterial);
-    pack.position.set(-0.55, 72.2, -0.55);
+    const pack = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.72, 0.22), blackMaterial);
+    pack.position.set(-0.48, 0.1, -0.42);
     model.add(pack);
   }
+}
+
+function normalizeLoadedModel(model: THREE.Group, bodyScale: number, heightScale: number) {
+  const root = new THREE.Group();
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  const maxAxis = Math.max(size.x, size.y, size.z, 1);
+  const fitScale = 3.25 / maxAxis;
+
+  model.position.sub(center);
+  root.scale.set(fitScale * bodyScale, fitScale * heightScale, fitScale * bodyScale);
+  root.position.y = -0.05;
+  root.add(model);
+
+  return root;
 }
 
 export function BlockAvatar3D({
@@ -101,6 +117,7 @@ export function BlockAvatar3D({
     let renderer: THREE.WebGLRenderer;
     let activeModel: THREE.Group | null = null;
     let mixer: THREE.AnimationMixer | null = null;
+    let disposed = false;
 
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -110,8 +127,8 @@ export function BlockAvatar3D({
     }
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
-    camera.position.set(0, 1.4, 7.2);
+    const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
+    camera.position.set(0, 0.35, 6.2);
 
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
     renderer.setClearColor(0x000000, 0);
@@ -135,6 +152,7 @@ export function BlockAvatar3D({
     scene.add(floor);
 
     const avatar = new THREE.Group();
+    avatar.visible = false;
     scene.add(avatar);
 
     const bodyMaterial = new THREE.MeshStandardMaterial({
@@ -309,50 +327,56 @@ export function BlockAvatar3D({
     const textureLoader = new THREE.TextureLoader();
     const selectedSkin = `${assetRoot}/Skins/${skinByBase[base]}`;
 
-    textureLoader.load(selectedSkin, (texture) => {
-      texture.colorSpace = THREE.SRGBColorSpace;
-      fbxLoader.load(
-        `${assetRoot}/Model/characterMedium.fbx`,
-        (model) => {
-          avatar.visible = false;
-          activeModel = model;
-          activeModel.scale.setScalar(0.024);
-          activeModel.position.set(0, -1.72, 0);
-          activeModel.rotation.y = 0;
-          const modelScaleY = height === "pendek" ? 0.9 : height === "tinggi" ? 1.08 : 1;
-          const modelScaleXZ = bodyType === "slim" ? 0.9 : bodyType === "strong" ? 1.08 : 1;
-          activeModel.scale.set(0.024 * modelScaleXZ, 0.024 * modelScaleY, 0.024 * modelScaleXZ);
+    const showFallback = () => {
+      if (disposed) return;
+      avatar.visible = true;
+    };
 
-          const texturedMaterial = new THREE.MeshStandardMaterial({
-            map: texture,
-            roughness: 0.55,
-            metalness: 0.02,
-          });
+    textureLoader.load(
+      selectedSkin,
+      (texture) => {
+        if (disposed) return;
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.flipY = false;
 
-          activeModel.traverse((object) => {
-            if (object instanceof THREE.Mesh) {
-              object.castShadow = true;
-              object.receiveShadow = true;
-              object.material = texturedMaterial;
-            }
-          });
+        fbxLoader.load(
+          `${assetRoot}/Model/characterMedium.fbx`,
+          (model) => {
+            if (disposed) return;
+            const modelScaleY = height === "pendek" ? 0.9 : height === "tinggi" ? 1.08 : 1;
+            const modelScaleXZ = bodyType === "slim" ? 0.9 : bodyType === "strong" ? 1.08 : 1;
+            const texturedMaterial = new THREE.MeshStandardMaterial({
+              map: texture,
+              roughness: 0.55,
+              metalness: 0.02,
+            });
 
-          addModelAccessory(activeModel, accessory, amberMaterial, blueMaterial, blackMaterial);
-          scene.add(activeModel);
+            model.traverse((object) => {
+              if (object instanceof THREE.Mesh) {
+                object.castShadow = true;
+                object.receiveShadow = true;
+                object.material = texturedMaterial;
+              }
+            });
 
-          fbxLoader.load(`${assetRoot}/Animations/idle.fbx`, (idle) => {
-            if (!activeModel || idle.animations.length === 0) return;
-            mixer = new THREE.AnimationMixer(activeModel);
-            const action = mixer.clipAction(idle.animations[0]);
-            action.play();
-          });
-        },
-        undefined,
-        () => {
-          avatar.visible = true;
-        },
-      );
-    });
+            activeModel = normalizeLoadedModel(model, modelScaleXZ, modelScaleY);
+            addModelAccessory(activeModel, accessory, amberMaterial, blueMaterial, blackMaterial);
+            scene.add(activeModel);
+
+            fbxLoader.load(`${assetRoot}/Animations/idle.fbx`, (idle) => {
+              if (disposed || !activeModel || idle.animations.length === 0) return;
+              mixer = new THREE.AnimationMixer(activeModel);
+              const action = mixer.clipAction(idle.animations[0]);
+              action.play();
+            });
+          },
+          undefined,
+          showFallback,
+        );
+      },
+      undefined,
+      showFallback,
+    );
 
     function resize() {
       const width = host.clientWidth || 320;
@@ -385,6 +409,7 @@ export function BlockAvatar3D({
     animate();
 
     return () => {
+      disposed = true;
       cancelAnimationFrame(frameId);
       resizeObserver.disconnect();
       renderer.dispose();
@@ -398,7 +423,9 @@ export function BlockAvatar3D({
           }
         }
       });
-      renderer.domElement.remove();
+      if (renderer.domElement.parentNode) {
+        renderer.domElement.remove();
+      }
     };
   }, [accessory, base, bodyType, color, height, shadow, skinTone]);
 

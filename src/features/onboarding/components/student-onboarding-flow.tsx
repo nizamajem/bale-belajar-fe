@@ -535,7 +535,7 @@ function CycleRow<T extends string>({
           onClick={() => cycle(-1)}
           type="button"
         >
-          ‹
+          &lt;
         </button>
         <div className="min-h-11 rounded-[8px] bg-[linear-gradient(180deg,#0ea5e9,#2563eb)] px-3 py-2 text-center font-heading font-black shadow-[0_4px_0_#1e40af]">
           {current.label}
@@ -546,7 +546,7 @@ function CycleRow<T extends string>({
           onClick={() => cycle(1)}
           type="button"
         >
-          ›
+          &gt;
         </button>
       </div>
     </div>
