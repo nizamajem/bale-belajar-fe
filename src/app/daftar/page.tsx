@@ -24,7 +24,7 @@ export default function DaftarPage() {
     setLoading(true);
     try {
       await registerStudent(name, email, password);
-      router.push("/student/onboarding");
+      router.push("/student/careers");
     } catch (err) {
       setError(
         err instanceof ApiError ? err.message : "Gagal mendaftar. Silakan coba lagi.",
@@ -39,7 +39,7 @@ export default function DaftarPage() {
     setGoogleLoading(true);
     try {
       const { isNewUser } = await loginWithGoogle(idToken);
-      router.push(isNewUser ? "/student/onboarding" : "/student/dashboard");
+      router.push(isNewUser ? "/student/careers" : "/student/dashboard");
     } catch (err) {
       setError(
         err instanceof ApiError

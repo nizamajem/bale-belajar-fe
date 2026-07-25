@@ -9,6 +9,7 @@ import {
   Home,
   LogOut,
   MapPinned,
+  School,
   Search,
   Star,
   UserRound,
@@ -57,6 +58,12 @@ const navItems = [
     label: "Profil",
     description: "Data akun siswa",
     icon: UserRound,
+  },
+  {
+    href: "/student/school",
+    label: "Sekolah",
+    description: "Hubungkan akun ke sekolah",
+    icon: School,
   },
 ];
 

@@ -3,10 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowRight, BookOpen, KeyRound, Loader2, Mail, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, KeyRound, Loader2, Mail, ShieldCheck, Sparkles } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { GoogleAuthButton } from "@/components/google-auth-button";
-import { loginDummyStudent } from "@/features/auth/services/auth-dummy-service";
 import { ApiError } from "@/lib/api";
 import { dashboardPathForRole, login, loginWithGoogle, studentLogin } from "@/lib/auth";
 
@@ -23,7 +22,6 @@ export default function StudentLoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [dummyLoading, setDummyLoading] = useState(false);
 
   async function handleEmailSubmit(event: FormEvent) {
     event.preventDefault();
@@ -58,21 +56,10 @@ export default function StudentLoginPage() {
     setGoogleLoading(true);
     try {
       const { isNewUser } = await loginWithGoogle(idToken);
-      router.push(isNewUser ? "/student/onboarding" : "/student/dashboard");
+      router.push(isNewUser ? "/student/careers" : "/student/dashboard");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Gagal masuk dengan Google. Silakan coba lagi.");
       setGoogleLoading(false);
-    }
-  }
-
-  async function handleDummyLogin() {
-    setError(null);
-    setDummyLoading(true);
-    try {
-      await loginDummyStudent();
-      router.push("/student/dashboard");
-    } finally {
-      setDummyLoading(false);
     }
   }
 
@@ -101,11 +88,14 @@ export default function StudentLoginPage() {
           </div>
 
           <h1 className="font-heading mt-8 text-3xl font-black leading-tight">
-            Masuk pakai kode peserta, lalu lanjutkan misi belajar.
+            Masuk, lalu lanjutkan perjalanan belajarmu.
           </h1>
           <p className="mt-3 font-bold leading-7 text-white/86">
-            Kode dari guru adalah jalur tercepat. Email dan Google tetap bisa dipakai.
+            Pakai kode peserta dari guru untuk langsung masuk kelas. Email dan Google bisa dipakai untuk akun mandiri.
           </p>
+          <div className="mt-6 rounded-[8px] bg-white/14 p-4 text-sm font-bold leading-6 text-white/86">
+            BaleBelajar menyimpan progress, hasil tes, dan rekomendasi dari backend sekolah.
+          </div>
         </div>
 
         <div className="p-6 sm:p-8 lg:p-10">
@@ -114,7 +104,7 @@ export default function StudentLoginPage() {
             Login siswa
           </span>
           <h2 className="font-heading mt-5 text-3xl font-black">
-            Siap mulai?
+            Lanjut dari akun resmi
           </h2>
 
           <div className="mt-6 grid grid-cols-2 gap-2 rounded-[8px] bg-slate-100 p-1">
@@ -237,19 +227,16 @@ export default function StudentLoginPage() {
             />
           )}
 
-          <button
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-[8px] border-2 border-[#bbf7d0] bg-[#f0fdf4] px-4 py-4 font-heading font-black text-[#166534] transition hover:-translate-y-0.5 active:translate-y-1 disabled:opacity-70"
-            disabled={dummyLoading}
-            onClick={handleDummyLogin}
-            type="button"
-          >
-            {dummyLoading ? <Loader2 className="animate-spin" size={19} /> : <Sparkles size={19} />}
-            Coba akun siswa dummy
-          </button>
+          <div className="mt-4 flex items-start gap-3 rounded-[8px] bg-[#f8fafc] p-4 text-sm font-bold leading-6 text-slate-500">
+            <ShieldCheck className="mt-0.5 shrink-0 text-[#22c55e]" size={20} />
+            <p>
+              Butuh kode peserta? Minta guru atau admin sekolah membuka menu Siswa, lalu bagikan kode resmi kelasmu.
+            </p>
+          </div>
 
           <p className="mt-5 text-center text-sm font-bold text-slate-400">
             Belum punya akun?{" "}
-            <Link className="text-[#6d28d9] hover:underline" href="/register/student">
+            <Link className="text-[#6d28d9] hover:underline" href="/daftar">
               Daftar sekarang
             </Link>
           </p>

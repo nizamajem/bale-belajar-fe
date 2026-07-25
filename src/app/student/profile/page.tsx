@@ -135,7 +135,7 @@ export default function StudentProfilePage() {
             </div>
             <Link
               className="inline-flex shrink-0 items-center gap-2 rounded-[8px] bg-[#6d28d9] px-4 py-3 font-heading font-black text-white shadow-[0_5px_0_#4c1d95] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
-              href="/student/onboarding?step=school"
+              href="/student/school"
             >
               {school ? "Ubah" : "Hubungkan"}
               <ArrowRight size={16} />
