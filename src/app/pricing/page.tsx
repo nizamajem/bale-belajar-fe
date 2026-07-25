@@ -83,8 +83,11 @@ export default function PricingPage() {
             Coba Demo Gratis
             <ArrowRight size={18} />
           </Link>
-          <Link className="inline-flex items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_6px_0_#d8e2ef]" href="/welcome#pilot">
-            Ajukan Pilot Sekolah
+          <Link className="inline-flex items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_6px_0_#d8e2ef]" href="/checkout">
+            Minat paket
+          </Link>
+          <Link className="inline-flex items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_6px_0_#d8e2ef]" href="/sales/pilot-package">
+            Paket Pilot 14 Hari
           </Link>
         </div>
       </section>

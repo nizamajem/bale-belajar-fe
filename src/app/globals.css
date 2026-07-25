@@ -498,6 +498,40 @@ canvas {
   text-wrap: balance;
 }
 
+.certificate-page {
+  break-after: page;
+  page-break-after: always;
+}
+
+.certificate-page:last-child {
+  break-after: auto;
+  page-break-after: auto;
+}
+
+.certificate-seal {
+  background:
+    radial-gradient(circle at center, rgba(37, 99, 235, 0.08), transparent 56%),
+    repeating-linear-gradient(45deg, transparent 0 7px, rgba(37, 99, 235, 0.08) 7px 9px);
+  transform: rotate(-7deg);
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+
+  .certificate-toolbar {
+    display: none !important;
+  }
+
+  .certificate-page {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    min-height: 100vh;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

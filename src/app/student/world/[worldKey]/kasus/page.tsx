@@ -23,6 +23,22 @@ const CONFIDENCE_OPTIONS: CaseConfidenceDeclaration[] = [
   "INSUFFICIENT_EVIDENCE",
 ];
 
+const EVIDENCE_ICON: Record<string, string> = {
+  DOCUMENT: "/detective/evidence-document.svg",
+  LOG: "/detective/evidence-log.svg",
+  STATEMENT: "/detective/evidence-statement.svg",
+  PHOTO_DESC: "/detective/evidence-photo.svg",
+  MESSAGE: "/detective/evidence-message.svg",
+};
+
+const EVIDENCE_TYPE_LABEL: Record<string, string> = {
+  DOCUMENT: "Dokumen",
+  LOG: "Log",
+  STATEMENT: "Pernyataan",
+  PHOTO_DESC: "Foto",
+  MESSAGE: "Pesan",
+};
+
 export default function CaseRunnerPage() {
   const params = useParams<{ worldKey: string }>();
   const router = useRouter();
@@ -428,8 +444,13 @@ export default function CaseRunnerPage() {
               transition={{ delay: index * 0.04 }}
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="rounded-full bg-[#ede9fe] px-3 py-1 text-xs font-black text-[#6d28d9] transition group-hover:bg-[#f5f3ff]">
-                  Bukti {item.orderNumber} - {item.type}
+                <span className="flex items-center gap-2 rounded-full bg-[#ede9fe] py-1 pl-1 pr-3 text-xs font-black text-[#6d28d9] transition group-hover:bg-[#f5f3ff]">
+                  <img
+                    alt=""
+                    className="size-6 rounded-full"
+                    src={EVIDENCE_ICON[item.type] ?? EVIDENCE_ICON.DOCUMENT}
+                  />
+                  Bukti {item.orderNumber} - {EVIDENCE_TYPE_LABEL[item.type] ?? item.type}
                 </span>
                 <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-500">
                   {evidenceRelevanceLabel(item.relevance)}

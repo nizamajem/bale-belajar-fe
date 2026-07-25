@@ -15,7 +15,8 @@ import {
   UsersRound,
   XCircle,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 
 const steps = [
   {
@@ -73,6 +74,15 @@ export function DetectiveDemoClient() {
   );
   const answered = selectedEvidence !== null;
   const correct = selected?.correct ?? false;
+
+  useEffect(() => {
+    trackEvent("demo_detective_view");
+  }, []);
+
+  function chooseEvidence(id: string) {
+    setSelectedEvidence(id);
+    trackEvent("demo_detective_evidence_selected", { evidence: id });
+  }
 
   return (
     <main className="min-h-screen bg-[#f8fafc] px-4 py-6 sm:px-6">
@@ -159,7 +169,7 @@ export function DetectiveDemoClient() {
                       active ? "border-[#2563eb] bg-[#eff6ff] shadow-[0_5px_0_#bfdbfe]" : "border-slate-200 bg-[#f8fafc] shadow-sm hover:border-[#93c5fd]",
                     ].join(" ")}
                     key={item.id}
-                    onClick={() => setSelectedEvidence(item.id)}
+                    onClick={() => chooseEvidence(item.id)}
                     type="button"
                   >
                     <p className="font-heading text-lg font-black">{item.title}</p>
@@ -212,11 +222,19 @@ export function DetectiveDemoClient() {
         </section>
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <Link className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447]" href="/student/login">
+          <Link
+            className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447]"
+            href="/student/login"
+            onClick={() => trackEvent("demo_detective_student_login_click")}
+          >
             Mulai sebagai siswa
             <ArrowRight size={18} />
           </Link>
-          <Link className="inline-flex items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_6px_0_#d8e2ef]" href="/welcome#pilot">
+          <Link
+            className="inline-flex items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_6px_0_#d8e2ef]"
+            href="/welcome#pilot"
+            onClick={() => trackEvent("demo_detective_pilot_click")}
+          >
             Pilot untuk sekolah
           </Link>
         </div>

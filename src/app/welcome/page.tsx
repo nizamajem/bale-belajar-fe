@@ -191,6 +191,9 @@ export default function WelcomePage() {
             <Link className="inline-flex min-h-12 items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_7px_0_#d8e2ef]" href="/pricing">
               Lihat Harga
             </Link>
+            <Link className="inline-flex min-h-12 items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_7px_0_#d8e2ef]" href="/trust">
+              Keamanan Data
+            </Link>
           </div>
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
             {["Materi dulu", "Tes adaptif", "Laporan guru"].map((item) => (
@@ -339,6 +342,26 @@ export default function WelcomePage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <div className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-sm font-black uppercase text-[#2563eb]">Kesiapan produk</p>
+          <h2 className="font-heading mt-1 text-3xl font-black">Hal yang ditanyakan sekolah sebelum membeli.</h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-4">
+            {[
+              ["Keamanan data", "Akses role, data siswa, dan kontrol sekolah.", "/trust"],
+              ["AI guardrails", "AI sebagai rekomendasi, bukan keputusan final.", "/product/ai-guardrails"],
+              ["Kualitas tes", "Retake, remedial, dan variasi kasus.", "/product/assessment-quality"],
+              ["Mobile QA", "Checklist HP kecil dan tablet.", "/product/mobile-qa"],
+            ].map(([title, text, href]) => (
+              <Link className="rounded-[8px] bg-[#f8fafc] p-4" href={href} key={title}>
+                <p className="font-heading text-lg font-black">{title}</p>
+                <p className="mt-2 text-sm font-bold leading-6 text-slate-600">{text}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <div className="grid gap-4 md:grid-cols-3">
           {[
             {
@@ -447,6 +470,7 @@ export default function WelcomePage() {
             <Link href="/terms">Ketentuan</Link>
             <Link href="/pricing">Harga</Link>
             <Link href="/demo/detective">Demo</Link>
+            <Link href="/trust">Trust</Link>
             <a href="https://wa.me/628111111111" rel="noreferrer" target="_blank">WhatsApp</a>
             <Link href="/staff/login">Masuk Platform</Link>
           </div>
