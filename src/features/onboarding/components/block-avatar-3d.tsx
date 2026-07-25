@@ -80,6 +80,69 @@ function addModelAccessory(
   }
 }
 
+function addRoleCostume(
+  model: THREE.Group,
+  base: AvatarBaseId,
+  amberMaterial: THREE.Material,
+  blueMaterial: THREE.Material,
+  blackMaterial: THREE.Material,
+  coatMaterial: THREE.Material,
+  whiteMaterial: THREE.Material,
+) {
+  if (base === "detektif") {
+    const brim = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.06, 0.62), blackMaterial);
+    brim.position.set(0, 1.28, 0.08);
+    model.add(brim);
+
+    const crown = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.24, 0.48), blackMaterial);
+    crown.position.set(0, 1.43, 0.02);
+    model.add(crown);
+
+    const coat = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.92, 0.08), coatMaterial);
+    coat.position.set(0, 0.18, 0.43);
+    model.add(coat);
+
+    const collarLeft = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.32, 0.06), blackMaterial);
+    collarLeft.position.set(-0.18, 0.52, 0.49);
+    collarLeft.rotation.z = -0.45;
+    model.add(collarLeft);
+
+    const collarRight = collarLeft.clone();
+    collarRight.position.x = 0.18;
+    collarRight.rotation.z = 0.45;
+    model.add(collarRight);
+
+    const lens = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.022, 16, 42), amberMaterial);
+    lens.position.set(0.42, 0.62, 0.56);
+    model.add(lens);
+
+    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.28, 10), amberMaterial);
+    handle.position.set(0.55, 0.45, 0.57);
+    handle.rotation.z = -0.72;
+    model.add(handle);
+  }
+
+  if (base === "dokter") {
+    const coat = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.95, 0.08), whiteMaterial);
+    coat.position.set(0, 0.15, 0.43);
+    model.add(coat);
+
+    const plusV = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.2, 0.04), amberMaterial);
+    plusV.position.set(0.26, 0.43, 0.5);
+    model.add(plusV);
+
+    const plusH = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.05, 0.04), amberMaterial);
+    plusH.position.set(0.26, 0.43, 0.51);
+    model.add(plusH);
+  }
+
+  if (base === "robot") {
+    const visor = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.12, 0.04), blueMaterial);
+    visor.position.set(0, 0.78, 0.56);
+    model.add(visor);
+  }
+}
+
 function normalizeLoadedModel(model: THREE.Group, bodyScale: number, heightScale: number) {
   const root = new THREE.Group();
   const box = new THREE.Box3().setFromObject(model);
@@ -174,6 +237,7 @@ export function BlockAvatar3D({
     const amberMaterial = new THREE.MeshStandardMaterial({ color: 0xf9c74f, roughness: 0.42 });
     const blueMaterial = new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.42 });
     const blackMaterial = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.55 });
+    const coatMaterial = new THREE.MeshStandardMaterial({ color: 0x8b5e34, roughness: 0.58 });
 
     function roundedBox(width: number, height: number, depth: number, material: THREE.Material) {
       const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
@@ -337,7 +401,6 @@ export function BlockAvatar3D({
       (texture) => {
         if (disposed) return;
         texture.colorSpace = THREE.SRGBColorSpace;
-        texture.flipY = false;
 
         fbxLoader.load(
           `${assetRoot}/Model/characterMedium.fbx`,
@@ -360,6 +423,7 @@ export function BlockAvatar3D({
             });
 
             activeModel = normalizeLoadedModel(model, modelScaleXZ, modelScaleY);
+            addRoleCostume(activeModel, base, amberMaterial, blueMaterial, blackMaterial, coatMaterial, whiteMaterial);
             addModelAccessory(activeModel, accessory, amberMaterial, blueMaterial, blackMaterial);
             scene.add(activeModel);
 
@@ -399,7 +463,10 @@ export function BlockAvatar3D({
       leftArm.rotation.z = -0.24 + Math.sin(elapsed * 1.8) * 0.12;
       rightArm.rotation.z = 0.24 - Math.sin(elapsed * 1.8) * 0.12;
       if (activeModel) {
-        activeModel.rotation.y = Math.sin(elapsed * 0.4) * 0.22;
+        const detectiveMotion = base === "detektif" ? 1 : 0;
+        activeModel.rotation.y = Math.PI + Math.sin(elapsed * (0.45 + detectiveMotion * 0.35)) * (0.18 + detectiveMotion * 0.18);
+        activeModel.rotation.x = detectiveMotion ? Math.sin(elapsed * 1.4) * 0.025 : 0;
+        activeModel.position.y = -0.05 + Math.sin(elapsed * (1.2 + detectiveMotion * 0.5)) * 0.035;
       }
       mixer?.update(delta);
       renderer.render(scene, camera);

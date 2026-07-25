@@ -17,6 +17,7 @@ export function OnboardingShell({
   subtitle: string;
 }) {
   const progress = Math.max(8, Math.min(100, ((stepIndex + 1) / stepLabels.length) * 100));
+  const isAvatarStep = stepIndex === 4;
 
   return (
     <main className="min-h-screen bg-[#f8fafc] px-4 py-5 sm:px-6">
@@ -40,16 +41,16 @@ export function OnboardingShell({
           />
         </div>
 
-        <div className="mb-5 grid gap-4 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
-          <GameScene stepIndex={stepIndex} />
-          <div>
-          <p className="text-sm font-black uppercase text-[#2563eb]">
-            {stepLabels[stepIndex]}
-          </p>
-          <h1 className="font-heading mt-1 text-3xl font-black leading-tight text-[#172033] sm:text-5xl">
-            {title}
-          </h1>
-          <p className="mt-2 max-w-xl font-bold leading-7 text-slate-500">{subtitle}</p>
+        <div className={isAvatarStep ? "mb-5" : "mb-5 grid gap-4 lg:grid-cols-[0.92fr_1.08fr] lg:items-center"}>
+          {isAvatarStep ? null : <GameScene stepIndex={stepIndex} />}
+          <div className={isAvatarStep ? "max-w-2xl" : undefined}>
+            <p className="text-sm font-black uppercase text-[#2563eb]">
+              {stepLabels[stepIndex]}
+            </p>
+            <h1 className="font-heading mt-1 text-3xl font-black leading-tight text-[#172033] sm:text-5xl">
+              {title}
+            </h1>
+            <p className="mt-2 max-w-xl font-bold leading-7 text-slate-500">{subtitle}</p>
           </div>
         </div>
 

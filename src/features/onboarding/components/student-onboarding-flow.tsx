@@ -20,6 +20,7 @@ import {
   avatarColors,
   avatarHeights,
   avatarSkinTones,
+  AvatarColorId,
   firstWorlds,
   gradeChoices,
   learningGoals,
@@ -489,7 +490,7 @@ function AvatarStep({
           <CycleRow label="Warna Kulit" options={avatarSkinTones} value={skinTone} onChange={setSkinTone} />
           <CycleRow label="Tinggi" options={avatarHeights} value={height} onChange={setHeight} />
           <CycleRow label="Badan" options={avatarBodies} value={body} onChange={setBody} />
-          <CycleRow label="Kostum" options={avatarColors} value={color} onChange={setColor} />
+          <ColorPalette value={color} onChange={setColor} />
           <CycleRow label="Item" options={avatarAccessories} value={accessory} onChange={setAccessory} />
         </div>
         <button
@@ -501,6 +502,42 @@ function AvatarStep({
           {loading ? <Loader2 className="animate-spin" size={18} /> : null}
           Simpan BaleHero
         </button>
+      </div>
+    </div>
+  );
+}
+
+function ColorPalette({
+  onChange,
+  value,
+}: {
+  onChange: (value: AvatarColorId) => void;
+  value: AvatarColorId;
+}) {
+  return (
+    <div className="rounded-[8px] border border-white/12 bg-white/8 p-3">
+      <div className="mb-2 px-1 text-xs font-black uppercase text-white/55">Palette Kostum</div>
+      <div className="grid grid-cols-4 gap-2">
+        {avatarColors.map((item) => {
+          const selected = item.id === value;
+          return (
+            <button
+              aria-label={`Pilih ${item.label}`}
+              className={[
+                "min-h-14 rounded-[8px] border-2 p-1 shadow-[0_4px_0_rgba(2,6,23,0.35)] transition active:translate-y-1 active:shadow-none",
+                selected ? "border-white bg-white/18" : "border-white/10 bg-white/8",
+              ].join(" ")}
+              key={item.id}
+              onClick={() => onChange(item.id)}
+              type="button"
+            >
+              <span
+                className="block h-9 rounded-[6px]"
+                style={{ background: `linear-gradient(135deg, ${item.hex}, ${item.shadow})` }}
+              />
+            </button>
+          );
+        })}
       </div>
     </div>
   );
