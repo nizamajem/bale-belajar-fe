@@ -1,5 +1,5 @@
-import { StudentOnboardingFlow } from "@/features/onboarding/components/student-onboarding-flow";
+import { redirect } from "next/navigation";
 
-export default function StudentGoalOnboardingPage() {
-  return <StudentOnboardingFlow step="goal" />;
+export default function LegacyOnboardingGoalPage() {
+  redirect("/student/careers");
 }

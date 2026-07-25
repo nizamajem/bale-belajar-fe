@@ -8,9 +8,9 @@ const toneByStatus: Record<LearningMasteryStatus, string> = {
 };
 
 const confidenceLabel: Record<ConfidenceLevel, string> = {
-  HIGH: "Keyakinan tinggi",
-  MEDIUM: "Keyakinan sedang",
-  LOW: "Keyakinan rendah",
+  HIGH: "Sangat yakin",
+  MEDIUM: "Cukup yakin",
+  LOW: "Belum yakin",
 };
 
 export function MasteryBadge({

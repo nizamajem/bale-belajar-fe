@@ -30,34 +30,28 @@ const navItems = [
   },
   {
     href: "/student/careers",
-    label: "Cita-cita",
-    description: "Pilih jalur karier",
+    label: "Mau Jadi Apa?",
+    description: "Pilih impianmu",
     icon: BriefcaseBusiness,
   },
   {
     href: "/student/world/detectivia",
-    label: "Detectivia",
-    description: "Materi, kasus, dan tes",
+    label: "Dunia Detektif",
+    description: "Belajar dari bukti",
     icon: Search,
   },
   {
     href: "/student/growth-map?worldKey=detectivia",
     match: "/student/growth-map",
-    label: "Peta Tumbuh",
-    description: "Lihat skill kuat dan lemah",
+    label: "Kemampuanku",
+    description: "Lihat yang sudah paham",
     icon: MapPinned,
   },
   {
     href: "/student/history",
-    label: "Riwayat",
-    description: "Aktivitas belajar",
+    label: "Aktivitasku",
+    description: "Lihat belajar sebelumnya",
     icon: History,
-  },
-  {
-    href: "/student/profile",
-    label: "Profil",
-    description: "Data akun siswa",
-    icon: UserRound,
   },
   {
     href: "/student/school",
@@ -111,14 +105,6 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
               </span>
             </span>
           </Link>
-
-          <div className="mb-5 rounded-[8px] bg-[#172033] p-4 text-white">
-            <p className="text-xs font-black uppercase text-white/55">Sedang aktif</p>
-            <p className="font-heading mt-1 text-xl font-black">{user?.name ?? "Siswa"}</p>
-            <p className="mt-1 text-sm font-bold text-white/70">
-              Belajar bertahap: materi, contoh, tes, lalu rekomendasi.
-            </p>
-          </div>
 
           <nav className="space-y-2">
             {navItems.map((item) => {
@@ -184,10 +170,27 @@ export function StudentShell({ children }: { children: React.ReactNode }) {
 
             <div className="flex shrink-0 items-center gap-2">
               {user ? <RoleSwitcher user={user} /> : null}
+              <Link
+                aria-label="Buka profil"
+                className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-black text-slate-600 shadow-sm sm:inline-flex"
+                href="/student/profile"
+              >
+                <span className="grid size-7 place-items-center rounded-full bg-[#eff6ff] text-[#2563eb]">
+                  <UserRound size={16} />
+                </span>
+                <span className="max-w-24 truncate">{user?.name ?? "Profil"}</span>
+              </Link>
               <div className="mission-node-active hidden items-center gap-2 rounded-full bg-[#fff7ed] px-3 py-2 text-sm font-black text-[#c2410c] sm:flex">
                 <Star size={17} fill="#f9c74f" />
                 {streakCurrent ?? 0} hari
               </div>
+              <Link
+                aria-label="Buka profil"
+                className="grid size-10 place-items-center rounded-[8px] border border-slate-200 bg-white text-[#2563eb] shadow-sm sm:hidden"
+                href="/student/profile"
+              >
+                <UserRound size={18} />
+              </Link>
               <button
                 aria-label="Keluar"
                 className="grid size-10 place-items-center rounded-[8px] border border-slate-200 bg-white text-slate-600 shadow-sm lg:hidden"

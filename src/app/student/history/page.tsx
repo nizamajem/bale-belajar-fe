@@ -36,9 +36,9 @@ export default function StudentHistoryPage() {
     <StudentShell>
       <section className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
         <p className="text-sm font-black uppercase text-[#2563eb]">
-          Riwayat belajar
+          Aktivitasku
         </p>
-        <h1 className="font-heading text-3xl font-black">Hasil asesmen</h1>
+        <h1 className="font-heading text-3xl font-black">Hasil tes yang sudah selesai</h1>
 
         {loading ? (
           <div className="grid place-items-center py-10">
@@ -46,7 +46,7 @@ export default function StudentHistoryPage() {
           </div>
         ) : history.length === 0 ? (
           <p className="mt-5 rounded-[8px] border border-slate-200 bg-white p-8 text-center font-bold text-slate-500 shadow-sm">
-            Belum ada asesmen yang selesai dikerjakan.
+            Belum ada tes yang selesai. Mulai satu latihan dulu, nanti hasilnya muncul di sini.
           </p>
         ) : (
           <div className="mt-5 grid gap-4">

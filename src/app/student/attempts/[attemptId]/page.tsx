@@ -64,7 +64,7 @@ export default function AttemptPage() {
           setRemainingSeconds(Math.max(totalSec - elapsedSec, 0));
         }
       })
-      .catch((err) => setError(err instanceof ApiError ? err.message : "Gagal memuat asesmen."))
+      .catch((err) => setError(err instanceof ApiError ? err.message : "Tes belum bisa dibuka."))
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.attemptId]);
@@ -159,7 +159,7 @@ export default function AttemptPage() {
     return (
       <StudentShell>
         <div className="mx-auto max-w-xl px-4 py-10 text-center">
-          <p className="font-bold text-[#e11d48]">{error ?? "Asesmen tidak ditemukan."}</p>
+          <p className="font-bold text-[#e11d48]">{error ?? "Tes tidak ditemukan."}</p>
           <Link className="mt-4 inline-block font-heading font-black text-[#2563eb]" href="/student/dashboard">
             Kembali ke beranda
           </Link>
@@ -353,7 +353,7 @@ export default function AttemptPage() {
                   <AlertTriangle size={22} />
                 </span>
                 <h2 className="font-heading mt-4 text-2xl font-black">
-                  Selesaikan asesmen?
+                  Selesaikan tes?
                 </h2>
               </div>
               <button
@@ -385,7 +385,7 @@ export default function AttemptPage() {
                 type="button"
               >
                 {submitting ? <Loader2 className="animate-spin" size={18} /> : null}
-                Ya, kumpulkan
+                Ya, kumpulkan jawaban
               </button>
             </div>
           </motion.div>

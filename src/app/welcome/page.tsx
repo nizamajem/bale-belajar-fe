@@ -45,6 +45,27 @@ const benefits = [
   },
 ];
 
+const pricing = [
+  {
+    name: "Pilot Sekolah",
+    price: "Mulai dari 1 kelas",
+    description: "Cocok untuk validasi awal sebelum dipakai satu sekolah.",
+    points: ["Akun siswa", "Dunia Detektif", "Laporan guru", "Sesi evaluasi pilot"],
+  },
+  {
+    name: "Paket Sekolah",
+    price: "Per siswa / semester",
+    description: "Untuk sekolah yang ingin memakai asesmen dan rekomendasi belajar rutin.",
+    points: ["Dashboard admin", "Manajemen kelas", "Bank tes", "Kelompok latihan ulang"],
+  },
+  {
+    name: "Custom",
+    price: "Sesuai kebutuhan",
+    description: "Untuk yayasan, bimbel, komunitas belajar, atau kurikulum khusus.",
+    points: ["Kurikulum tambahan", "Integrasi data", "Branding sekolah", "Dukungan prioritas"],
+  },
+];
+
 const faqs = [
   ["Apakah ini hanya untuk Detektif?", "Tidak. Detectivia dipakai sebagai kurikulum testing. Struktur yang sama bisa dipakai untuk dokter, programmer, guru, matematika, bahasa, dan jalur lain."],
   ["Apakah data belajar tersimpan sungguhan?", "Ya. Halaman produksi diarahkan ke akun, progress, kurikulum, dan hasil yang dibaca dari backend BaleBelajar."],
@@ -206,6 +227,50 @@ export default function WelcomePage() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <div className="mb-5">
+          <p className="text-sm font-black uppercase text-[#22c55e]">Paket penggunaan</p>
+          <h2 className="font-heading text-3xl font-black">Mulai kecil, ukur hasilnya, lalu perluas.</h2>
+          <p className="mt-2 max-w-2xl font-bold leading-7 text-slate-600">
+            Sekolah bisa mencoba dari satu kelas dulu. Setelah guru melihat laporan dan siswa nyaman, penggunaan bisa diperluas.
+          </p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {pricing.map((plan) => (
+            <article className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm" key={plan.name}>
+              <h3 className="font-heading text-2xl font-black">{plan.name}</h3>
+              <p className="mt-2 rounded-full bg-[#eff6ff] px-3 py-2 text-sm font-black text-[#2563eb]">
+                {plan.price}
+              </p>
+              <p className="mt-3 text-sm font-bold leading-6 text-slate-600">{plan.description}</p>
+              <div className="mt-4 space-y-2">
+                {plan.points.map((point) => (
+                  <p className="flex items-center gap-2 text-sm font-bold text-slate-600" key={point}>
+                    <CheckCircle2 className="shrink-0 text-[#22c55e]" size={17} />
+                    {point}
+                  </p>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <div className="grid gap-4 md:grid-cols-3">
+          {[
+            ["Untuk sekolah", "Membantu guru membaca kebutuhan belajar siswa tanpa menunggu rekap manual."],
+            ["Untuk bimbel", "Membuat latihan terasa lebih personal dan punya alasan yang jelas."],
+            ["Untuk komunitas", "Cocok untuk program literasi, logika, dan eksplorasi cita-cita."],
+          ].map(([title, text]) => (
+            <div className="rounded-[8px] bg-[#172033] p-5 text-white" key={title}>
+              <p className="font-heading text-xl font-black">{title}</p>
+              <p className="mt-2 text-sm font-bold leading-6 text-white/70">{text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="mx-auto grid max-w-6xl gap-5 px-4 py-8 sm:px-6 lg:grid-cols-[0.9fr_1.1fr]" id="pilot">
         <div className="rounded-[8px] bg-[#172033] p-6 text-white">
           <Mail className="text-[#f9c74f]" size={28} />
@@ -273,6 +338,7 @@ export default function WelcomePage() {
           <div className="flex gap-4">
             <Link href="/privacy">Privasi</Link>
             <Link href="/terms">Ketentuan</Link>
+            <a href="https://wa.me/628111111111" rel="noreferrer" target="_blank">WhatsApp</a>
             <Link href="/staff/login">Masuk Platform</Link>
           </div>
         </div>

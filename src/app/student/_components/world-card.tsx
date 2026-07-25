@@ -24,7 +24,7 @@ export function WorldCard({ world }: { world: WorldSummary }) {
       <h3 className="relative font-heading text-xl font-black">{world.name}</h3>
       <p className="mt-1 text-sm font-bold text-slate-500">{world.subject.name}</p>
       <div className="mt-4">
-        <XpBar level={world.worldLevel} levelLabel="Level Dunia" xpIntoLevel={world.worldXp % 100} xpRequired={100} />
+        <XpBar level={world.worldLevel} levelLabel="Tingkat Dunia" xpIntoLevel={world.worldXp % 100} xpRequired={100} />
       </div>
       <div className="mt-4 inline-flex items-center gap-2 font-heading text-sm font-black text-[#2563eb]">
         Buka dunia

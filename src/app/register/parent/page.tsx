@@ -12,7 +12,7 @@ export default function RegisterParentPage() {
         </p>
         <Link
           className="mt-5 inline-flex items-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_7px_0_#129447]"
-          href="/register/student"
+          href="/daftar"
         >
           Mulai sebagai Siswa
           <ArrowRight size={18} />

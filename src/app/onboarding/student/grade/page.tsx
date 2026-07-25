@@ -1,5 +1,5 @@
-import { StudentOnboardingFlow } from "@/features/onboarding/components/student-onboarding-flow";
+import { redirect } from "next/navigation";
 
-export default function StudentGradeOnboardingPage() {
-  return <StudentOnboardingFlow step="grade" />;
+export default function LegacyOnboardingGradePage() {
+  redirect("/student/careers");
 }

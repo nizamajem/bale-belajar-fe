@@ -1,5 +1,5 @@
-import { StudentOnboardingFlow } from "@/features/onboarding/components/student-onboarding-flow";
+import { redirect } from "next/navigation";
 
-export default function StudentFirstMissionOnboardingPage() {
-  return <StudentOnboardingFlow step="first-mission" />;
+export default function LegacyOnboardingFirstMissionPage() {
+  redirect("/student/world/detectivia");
 }

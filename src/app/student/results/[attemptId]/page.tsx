@@ -40,7 +40,7 @@ function sevenDayPlan(priority?: string) {
     ["Hari 4", `Kerjakan 5 soal baru dengan tingkat sedikit lebih menantang.`],
     ["Hari 5", "Jelaskan langkah penyelesaian dengan kata-katamu sendiri."],
     ["Hari 6", "Minta guru atau teman memeriksa satu soal yang masih membingungkan."],
-    ["Hari 7", "Coba asesmen ulang singkat atau latihan campuran untuk melihat kemajuan."],
+    ["Hari 7", "Coba tes ulang singkat atau latihan campuran untuk melihat kemajuan."],
   ];
 }
 
@@ -102,7 +102,7 @@ export default function ResultPage() {
             <div>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/16 px-3 py-2 text-sm font-black">
                 <Sparkles size={17} />
-                Hasil asesmen selesai
+                Tes selesai
               </span>
               <h1 className="font-heading mt-4 text-3xl font-black leading-tight sm:text-5xl text-balance-soft">
                 {result.assignment.assessment.title}
@@ -131,7 +131,7 @@ export default function ResultPage() {
                   Peta kemampuan
                 </p>
                 <h2 className="font-heading text-2xl font-black">
-                  Ringkasan kompetensi
+                  Ringkasan kemampuan
                 </h2>
               </div>
               <span className="w-fit rounded-full bg-[#eff6ff] px-3 py-1 text-xs font-black text-[#2563eb]">
@@ -141,7 +141,7 @@ export default function ResultPage() {
 
             {result.competencyResults.length === 0 ? (
               <p className="rounded-[8px] bg-[#f8fafc] p-5 text-sm font-bold text-slate-500">
-                Belum ada rincian kompetensi untuk hasil ini.
+                Belum ada rincian kemampuan untuk hasil ini.
               </p>
             ) : (
               <div className="space-y-5">
@@ -225,7 +225,7 @@ export default function ResultPage() {
             ))}
           </div>
           <p className="mt-5 rounded-[8px] bg-[#fffbeb] p-4 text-sm font-bold leading-6 text-[#92400e]">
-            Catatan: hasil ini adalah alat bantu belajar, bukan penilaian akhir kemampuanmu.
+            Catatan: hasil ini adalah alat bantu belajar, bukan cap akhir kemampuanmu.
             Guru tetap dapat membantu menyesuaikan langkah belajar yang paling tepat.
           </p>
         </section>

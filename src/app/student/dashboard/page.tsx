@@ -51,7 +51,7 @@ export default function StudentDashboardPage() {
         setCurriculum(curriculumData);
         setAdaptivePlan(adaptiveData);
       } catch {
-        if (!cancelled) setError("Dashboard belum bisa memuat data dari server.");
+        if (!cancelled) setError("Beranda belum bisa dibuka. Coba ulang sebentar lagi.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -73,7 +73,7 @@ export default function StudentDashboardPage() {
     <StudentShell>
       <section className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:py-8">
         <div className="mb-5">
-          <p className="text-sm font-black uppercase text-[#2563eb]">Beranda Siswa</p>
+          <p className="text-sm font-black uppercase text-[#2563eb]">Beranda</p>
           <h1 className="font-heading text-3xl font-black leading-tight text-[#172033]">
             Hai {user?.name ?? "Siswa"}, mau belajar apa hari ini?
           </h1>
@@ -84,7 +84,7 @@ export default function StudentDashboardPage() {
             className="mt-3 inline-flex items-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-4 py-3 font-heading font-black text-slate-700 shadow-[0_5px_0_#d8e2ef]"
             href="/student/careers"
           >
-            Lihat Semua Cita-Cita
+            Lihat pilihan impian
           </Link>
         </div>
 
@@ -101,29 +101,29 @@ export default function StudentDashboardPage() {
             <div className="grid gap-3 sm:grid-cols-3">
               <SmallStat icon={<Star size={18} />} label="Streak" value={`${profile?.streakCurrent ?? 0} hari`} />
               <SmallStat icon={<Zap size={18} />} label="Daya Bale" value={String(profile?.dayaBale ?? 0)} />
-              <SmallStat icon={<BookOpen size={18} />} label="Level" value={String(profile?.accountLevel ?? 1)} />
+              <SmallStat icon={<BookOpen size={18} />} label="Tingkat" value={String(profile?.accountLevel ?? 1)} />
             </div>
 
             <div className="mt-5 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
               <article className="rounded-[8px] bg-[#172033] p-5 text-white shadow-[0_9px_0_#020617] sm:p-6">
                 <span className="inline-flex items-center gap-2 rounded-full bg-white/14 px-3 py-2 text-sm font-black">
                   <Search size={17} />
-                  {adaptivePlan?.nextAction === "REMEDIAL" ? "Remedial Pintar" : "Testing Kurikulum"}
+                  {adaptivePlan?.nextAction === "REMEDIAL" ? "Latihan ulang" : "Belajar hari ini"}
                 </span>
                 <h2 className="font-heading mt-4 text-3xl font-black leading-tight">
-                  {adaptivePlan?.title ?? "Detectivia: belajar jadi detektif dari dasar."}
+                  {adaptivePlan?.title ?? "Mau jadi detektif? Mulai dari dasar dulu."}
                 </h2>
                 <p className="mt-3 font-bold leading-7 text-white/80">
                   {adaptivePlan?.message ??
-                    "Materi singkat, contoh jawaban, lalu tes penalaran. Kalau salah, skill yang lemah akan muncul lagi di tes berikutnya dengan kasus baru."}
+                    "Baca materi singkat, lihat contoh jawaban, lalu coba kasus. Kalau salah, bagian yang belum paham akan muncul lagi di latihan berikutnya."}
                 </p>
                 {adaptivePlan?.targetModule ? (
                   <div className="mt-4 rounded-[8px] bg-white/10 p-4">
-                    <p className="text-xs font-black uppercase text-white/60">Target sekarang</p>
+                    <p className="text-xs font-black uppercase text-white/60">Belajar sekarang</p>
                     <p className="font-heading mt-1 text-xl font-black">{adaptivePlan.targetModule.title}</p>
                     {adaptivePlan.mastery ? (
                       <p className="mt-1 text-sm font-bold text-white/72">
-                        Mastery {Math.round(adaptivePlan.mastery.masteryScore)}% - {adaptivePlan.mastery.status}
+                        Tingkat paham {Math.round(adaptivePlan.mastery.masteryScore)}%
                       </p>
                     ) : null}
                   </div>
@@ -144,13 +144,13 @@ export default function StudentDashboardPage() {
                   className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] sm:w-auto"
                   href="/student/world/detectivia"
                 >
-                  Mulai Detectivia
+                  Mulai Dunia Detektif
                   <ArrowRight size={18} />
                 </Link>
               </article>
 
               <aside className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
-                <p className="text-sm font-black uppercase text-[#6d28d9]">Dari Backend</p>
+                <p className="text-sm font-black uppercase text-[#6d28d9]">Dunia aktif</p>
                 <h2 className="font-heading mt-1 text-2xl font-black">
                   {detectivia?.name ?? "Detectivia"}
                 </h2>
@@ -158,7 +158,7 @@ export default function StudentDashboardPage() {
                   {currentCase?.lessonPlan?.simpleGoal ?? detectivia?.themeDescription}
                 </p>
                 <div className="mt-4 rounded-[8px] bg-[#f8fafc] p-4">
-                  <p className="text-xs font-black uppercase text-slate-400">Tes aktif</p>
+                  <p className="text-xs font-black uppercase text-slate-400">Latihan aktif</p>
                   <p className="mt-1 font-heading text-lg font-black">
                     {currentCase?.case.title ?? "Kasus hari ini"}
                   </p>
@@ -171,9 +171,9 @@ export default function StudentDashboardPage() {
 
             {curriculum?.modules.length ? (
               <section className="mt-5 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
-                <p className="text-sm font-black uppercase text-[#6d28d9]">Peta Karier</p>
+                <p className="text-sm font-black uppercase text-[#6d28d9]">Jalur belajar</p>
                 <h2 className="font-heading mt-1 text-2xl font-black">
-                  Jalur menjadi {curriculum.characterClass}
+                  Langkah menjadi {curriculum.characterClass}
                 </h2>
                 <div className="mt-4 grid gap-3">
                   {curriculum.modules.map((module) => (
@@ -190,7 +190,7 @@ export default function StudentDashboardPage() {
                           {module.lessons.length} materi
                         </span>
                         <span className="rounded-full bg-white px-3 py-2 text-slate-500">
-                          {module.caseStudies.length} studi kasus
+                          {module.caseStudies.length} cerita kasus
                         </span>
                         <span className="rounded-full bg-white px-3 py-2 text-slate-500">
                           {module.estimatedMinutes} menit

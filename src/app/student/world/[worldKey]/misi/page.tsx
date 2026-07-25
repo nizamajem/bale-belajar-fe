@@ -54,7 +54,7 @@ export default function MissionRunnerPage() {
           ),
         );
       } catch {
-        if (!cancelled) setError("Misi tidak dapat dimuat. Silakan coba lagi.");
+        if (!cancelled) setError("Latihan belum bisa dibuka. Coba lagi sebentar.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -93,7 +93,7 @@ export default function MissionRunnerPage() {
       );
       setResult(data);
     } catch {
-      setError("Misi gagal disubmit. Silakan coba lagi.");
+      setError("Jawaban belum bisa dikirim. Coba lagi sebentar.");
     } finally {
       setSubmitting(false);
     }
@@ -103,7 +103,7 @@ export default function MissionRunnerPage() {
     return (
       <StudentShell>
         <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-          <LoadingEvidence label="Misi sedang disusun untukmu..." />
+          <LoadingEvidence label="Latihan sedang disiapkan untukmu..." />
         </div>
       </StudentShell>
     );
@@ -115,7 +115,7 @@ export default function MissionRunnerPage() {
         <section className="mx-auto max-w-3xl px-4 py-10 text-center sm:px-6">
           <div className="rounded-[8px] border border-slate-200 bg-white p-8 shadow-sm">
             <Sparkles className="mx-auto text-[#f9c74f]" size={34} />
-            <p className="mt-4 font-heading text-2xl font-black">Misi belum bisa dibuka.</p>
+            <p className="mt-4 font-heading text-2xl font-black">Latihan belum bisa dibuka.</p>
             <p className="mt-2 font-bold leading-7 text-slate-500">
               {error} Progresmu tetap aman.
             </p>
@@ -123,7 +123,7 @@ export default function MissionRunnerPage() {
               className="mt-5 inline-flex rounded-[8px] bg-[#2563eb] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#1e40af]"
               href={`/student/world/${worldKey}`}
             >
-              Kembali ke Dunia
+              Kembali ke dunia
             </Link>
           </div>
         </section>
@@ -144,7 +144,7 @@ export default function MissionRunnerPage() {
           >
             <span className="inline-flex items-center gap-2 rounded-full bg-white/18 px-3 py-2 text-sm font-black">
               <Trophy size={17} />
-              Misi selesai!
+              Latihan selesai!
             </span>
             <h1 className="font-heading mt-4 text-3xl font-black">
               {result.correctCount}/{result.totalActivities} benar
@@ -159,7 +159,7 @@ export default function MissionRunnerPage() {
 
           {result.mastery ? (
             <div className="mt-5 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
-              <p className="text-sm font-black uppercase text-[#2563eb]">Mastery Kompetensi</p>
+              <p className="text-sm font-black uppercase text-[#2563eb]">Tingkat paham</p>
               <div className="mt-2">
                 <MasteryBadge confidence={result.mastery.confidence} status={result.mastery.status} />
               </div>
@@ -189,13 +189,13 @@ export default function MissionRunnerPage() {
               className="inline-flex items-center gap-2 rounded-[8px] bg-[#2563eb] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#1e40af] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
               href={`/student/growth-map?worldKey=${worldKey}`}
             >
-              Lihat Peta Tumbuh
+              Lihat kemampuanku
             </Link>
             <Link
               className="inline-flex items-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_6px_0_#d8e2ef] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
               href={`/student/world/${worldKey}`}
             >
-              Kembali ke Dunia
+              Kembali ke dunia
             </Link>
           </div>
         </section>
@@ -273,7 +273,7 @@ export default function MissionRunnerPage() {
           type="button"
         >
           {submitting ? <Loader2 className="animate-spin" size={18} /> : null}
-          Selesaikan Misi
+          Kumpulkan jawaban
         </button>
       </section>
     </StudentShell>

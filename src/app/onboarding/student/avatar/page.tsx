@@ -1,5 +1,5 @@
-import { StudentOnboardingFlow } from "@/features/onboarding/components/student-onboarding-flow";
+import { redirect } from "next/navigation";
 
-export default function StudentAvatarOnboardingPage() {
-  return <StudentOnboardingFlow step="avatar" />;
+export default function LegacyOnboardingAvatarPage() {
+  redirect("/student/careers");
 }

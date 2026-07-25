@@ -92,7 +92,7 @@ export function MissionMapNode({
       </button>
       {locked ? (
         <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden w-44 -translate-x-1/2 rounded-[8px] bg-[#172033] p-2 text-center text-xs font-bold text-white shadow-xl group-hover:block group-focus-within:block">
-          Selesaikan misi sebelumnya untuk membuka node ini.
+          Selesaikan latihan sebelumnya untuk membuka bagian ini.
         </div>
       ) : null}
     </div>

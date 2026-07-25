@@ -72,7 +72,7 @@ export default function CaseResultPage() {
             className="mt-4 inline-flex items-center gap-2 rounded-[8px] bg-[#6d28d9] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#4c1d95]"
             href={`/student/world/${worldKey}`}
           >
-            Kembali ke Dunia
+            Kembali ke dunia
           </Link>
         </section>
       </StudentShell>
@@ -108,13 +108,13 @@ export default function CaseResultPage() {
         </div>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          <ResultMetric label="Kuat" value={`${strong.length} skill`} tone="green" />
-          <ResultMetric label="Perlu Ulang" value={`${weak.length} skill`} tone="red" />
-          <ResultMetric label="Next Study" value={weak.length ? "5 menit" : "Naik level"} tone="blue" />
+          <ResultMetric label="Sudah paham" value={`${strong.length} bagian`} tone="green" />
+          <ResultMetric label="Latihan ulang" value={`${weak.length} bagian`} tone="red" />
+          <ResultMetric label="Berikutnya" value={weak.length ? "5 menit" : "Naik tingkat"} tone="blue" />
         </div>
 
         <div className="mt-5 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm font-black uppercase text-[#2563eb]">Skill Radar</p>
+          <p className="text-sm font-black uppercase text-[#2563eb]">Kemampuanmu</p>
           <div className="mt-4 space-y-3">
             {result.questions.map((question) => (
               <div key={question.questionId}>
@@ -142,6 +142,10 @@ export default function CaseResultPage() {
             <p className="mt-2 font-bold leading-6 text-[#5b21b6]">
               {result.nextRecommendation.message}
             </p>
+            <p className="mt-3 rounded-[8px] bg-white p-3 text-sm font-bold leading-6 text-[#4c1d95]">
+              Kalau masih belum paham, kamu bisa latihan ulang dengan materi pendek dulu. Di tes berikutnya,
+              bagian yang lemah akan muncul lagi lewat kasus baru, jadi kamu tidak mengulang semuanya dari nol.
+            </p>
             {result.nextRecommendation.focusSkills.length > 0 ? (
               <div className="mt-3 flex flex-wrap gap-2">
                 {result.nextRecommendation.focusSkills.map((skill) => (
@@ -168,7 +172,7 @@ export default function CaseResultPage() {
                 </p>
               </div>
               <p className="mt-1 text-xs font-black uppercase text-slate-400">
-                Kompetensi: {question.skill.name} - Skor {Math.round(question.score)}
+                Kemampuan: {question.skill.name} - Skor {Math.round(question.score)}
               </p>
               {question.answerText ? (
                 <p className="mt-3 rounded-[8px] bg-slate-50 p-3 text-sm font-bold leading-6 text-slate-600">
@@ -188,13 +192,13 @@ export default function CaseResultPage() {
             className="inline-flex items-center gap-2 rounded-[8px] bg-[#2563eb] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#1e40af] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
             href={`/student/growth-map?worldKey=${worldKey}`}
           >
-            Lihat Peta Tumbuh
+            Lihat kemampuanku
           </Link>
           <Link
             className="inline-flex items-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_6px_0_#d8e2ef] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
             href={`/student/world/${worldKey}`}
           >
-            Kembali ke Dunia
+            Kembali ke dunia
           </Link>
         </div>
       </section>

@@ -68,7 +68,7 @@ export default function CaseRunnerPage() {
           Object.fromEntries(active.questions.map((question) => [question.id, question.answerText ?? ""])),
         );
       } catch {
-        if (!cancelled) setError("Kasus tidak dapat dimuat. Silakan coba lagi.");
+        if (!cancelled) setError("Kasus belum bisa dibuka. Coba lagi sebentar.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -112,7 +112,7 @@ export default function CaseRunnerPage() {
     return (
       <StudentShell>
         <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-          <LoadingEvidence label="Menghubungkan bukti dan pertanyaan..." />
+          <LoadingEvidence label="Menyiapkan bukti dan pertanyaan..." />
         </div>
       </StudentShell>
     );
@@ -124,7 +124,7 @@ export default function CaseRunnerPage() {
         <section className="mx-auto max-w-3xl px-4 py-10 text-center sm:px-6">
           <div className="rounded-[8px] border border-slate-200 bg-white p-8 shadow-sm">
             <Search className="mx-auto text-[#6d28d9]" size={34} />
-            <p className="mt-4 font-heading text-2xl font-black">Papan analisis belum siap.</p>
+            <p className="mt-4 font-heading text-2xl font-black">Papan bukti belum siap.</p>
             <p className="mt-2 font-bold leading-7 text-slate-500">
               {error} Progresmu tetap aman.
             </p>
@@ -132,7 +132,7 @@ export default function CaseRunnerPage() {
               className="mt-5 inline-flex rounded-[8px] bg-[#2563eb] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#1e40af]"
               href={`/student/world/${worldKey}`}
             >
-              Kembali ke Dunia
+              Kembali ke dunia
             </Link>
           </div>
         </section>
@@ -189,13 +189,13 @@ export default function CaseRunnerPage() {
               className="inline-flex items-center gap-2 rounded-[8px] bg-[#2563eb] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#1e40af] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
               href={`/student/growth-map?worldKey=${worldKey}`}
             >
-              Lihat Peta Tumbuh
+              Lihat kemampuanku
             </Link>
             <Link
               className="inline-flex items-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_6px_0_#d8e2ef] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none"
               href={`/student/world/${worldKey}`}
             >
-              Kembali ke Dunia
+              Kembali ke dunia
             </Link>
           </div>
         </section>
@@ -284,13 +284,13 @@ export default function CaseRunnerPage() {
                   onClick={() => setPhase("case-study")}
                   type="button"
                 >
-                  Lanjut ke Studi Kasus
+                  Lanjut ke cerita kasus
                 </button>
               </>
             ) : phase === "case-study" ? (
               <>
-                <p className="text-sm font-black uppercase text-[#6d28d9]">2. Studi Kasus</p>
-                <h2 className="font-heading mt-1 text-2xl font-black">Latih cara membaca kasus</h2>
+                <p className="text-sm font-black uppercase text-[#6d28d9]">2. Cerita kasus</p>
+                <h2 className="font-heading mt-1 text-2xl font-black">Latih cara membaca bukti</h2>
                 <p className="mt-2 font-bold leading-6 text-slate-600">
                   Baca contoh ini pelan-pelan. Perhatikan mana fakta kuat, mana dugaan, dan mana yang belum cukup bukti.
                 </p>
@@ -397,7 +397,7 @@ export default function CaseRunnerPage() {
           <>
 
         <div className="mt-6 rounded-[8px] border border-[#bfdbfe] bg-[#eff6ff] p-4">
-          <p className="font-heading font-black text-[#1e40af]">AI Mentor Aman</p>
+          <p className="font-heading font-black text-[#1e40af]">Petunjuk aman</p>
           <p className="mt-1 text-sm font-bold leading-6 text-[#1d4ed8]">
             {[
               "Mulai dari bukti yang waktunya paling jelas. Jangan pilih jawaban karena terasa mencurigakan.",
@@ -410,7 +410,7 @@ export default function CaseRunnerPage() {
             onClick={() => setMentorHint((current) => (current + 1) % 3)}
             type="button"
           >
-            Hint berikutnya
+            Petunjuk berikutnya
           </button>
         </div>
 
@@ -473,7 +473,7 @@ export default function CaseRunnerPage() {
                 {index + 1}. {question.prompt}
               </p>
               <p className="mt-1 text-xs font-black uppercase text-slate-400">
-                Kompetensi: {question.skill.name}
+                Kemampuan: {question.skill.name}
               </p>
               <textarea
                 className="mt-3 w-full rounded-[8px] border-2 border-slate-200 p-3 font-bold text-slate-700 outline-none transition focus:border-[#6d28d9] focus:ring-4 focus:ring-[#ddd6fe]"
@@ -481,7 +481,7 @@ export default function CaseRunnerPage() {
                 onChange={(event) =>
                   setAnswers((prev) => ({ ...prev, [question.id]: event.target.value }))
                 }
-                placeholder="Tuliskan alasan dan analisismu di sini..."
+                placeholder="Tulis alasanmu di sini. Mulai dari bukti yang paling kuat."
                 rows={3}
                 value={answers[question.id] ?? ""}
               />
@@ -502,7 +502,7 @@ export default function CaseRunnerPage() {
             value={conclusionText}
           />
 
-          <p className="mt-4 text-sm font-black uppercase text-slate-500">Tingkat Keyakinan</p>
+          <p className="mt-4 text-sm font-black uppercase text-slate-500">Seberapa yakin?</p>
           <div className="mt-2 grid gap-2 sm:grid-cols-2">
             {CONFIDENCE_OPTIONS.map((option) => {
               const selected = confidenceLevel === option;
@@ -532,7 +532,7 @@ export default function CaseRunnerPage() {
           type="button"
         >
           {submitting ? <Loader2 className="animate-spin" size={18} /> : null}
-          Selesaikan Kasus
+          Kirim jawaban kasus
         </button>
           </>
         ) : null}

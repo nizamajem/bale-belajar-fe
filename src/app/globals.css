@@ -201,6 +201,26 @@ canvas {
   }
 }
 
+@keyframes detective-breathe {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+@keyframes lens-spark {
+  0%,
+  100% {
+    transform: rotate(-18deg) scale(1);
+  }
+  50% {
+    transform: rotate(-8deg) scale(1.08);
+  }
+}
+
 @keyframes accessory-pop {
   0% {
     opacity: 0;
@@ -309,6 +329,121 @@ canvas {
 
 .accessory-pop {
   animation: accessory-pop 0.32s ease-out both;
+}
+
+.detective-avatar {
+  animation: detective-breathe 3.4s ease-in-out infinite;
+  height: 188px;
+  position: relative;
+  width: 150px;
+}
+
+.detective-hat {
+  background: #f9c74f;
+  border-radius: 8px 8px 4px 4px;
+  box-shadow: 0 8px 0 #b7791f;
+  height: 32px;
+  left: 34px;
+  position: absolute;
+  top: 3px;
+  transform: rotate(-3deg);
+  width: 86px;
+}
+
+.detective-hat::after {
+  background: #fef3c7;
+  border-radius: 999px;
+  content: "";
+  height: 12px;
+  left: -18px;
+  position: absolute;
+  top: 22px;
+  width: 122px;
+}
+
+.detective-face {
+  background: #ffe0bd;
+  border-radius: 32px 32px 24px 24px;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.14);
+  height: 82px;
+  left: 35px;
+  position: absolute;
+  top: 42px;
+  width: 80px;
+}
+
+.detective-eye {
+  background: #172033;
+  border-radius: 999px;
+  height: 9px;
+  position: absolute;
+  top: 32px;
+  width: 9px;
+}
+
+.detective-smile {
+  border-bottom: 4px solid #172033;
+  border-radius: 0 0 999px 999px;
+  height: 14px;
+  left: 27px;
+  position: absolute;
+  top: 48px;
+  width: 26px;
+}
+
+.detective-coat {
+  background: linear-gradient(180deg, #7c3aed, #4c1d95);
+  border-radius: 28px 28px 12px 12px;
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.18);
+  height: 78px;
+  left: 22px;
+  position: absolute;
+  top: 112px;
+  width: 106px;
+}
+
+.detective-coat::before,
+.detective-coat::after {
+  background: #ffe0bd;
+  border-radius: 999px;
+  content: "";
+  height: 58px;
+  position: absolute;
+  top: 8px;
+  width: 20px;
+}
+
+.detective-coat::before {
+  left: -12px;
+  transform: rotate(12deg);
+}
+
+.detective-coat::after {
+  right: -12px;
+  transform: rotate(-12deg);
+}
+
+.detective-lens {
+  animation: lens-spark 2.6s ease-in-out infinite;
+  border: 6px solid #06b6d4;
+  border-radius: 999px;
+  height: 44px;
+  position: absolute;
+  right: -2px;
+  top: 18px;
+  width: 44px;
+}
+
+.detective-lens::after {
+  background: #06b6d4;
+  border-radius: 999px;
+  content: "";
+  height: 28px;
+  position: absolute;
+  right: -14px;
+  top: 28px;
+  transform: rotate(42deg);
+  width: 8px;
 }
 
 .interactive-card {

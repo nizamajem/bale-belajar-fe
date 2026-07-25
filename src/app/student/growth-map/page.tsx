@@ -37,7 +37,7 @@ function GrowthMapContent() {
 
     apiFetch<WorldSummary[]>("/student/worlds")
       .then(({ data }) => setWorldKey(data[0]?.key ?? null))
-      .catch(() => setError("Belum ada dunia yang tersedia."));
+      .catch(() => setError("Belum ada dunia belajar yang bisa dibuka."));
   }, [worldKey]);
 
   useEffect(() => {
@@ -49,7 +49,7 @@ function GrowthMapContent() {
         if (!cancelled) setEntries(data);
       })
       .catch(() => {
-        if (!cancelled) setError("Peta Tumbuh belum bisa dimuat.");
+        if (!cancelled) setError("Halaman kemampuanmu belum bisa dibuka.");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -78,14 +78,14 @@ function GrowthMapContent() {
             <MapPinned size={24} />
           </span>
           <div>
-            <p className="text-sm font-black uppercase text-[#2563eb]">Peta Tumbuh</p>
-            <h1 className="font-heading text-2xl font-black">Perjalanan kompetensimu</h1>
+            <p className="text-sm font-black uppercase text-[#2563eb]">Kemampuanku</p>
+            <h1 className="font-heading text-2xl font-black">Yang sudah kamu pahami</h1>
           </div>
         </div>
 
         {error || !entries ? (
           <p className="rounded-[8px] border border-slate-200 bg-white p-8 text-center font-bold text-slate-500 shadow-sm">
-            {error ?? "Belum ada data."}
+            {error ?? "Belum ada hasil belajar. Coba satu latihan dulu."}
           </p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
@@ -105,7 +105,7 @@ function GrowthMapContent() {
                   <ProgressBar value={entry.masteryScore} />
                 </div>
                 <p className="mt-2 text-xs font-bold text-slate-400">
-                  {entry.evidenceCount} bukti latihan terkumpul
+                  {entry.evidenceCount} hasil latihan terkumpul
                 </p>
               </motion.div>
             ))}

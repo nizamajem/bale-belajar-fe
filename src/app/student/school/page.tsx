@@ -69,7 +69,7 @@ export default function StudentSchoolPage() {
           <SchoolIcon className="text-[#f9c74f]" size={30} />
           <h1 className="font-heading mt-4 text-3xl font-black">Hubungkan akun ke sekolah</h1>
           <p className="mt-2 font-bold leading-7 text-white/75">
-            Pilih sekolah agar guru bisa melihat progress, memberi asesmen, dan mengatur kelasmu.
+            Pilih sekolah agar guru bisa melihat perjalanan belajarmu, memberi tes, dan mengatur kelasmu.
           </p>
         </div>
 
