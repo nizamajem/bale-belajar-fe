@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { BookOpen, Loader2, Search, ShieldQuestion, Sparkles, Trophy } from "lucide-react";
@@ -105,6 +106,11 @@ export default function CaseRunnerPage() {
     }).catch(() => {
       // Autosave gagal secara diam-diam; siswa masih bisa melanjutkan dan submit ulang.
     });
+  }
+
+  function chooseAnswer(questionId: string, text: string) {
+    setAnswers((prev) => ({ ...prev, [questionId]: text }));
+    saveAnswer(questionId, text);
   }
 
   async function handleSubmit() {
@@ -445,10 +451,12 @@ export default function CaseRunnerPage() {
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="flex items-center gap-2 rounded-full bg-[#ede9fe] py-1 pl-1 pr-3 text-xs font-black text-[#6d28d9] transition group-hover:bg-[#f5f3ff]">
-                  <img
+                  <Image
                     alt=""
                     className="size-6 rounded-full"
+                    height={24}
                     src={EVIDENCE_ICON[item.type] ?? EVIDENCE_ICON.DOCUMENT}
+                    width={24}
                   />
                   Bukti {item.orderNumber} - {EVIDENCE_TYPE_LABEL[item.type] ?? item.type}
                 </span>
@@ -496,16 +504,39 @@ export default function CaseRunnerPage() {
               <p className="mt-1 text-xs font-black uppercase text-slate-400">
                 Kemampuan: {question.skill.name}
               </p>
-              <textarea
-                className="mt-3 w-full rounded-[8px] border-2 border-slate-200 p-3 font-bold text-slate-700 outline-none transition focus:border-[#6d28d9] focus:ring-4 focus:ring-[#ddd6fe]"
-                onBlur={(event) => saveAnswer(question.id, event.target.value)}
-                onChange={(event) =>
-                  setAnswers((prev) => ({ ...prev, [question.id]: event.target.value }))
-                }
-                placeholder="Tulis alasanmu di sini. Mulai dari bukti yang paling kuat."
-                rows={3}
-                value={answers[question.id] ?? ""}
-              />
+              <div className="mt-4 grid gap-3">
+                {quickAnswerOptions(question.prompt, question.skill.name).map((option) => {
+                  const selected = answers[question.id] === option.answer;
+                  return (
+                    <button
+                      className={[
+                        "rounded-[8px] border-2 p-4 text-left transition active:translate-y-1",
+                        selected
+                          ? "border-[#6d28d9] bg-[#f5f3ff] shadow-[0_5px_0_#ddd6fe]"
+                          : "border-slate-200 bg-[#f8fafc] shadow-sm hover:border-[#c4b5fd]",
+                      ].join(" ")}
+                      key={option.title}
+                      onClick={() => chooseAnswer(question.id, option.answer)}
+                      type="button"
+                    >
+                      <p className="font-heading font-black text-[#172033]">{option.title}</p>
+                      <p className="mt-1 text-sm font-bold leading-6 text-slate-600">{option.answer}</p>
+                    </button>
+                  );
+                })}
+              </div>
+              <label className="mt-3 block">
+                <span className="text-xs font-black uppercase text-slate-400">Catatan tambahan opsional</span>
+                <input
+                  className="mt-2 w-full rounded-[8px] border-2 border-slate-200 px-3 py-3 text-sm font-bold text-slate-700 outline-none transition focus:border-[#6d28d9] focus:ring-4 focus:ring-[#ddd6fe]"
+                  onBlur={(event) => {
+                    if (!event.target.value.trim()) return;
+                    const combined = `${answers[question.id] ?? ""} Catatan tambahan: ${event.target.value}`;
+                    chooseAnswer(question.id, combined);
+                  }}
+                  placeholder="Boleh kosong. Contoh: bukti ini perlu dicek lagi."
+                />
+              </label>
             </motion.div>
           ))}
         </div>
@@ -519,9 +550,29 @@ export default function CaseRunnerPage() {
             className="mt-3 w-full rounded-[8px] border-2 border-slate-200 p-3 font-bold text-slate-700 outline-none transition focus:border-[#6d28d9] focus:ring-4 focus:ring-[#ddd6fe]"
             onChange={(event) => setConclusionText(event.target.value)}
             placeholder="Apa kesimpulanmu dari kasus ini?"
-            rows={4}
+            rows={3}
             value={conclusionText}
           />
+          <div className="mt-3 grid gap-2">
+            {conclusionOptions(currentCase.case.title).map((option) => {
+              const selected = conclusionText === option;
+              return (
+                <button
+                  className={[
+                    "rounded-[8px] border-2 px-4 py-3 text-left text-sm font-bold leading-6 transition",
+                    selected
+                      ? "border-[#22c55e] bg-[#f0fdf4] text-[#166534]"
+                      : "border-slate-200 bg-[#f8fafc] text-slate-600 hover:border-[#86efac]",
+                  ].join(" ")}
+                  key={option}
+                  onClick={() => setConclusionText(option)}
+                  type="button"
+                >
+                  {option}
+                </button>
+              );
+            })}
+          </div>
 
           <p className="mt-4 text-sm font-black uppercase text-slate-500">Seberapa yakin?</p>
           <div className="mt-2 grid gap-2 sm:grid-cols-2">
@@ -560,4 +611,134 @@ export default function CaseRunnerPage() {
       </section>
     </StudentShell>
   );
+}
+
+function quickAnswerOptions(prompt: string, skillName: string) {
+  const lower = prompt.toLowerCase();
+
+  if (lower.includes("fakta") || lower.includes("verifikasi") || skillName.toLowerCase().includes("sumber")) {
+    return [
+      {
+        title: "Pilih bukti yang bisa dicek",
+        answer:
+          "Fakta yang bisa diverifikasi adalah jadwal, catatan login, waktu perubahan, dan catatan sistem. Bukti seperti ini lebih kuat karena punya sumber dan waktu yang jelas.",
+      },
+      {
+        title: "Jangan pilih perasaan dulu",
+        answer:
+          "Aku tidak akan memakai kesan gugup sebagai bukti utama. Itu masih dugaan dan perlu dicek dengan bukti lain yang lebih kuat.",
+      },
+      {
+        title: "Tandai bukti sebagian",
+        answer:
+          "Ada bukti sebagian yang membantu, tetapi belum cukup. Bukti seperti foto ruangan atau pesan grup perlu dibandingkan dengan catatan yang lebih kuat.",
+      },
+    ];
+  }
+
+  if (lower.includes("hipotesis") || lower.includes("motif") || skillName.toLowerCase().includes("penalaran")) {
+    return [
+      {
+        title: "Buat dua kemungkinan",
+        answer:
+          "Hipotesis pertama: benda atau file terhapus, dipindahkan, atau tersimpan di folder lain secara tidak sengaja. Hipotesis kedua: ada tindakan sengaja, tetapi belum cukup bukti untuk menuduh.",
+      },
+      {
+        title: "Pisahkan motif dan bukti",
+        answer:
+          "Motif bisa menjadi alasan, tetapi belum menjadi bukti. Aku perlu melihat kesempatan, waktu, dan bukti tindakan sebelum membuat kesimpulan.",
+      },
+      {
+        title: "Cek kemungkinan biasa dulu",
+        answer:
+          "Sebelum menuduh, aku perlu mengecek kemungkinan sederhana seperti salah folder, tertukar, tersenggol, atau lupa menyimpan.",
+      },
+    ];
+  }
+
+  if (lower.includes("kronologi") || lower.includes("urutan") || lower.includes("waktu")) {
+    return [
+      {
+        title: "Susun waktu dari awal",
+        answer:
+          "Urutan kejadian harus disusun dari sebelum, saat, dan setelah kejadian. Aku memakai jadwal, login, dan waktu ditemukan untuk melihat bagian yang masih kosong.",
+      },
+      {
+        title: "Cari bagian kosong",
+        answer:
+          "Bagian yang masih kosong adalah rentang waktu yang belum punya bukti kuat. Bagian itu perlu dicek sebelum membuat kesimpulan.",
+      },
+      {
+        title: "Bandingkan alibi",
+        answer:
+          "Aku akan membandingkan alibi dengan bukti waktu. Jika alibi tidak cocok, itu perlu diklarifikasi, tetapi belum otomatis berarti bersalah.",
+      },
+    ];
+  }
+
+  if (lower.includes("wulan") || lower.includes("menuduh") || lower.includes("adil") || skillName.toLowerCase().includes("etika")) {
+    return [
+      {
+        title: "Belum boleh menuduh",
+        answer:
+          "Belum cukup bukti untuk menuduh. Satu gerakan atau satu cerita bisa punya banyak alasan, jadi kesimpulan harus tetap adil dan tidak berdasarkan praduga.",
+      },
+      {
+        title: "Tanya dengan netral",
+        answer:
+          "Aku akan bertanya netral: apa yang kamu lihat, kapan, dan dari mana kamu tahu. Aku tidak akan mengarahkan saksi untuk menyebut pelaku.",
+      },
+      {
+        title: "Cari bukti tambahan",
+        answer:
+          "Langkah berikutnya adalah mencari informasi tambahan yang bisa diverifikasi, bukan langsung menyalahkan seseorang.",
+      },
+    ];
+  }
+
+  if (lower.includes("ingatan") || skillName.toLowerCase().includes("memori")) {
+    return [
+      {
+        title: "Ingatan bisa berbeda",
+        answer:
+          "Ingatan manusia tidak selalu persis. Perbedaan waktu bisa wajar karena fokus orang berbeda, jadi perlu dicek dengan jadwal atau catatan lain.",
+      },
+      {
+        title: "Jangan anggap bohong",
+        answer:
+          "Cerita yang berbeda belum tentu berarti ada yang berbohong. Aku perlu membandingkan detail cerita dengan bukti yang bisa dicek.",
+      },
+      {
+        title: "Cari jangkar waktu",
+        answer:
+          "Aku mencari jangkar waktu seperti jadwal, pesan, atau catatan teknisi agar ingatan saksi bisa dibandingkan dengan data.",
+      },
+    ];
+  }
+
+  return [
+    {
+      title: "Jawaban aman",
+      answer:
+        "Aku memilih bukti yang paling kuat, menjelaskan alasannya, lalu menulis kesimpulan sementara tanpa menuduh sebelum bukti cukup.",
+    },
+    {
+      title: "Jawaban cek ulang",
+      answer:
+        "Informasi ini belum cukup. Aku perlu mengecek sumber, waktu, dan bukti tambahan sebelum menentukan kemungkinan utama.",
+    },
+    {
+      title: "Jawaban laporan",
+      answer:
+        "Bukti yang kupakai adalah bukti yang bisa diverifikasi. Alasanku mengikuti urutan bukti, lalu aku menyebut bagian yang masih belum pasti.",
+    },
+  ];
+}
+
+function conclusionOptions(caseTitle: string) {
+  return [
+    `Kesimpulan sementara untuk ${caseTitle}: bukti sudah menunjukkan beberapa kemungkinan, tetapi belum cukup untuk menuduh satu orang. Langkah berikutnya adalah mengecek bukti tambahan yang waktunya jelas.`,
+    `Aku belum bisa membuat tuduhan pasti. Bukti paling kuat harus dibandingkan dengan jadwal, catatan, dan sumber lain agar kesimpulan tetap adil.`,
+    `Kemungkinan utama sudah bisa dipersempit, tetapi masih ada bagian yang perlu diverifikasi. Aku akan menulis laporan sementara dan menyebut bukti yang masih kurang.`,
+  ];
 }
