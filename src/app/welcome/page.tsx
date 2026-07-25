@@ -4,9 +4,11 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
+  Award,
   BookOpen,
   BrainCircuit,
   CheckCircle2,
+  Gift,
   GraduationCap,
   Loader2,
   Mail,
@@ -16,6 +18,8 @@ import {
   ShieldCheck,
   Sparkles,
   Target,
+  Trophy,
+  UsersRound,
 } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { apiFetch, ApiError } from "@/lib/api";
@@ -70,6 +74,31 @@ const faqs = [
   ["Apakah ini hanya untuk Detektif?", "Tidak. Detectivia dipakai sebagai kurikulum testing. Struktur yang sama bisa dipakai untuk dokter, programmer, guru, matematika, bahasa, dan jalur lain."],
   ["Apakah data belajar tersimpan sungguhan?", "Ya. Halaman produksi diarahkan ke akun, progress, kurikulum, dan hasil yang dibaca dari backend BaleBelajar."],
   ["Kalau siswa salah, apakah bisa belajar ulang?", "Bisa. Hasil tes masuk ke rekomendasi remedial sehingga skill lemah muncul lagi di materi atau tes berikutnya."],
+];
+
+const proofPoints = [
+  {
+    title: "Anak paham langkahnya",
+    text: "Baca materi, lihat contoh, jawab kasus, lalu tahu bagian yang perlu latihan ulang.",
+    icon: BookOpen,
+  },
+  {
+    title: "Guru melihat prioritas",
+    text: "Laporan menunjukkan siapa yang perlu dibantu dan materi mana yang harus diulang.",
+    icon: GraduationCap,
+  },
+  {
+    title: "Orang tua tahu progres",
+    text: "Ringkasan dibuat tanpa istilah rumit: kuat apa, lemah apa, latihan apa minggu ini.",
+    icon: UsersRound,
+  },
+];
+
+const growthFeatures = [
+  ["Demo gratis", "Calon user bisa mencoba satu kasus tanpa login.", "/demo/detective"],
+  ["Sertifikat mini", "Hadiah setelah siswa menyelesaikan kemampuan penting.", "/demo/certificate"],
+  ["Ajak teman", "Referral ringan untuk membuka item visual dan menaikkan pertumbuhan organik.", "/demo/referral"],
+  ["Leaderboard sehat", "Ranking berbasis usaha, tim, dan peningkatan agar tidak membuat siswa minder.", "/demo/leaderboard"],
 ];
 
 export default function WelcomePage() {
@@ -143,24 +172,24 @@ export default function WelcomePage() {
             Platform belajar berbasis cita-cita
           </span>
           <h1 className="font-heading mt-5 text-4xl font-black leading-tight sm:text-6xl">
-            Bantu siswa tahu harus belajar apa, kenapa itu penting, dan langkah berikutnya.
+            Belajar jadi seru karena dimulai dari impian anak.
           </h1>
           <p className="mt-5 max-w-2xl text-lg font-bold leading-8 text-slate-600">
-            BaleBelajar mengubah kurikulum menjadi petualangan karier: siswa belajar materi, membedah studi kasus, mengerjakan tes, lalu mendapat rekomendasi remedial yang bisa dipantau guru.
+            Siswa memilih cita-cita, lalu BaleBelajar membuat jalur belajar bertahap: materi singkat, contoh kasus, tes, dan rekomendasi latihan ulang yang bisa dipantau guru.
           </p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <Link className="light-trail inline-flex min-h-12 items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_7px_0_#129447]" href="/student/login">
-              Coba sebagai Siswa
+            <Link className="light-trail inline-flex min-h-12 items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_7px_0_#129447]" href="/demo/detective">
+              Coba Demo Gratis
               <ArrowRight size={18} />
             </Link>
-            <Link className="inline-flex min-h-12 items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_7px_0_#d8e2ef]" href="/demo/detective">
-              Lihat Demo
+            <Link className="inline-flex min-h-12 items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_7px_0_#d8e2ef]" href="/student/login">
+              Masuk Siswa
             </Link>
             <Link className="inline-flex min-h-12 items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_7px_0_#d8e2ef]" href="/sales/one-pager">
               Proposal Singkat
             </Link>
-            <Link className="inline-flex min-h-12 items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_7px_0_#d8e2ef]" href="#pilot">
-              Jadwalkan Pilot Sekolah
+            <Link className="inline-flex min-h-12 items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white px-5 py-4 font-heading font-black text-slate-700 shadow-[0_7px_0_#d8e2ef]" href="/pricing">
+              Lihat Harga
             </Link>
           </div>
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
@@ -210,6 +239,35 @@ export default function WelcomePage() {
             <Metric value="Guru" label="Tetap memegang kendali" />
           </div>
         </motion.div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+          <article className="rounded-[8px] bg-[#172033] p-6 text-white shadow-[0_10px_0_#020617]">
+            <Trophy className="text-[#f9c74f]" size={34} />
+            <p className="mt-4 text-sm font-black uppercase text-[#f9c74f]">Kenapa orang mau bayar</p>
+            <h2 className="font-heading mt-2 text-3xl font-black">
+              Bukan karena gamenya saja, tapi karena hasil belajar terlihat.
+            </h2>
+            <p className="mt-3 font-bold leading-7 text-white/72">
+              BaleBelajar menjual kejelasan: anak tahu harus belajar apa, guru tahu siapa yang perlu dibantu, dan orang tua tahu progres anak tanpa membaca laporan rumit.
+            </p>
+          </article>
+          <div className="grid gap-4 md:grid-cols-3">
+            {proofPoints.map((point) => {
+              const Icon = point.icon;
+              return (
+                <article className="interactive-card rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm" key={point.title}>
+                  <span className="grid size-12 place-items-center rounded-[8px] bg-[#eff6ff] text-[#2563eb]">
+                    <Icon size={23} />
+                  </span>
+                  <h3 className="font-heading mt-4 text-xl font-black">{point.title}</h3>
+                  <p className="mt-2 text-sm font-bold leading-6 text-slate-600">{point.text}</p>
+                </article>
+              );
+            })}
+          </div>
+        </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
@@ -263,6 +321,24 @@ export default function WelcomePage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <div className="mb-5">
+          <p className="text-sm font-black uppercase text-[#6d28d9]">Growth dan retention</p>
+          <h2 className="font-heading text-3xl font-black">Fitur yang membuat siswa balik lagi dan mengajak teman.</h2>
+        </div>
+        <div className="grid gap-4 md:grid-cols-4">
+          {growthFeatures.map(([title, text, href], index) => (
+            <Link className="interactive-card rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm" href={href} key={title}>
+              <span className="grid size-11 place-items-center rounded-[8px] bg-[#fff7ed] text-[#c2410c]">
+                {index === 0 ? <Sparkles size={22} /> : index === 1 ? <Award size={22} /> : index === 2 ? <Gift size={22} /> : <Trophy size={22} />}
+              </span>
+              <h3 className="font-heading mt-4 text-xl font-black">{title}</h3>
+              <p className="mt-2 text-sm font-bold leading-6 text-slate-600">{text}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <div className="grid gap-4 md:grid-cols-3">
           {[
             {
@@ -279,6 +355,16 @@ export default function WelcomePage() {
               title: "Untuk komunitas",
               text: "Cocok untuk program literasi, logika, dan eksplorasi cita-cita.",
               href: "/demo/detective",
+            },
+            {
+              title: "Untuk calon pengguna",
+              text: "Lihat harga, paket gratis, premium siswa, dan paket sekolah.",
+              href: "/pricing",
+            },
+            {
+              title: "Untuk pencarian Google",
+              text: "Halaman edukasi yang menjelaskan BaleBelajar sebagai game edukasi Indonesia.",
+              href: "/learn/game-edukasi-indonesia",
             },
           ].map((audience) => (
             <div className="rounded-[8px] bg-[#172033] p-5 text-white" key={audience.title}>
@@ -359,6 +445,8 @@ export default function WelcomePage() {
           <div className="flex gap-4">
             <Link href="/privacy">Privasi</Link>
             <Link href="/terms">Ketentuan</Link>
+            <Link href="/pricing">Harga</Link>
+            <Link href="/demo/detective">Demo</Link>
             <a href="https://wa.me/628111111111" rel="noreferrer" target="_blank">WhatsApp</a>
             <Link href="/staff/login">Masuk Platform</Link>
           </div>
