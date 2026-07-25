@@ -5,16 +5,29 @@ import * as THREE from "three";
 import {
   AvatarAccessoryId,
   AvatarBaseId,
+  AvatarBodyId,
+  AvatarHeightId,
 } from "../data/onboarding-dummy-data";
 
 type BlockAvatar3DProps = {
   accessory: AvatarAccessoryId;
   base: AvatarBaseId;
+  body: AvatarBodyId;
   color: string;
+  height: AvatarHeightId;
   shadow: string;
+  skinTone: string;
 };
 
-export function BlockAvatar3D({ accessory, base, color, shadow }: BlockAvatar3DProps) {
+export function BlockAvatar3D({
+  accessory,
+  base,
+  body: bodyType,
+  color,
+  height,
+  shadow,
+  skinTone,
+}: BlockAvatar3DProps) {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -70,6 +83,11 @@ export function BlockAvatar3D({ accessory, base, color, shadow }: BlockAvatar3DP
       color: new THREE.Color(shadow),
       roughness: 0.6,
     });
+    const skinMaterial = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(skinTone),
+      roughness: 0.5,
+      metalness: 0.02,
+    });
     const whiteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.46 });
     const inkMaterial = new THREE.MeshStandardMaterial({ color: 0x172033, roughness: 0.5 });
     const amberMaterial = new THREE.MeshStandardMaterial({ color: 0xf9c74f, roughness: 0.42 });
@@ -83,7 +101,11 @@ export function BlockAvatar3D({ accessory, base, color, shadow }: BlockAvatar3DP
       return mesh;
     }
 
-    const head = roundedBox(base === "robot" ? 1.6 : 1.75, 1.45, 1.35, bodyMaterial);
+    const heightScale = height === "pendek" ? 0.9 : height === "tinggi" ? 1.1 : 1;
+    const bodyScale = bodyType === "slim" ? 0.86 : bodyType === "strong" ? 1.12 : 1;
+    avatar.scale.set(bodyScale, heightScale, bodyScale);
+
+    const head = roundedBox(base === "robot" ? 1.6 : 1.75, 1.45, 1.35, skinMaterial);
     head.position.y = 1.15;
     avatar.add(head);
 
@@ -95,21 +117,21 @@ export function BlockAvatar3D({ accessory, base, color, shadow }: BlockAvatar3DP
     belt.position.y = -0.72;
     avatar.add(belt);
 
-    const leftArm = roundedBox(0.34, 1.1, 0.34, whiteMaterial);
+    const leftArm = roundedBox(0.34, 1.1, 0.34, skinMaterial);
     leftArm.position.set(-1.28, -0.05, 0);
     leftArm.rotation.z = -0.18;
     avatar.add(leftArm);
 
-    const rightArm = roundedBox(0.34, 1.1, 0.34, whiteMaterial);
+    const rightArm = roundedBox(0.34, 1.1, 0.34, skinMaterial);
     rightArm.position.set(1.28, -0.05, 0);
     rightArm.rotation.z = 0.18;
     avatar.add(rightArm);
 
-    const leftLeg = roundedBox(0.44, 0.9, 0.44, whiteMaterial);
+    const leftLeg = roundedBox(0.44, 0.9, 0.44, skinMaterial);
     leftLeg.position.set(-0.48, -1.35, 0);
     avatar.add(leftLeg);
 
-    const rightLeg = roundedBox(0.44, 0.9, 0.44, whiteMaterial);
+    const rightLeg = roundedBox(0.44, 0.9, 0.44, skinMaterial);
     rightLeg.position.set(0.48, -1.35, 0);
     avatar.add(rightLeg);
 
@@ -261,7 +283,7 @@ export function BlockAvatar3D({ accessory, base, color, shadow }: BlockAvatar3DP
       });
       renderer.domElement.remove();
     };
-  }, [accessory, base, color, shadow]);
+  }, [accessory, base, bodyType, color, height, shadow, skinTone]);
 
   if (failed) {
     return (

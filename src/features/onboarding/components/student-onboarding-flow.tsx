@@ -16,7 +16,10 @@ import { useMemo, useState } from "react";
 import {
   avatarAccessories,
   avatarBases,
+  avatarBodies,
   avatarColors,
+  avatarHeights,
+  avatarSkinTones,
   firstWorlds,
   gradeChoices,
   learningGoals,
@@ -425,6 +428,9 @@ function AvatarStep({
   const [base, setBase] = useState(state.avatar?.base ?? "detektif");
   const [color, setColor] = useState(state.avatar?.color ?? "green");
   const [accessory, setAccessory] = useState(state.avatar?.accessory ?? "lens");
+  const [skinTone, setSkinTone] = useState(state.avatar?.skinTone ?? "sawo");
+  const [height, setHeight] = useState(state.avatar?.height ?? "normal");
+  const [body, setBody] = useState(state.avatar?.body ?? "normal");
   const [name, setName] = useState(heroName);
   const selectedBase = useMemo(
     () => avatarBases.find((item) => item.id === base) ?? avatarBases[0],
@@ -434,37 +440,62 @@ function AvatarStep({
     () => avatarColors.find((item) => item.id === color) ?? avatarColors[0],
     [color],
   );
+  const selectedSkinTone = useMemo(
+    () => avatarSkinTones.find((item) => item.id === skinTone) ?? avatarSkinTones[0],
+    [skinTone],
+  );
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[0.78fr_1.22fr]">
-      <div className="game-pop rounded-[8px] border border-slate-200 bg-white p-4 text-center shadow-sm sm:p-5">
-        <div className="game-grid-surface relative overflow-hidden rounded-[8px] bg-[#172033] px-4 py-6 text-white">
-          <div className="absolute left-4 top-4 rounded-full bg-white/12 px-3 py-1 text-xs font-black uppercase">
-            Preview Hero
+    <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+      <div className="game-pop overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-sm">
+        <div className="game-grid-surface relative min-h-[520px] overflow-hidden bg-[linear-gradient(180deg,#9bd6ff_0%,#dff7df_48%,#70bd5f_100%)] px-4 py-6 text-white">
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.5),transparent_58%)]" />
+          <div className="absolute left-5 top-5 rounded-full bg-[#172033]/75 px-3 py-1 text-xs font-black uppercase">
+            Character Preview
           </div>
-          <BlockAvatar3D accessory={accessory} base={base} color={selectedColor.hex} shadow={selectedColor.shadow} />
+          <div className="absolute right-5 top-5 rounded-full bg-white/80 px-3 py-1 text-xs font-black text-[#172033]">
+            Idle 3D
+          </div>
+          <BlockAvatar3D
+            accessory={accessory}
+            base={base}
+            body={body}
+            color={selectedColor.hex}
+            height={height}
+            shadow={selectedColor.shadow}
+            skinTone={selectedSkinTone.hex}
+          />
         </div>
-        <p className="font-heading mt-4 text-2xl font-black">{name}</p>
-        <p className="mt-1 text-sm font-bold text-slate-500">
-          {selectedBase.label} - {selectedBase.vibe}
-        </p>
+        <div className="p-4 text-center">
+          <p className="font-heading text-2xl font-black">{name}</p>
+          <p className="mt-1 text-sm font-bold text-slate-500">
+            {selectedBase.label} - {selectedBase.vibe}
+          </p>
+        </div>
       </div>
-      <div className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="rounded-[8px] border border-slate-200 bg-[#172033] p-4 text-white shadow-[0_9px_0_#020617] sm:p-5">
+        <p className="font-heading text-2xl font-black">Tentukan karakter</p>
+        <p className="mt-1 text-sm font-bold text-white/62">Klik panah untuk ganti bagian.</p>
         <label className="block">
-          <span className="mb-2 block text-sm font-black text-slate-600">Nama karakter</span>
+          <span className="mb-2 mt-5 block text-sm font-black text-white/70">Nama karakter</span>
           <input
-            className="w-full rounded-[8px] border-2 border-slate-200 px-4 py-3 font-bold outline-none focus:border-[#22c55e]"
+            className="w-full rounded-[8px] border-2 border-white/15 bg-white px-4 py-3 font-bold text-[#172033] outline-none focus:border-[#22c55e]"
             onChange={(event) => setName(event.target.value)}
             value={name}
           />
         </label>
-        <BasePicker value={base} onChange={setBase} />
-        <ColorPicker value={color} onChange={setColor} />
-        <AccessoryPicker value={accessory} onChange={setAccessory} />
+        <div className="mt-4 space-y-3">
+          <CycleRow label="Base" options={avatarBases} value={base} onChange={setBase} />
+          <CycleRow label="Warna Kulit" options={avatarSkinTones} value={skinTone} onChange={setSkinTone} />
+          <CycleRow label="Tinggi" options={avatarHeights} value={height} onChange={setHeight} />
+          <CycleRow label="Badan" options={avatarBodies} value={body} onChange={setBody} />
+          <CycleRow label="Kostum" options={avatarColors} value={color} onChange={setColor} />
+          <CycleRow label="Item" options={avatarAccessories} value={accessory} onChange={setAccessory} />
+        </div>
         <button
           className="mt-5 flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_7px_0_#129447] transition active:translate-y-1 active:shadow-none disabled:opacity-60"
           disabled={loading}
-          onClick={() => onSubmit({ base, color, accessory, heroName: name })}
+          onClick={() => onSubmit({ base, color, accessory, skinTone, height, body, heroName: name })}
           type="button"
         >
           {loading ? <Loader2 className="animate-spin" size={18} /> : null}
@@ -475,90 +506,48 @@ function AvatarStep({
   );
 }
 
-function BasePicker({
+function CycleRow<T extends string>({
+  label,
   onChange,
+  options,
   value,
 }: {
-  onChange: (value: typeof avatarBases[number]["id"]) => void;
-  value: typeof avatarBases[number]["id"];
+  label: string;
+  onChange: (value: T) => void;
+  options: { id: T; label: string }[];
+  value: T;
 }) {
-  return (
-    <div className="mt-4">
-      <p className="mb-2 text-sm font-black text-slate-600">Base hero</p>
-      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-        {avatarBases.map((item) => (
-          <button
-            className={[
-              "rounded-[8px] border-2 px-3 py-3 text-left transition",
-              value === item.id ? "border-[#22c55e] bg-[#f0fdf4]" : "border-slate-200 bg-white",
-            ].join(" ")}
-            key={item.id}
-            onClick={() => onChange(item.id)}
-            type="button"
-          >
-            <span className="font-heading text-sm font-black">{item.label}</span>
-            <span className="mt-1 block text-xs font-bold leading-4 text-slate-500">{item.vibe}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
+  const currentIndex = Math.max(0, options.findIndex((option) => option.id === value));
+  const current = options[currentIndex] ?? options[0];
 
-function ColorPicker({
-  onChange,
-  value,
-}: {
-  onChange: (value: typeof avatarColors[number]["id"]) => void;
-  value: typeof avatarColors[number]["id"];
-}) {
-  return (
-    <div className="mt-4">
-      <p className="mb-2 text-sm font-black text-slate-600">Warna kostum</p>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {avatarColors.map((item) => (
-          <button
-            className={[
-              "rounded-[8px] border-2 bg-white p-2 text-left transition",
-              value === item.id ? "border-[#22c55e]" : "border-slate-200",
-            ].join(" ")}
-            key={item.id}
-            onClick={() => onChange(item.id)}
-            type="button"
-          >
-            <span className={`block h-10 rounded-[8px] ${item.className} shadow-[0_4px_0_rgba(15,23,42,0.16)]`} />
-            <span className="mt-2 block text-xs font-black text-slate-600">{item.label}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
+  function cycle(direction: -1 | 1) {
+    const nextIndex = (currentIndex + direction + options.length) % options.length;
+    onChange(options[nextIndex].id);
+  }
 
-function AccessoryPicker({
-  onChange,
-  value,
-}: {
-  onChange: (value: typeof avatarAccessories[number]["id"]) => void;
-  value: typeof avatarAccessories[number]["id"];
-}) {
   return (
-    <div className="mt-4">
-      <p className="mb-2 text-sm font-black text-slate-600">Item hero</p>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {avatarAccessories.map((item) => (
-          <button
-            className={[
-              "min-h-14 rounded-[8px] border-2 px-3 py-3 text-left text-sm font-black transition",
-              value === item.id ? "border-[#22c55e] bg-[#f0fdf4]" : "border-slate-200 bg-white",
-            ].join(" ")}
-            key={item.id}
-            onClick={() => onChange(item.id)}
-            type="button"
-          >
-            {item.label}
-          </button>
-        ))}
+    <div className="rounded-[8px] border border-white/12 bg-white/8 p-2">
+      <div className="mb-1 px-2 text-xs font-black uppercase text-white/55">{label}</div>
+      <div className="grid grid-cols-[42px_1fr_42px] items-center gap-2">
+        <button
+          aria-label={`Sebelumnya ${label}`}
+          className="grid min-h-11 place-items-center rounded-[8px] bg-[#0f766e] font-heading text-xl font-black shadow-[0_4px_0_#115e59]"
+          onClick={() => cycle(-1)}
+          type="button"
+        >
+          ‹
+        </button>
+        <div className="min-h-11 rounded-[8px] bg-[linear-gradient(180deg,#0ea5e9,#2563eb)] px-3 py-2 text-center font-heading font-black shadow-[0_4px_0_#1e40af]">
+          {current.label}
+        </div>
+        <button
+          aria-label={`Berikutnya ${label}`}
+          className="grid min-h-11 place-items-center rounded-[8px] bg-[#0f766e] font-heading text-xl font-black shadow-[0_4px_0_#115e59]"
+          onClick={() => cycle(1)}
+          type="button"
+        >
+          ›
+        </button>
       </div>
     </div>
   );

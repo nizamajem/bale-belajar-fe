@@ -20,6 +20,9 @@ export type FirstWorldId = "numeria" | "kodex" | "detectivia";
 export type AvatarBaseId = "buku" | "kompas" | "detektif" | "robot" | "dokter" | "arsitek";
 export type AvatarColorId = "green" | "blue" | "purple" | "amber";
 export type AvatarAccessoryId = "none" | "lens" | "cap" | "spark" | "badge" | "backpack";
+export type AvatarSkinToneId = "cerah" | "kuning" | "sawo" | "gelap";
+export type AvatarHeightId = "pendek" | "normal" | "tinggi";
+export type AvatarBodyId = "slim" | "normal" | "strong";
 
 export type StudentOnboardingState = {
   nickname?: string;
@@ -31,6 +34,9 @@ export type StudentOnboardingState = {
     base: AvatarBaseId;
     color: AvatarColorId;
     accessory: AvatarAccessoryId;
+    skinTone?: AvatarSkinToneId;
+    height?: AvatarHeightId;
+    body?: AvatarBodyId;
     heroName: string;
   };
   placementAnswers?: Record<string, string>;
@@ -122,6 +128,25 @@ export const avatarAccessories: { id: AvatarAccessoryId; label: string }[] = [
   { id: "spark", label: "Spark" },
   { id: "badge", label: "Badge" },
   { id: "backpack", label: "Tas" },
+];
+
+export const avatarSkinTones: { id: AvatarSkinToneId; label: string; hex: string }[] = [
+  { id: "cerah", label: "Cerah", hex: "#f6d7b8" },
+  { id: "kuning", label: "Kuning langsat", hex: "#eec48e" },
+  { id: "sawo", label: "Sawo matang", hex: "#b97a56" },
+  { id: "gelap", label: "Gelap hangat", hex: "#7c4a35" },
+];
+
+export const avatarHeights: { id: AvatarHeightId; label: string }[] = [
+  { id: "pendek", label: "Agak Pendek" },
+  { id: "normal", label: "Normal" },
+  { id: "tinggi", label: "Tinggi" },
+];
+
+export const avatarBodies: { id: AvatarBodyId; label: string }[] = [
+  { id: "slim", label: "Ramping" },
+  { id: "normal", label: "Normal" },
+  { id: "strong", label: "Kuat" },
 ];
 
 export const placementQuestions = [
