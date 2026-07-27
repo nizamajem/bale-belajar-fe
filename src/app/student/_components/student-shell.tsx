@@ -50,7 +50,7 @@ const navItems = [
   {
     href: "/student/history",
     label: "Riwayat",
-    description: "Belajar sebelumnya",
+    description: "Misi yang selesai",
     icon: History,
   },
   {
