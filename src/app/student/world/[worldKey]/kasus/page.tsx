@@ -4,7 +4,20 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { BookOpen, Loader2, Search, ShieldQuestion, Sparkles, Trophy } from "lucide-react";
+import {
+  BookOpen,
+  CheckCircle2,
+  Circle,
+  Loader2,
+  Pause,
+  Play,
+  RotateCcw,
+  Search,
+  ShieldQuestion,
+  Sparkles,
+  Timer,
+  Trophy,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import {
@@ -40,6 +53,15 @@ const EVIDENCE_TYPE_LABEL: Record<string, string> = {
   MESSAGE: "Pesan",
 };
 
+type LearningPhase = "learn" | "case-study" | "example" | "test";
+
+const LEARNING_STEPS: { phase: LearningPhase; title: string; subtitle: string }[] = [
+  { phase: "learn", title: "Materi", subtitle: "Pahami dulu" },
+  { phase: "case-study", title: "Cerita kasus", subtitle: "Baca pelan-pelan" },
+  { phase: "example", title: "Contoh", subtitle: "Lihat cara jawab" },
+  { phase: "test", title: "Tes", subtitle: "Kerjakan misi" },
+];
+
 export default function CaseRunnerPage() {
   const params = useParams<{ worldKey: string }>();
   const router = useRouter();
@@ -49,7 +71,9 @@ export default function CaseRunnerPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [conclusionText, setConclusionText] = useState("");
   const [confidenceLevel, setConfidenceLevel] = useState<CaseConfidenceDeclaration | null>(null);
-  const [phase, setPhase] = useState<"learn" | "case-study" | "example" | "test">("learn");
+  const [phase, setPhase] = useState<LearningPhase>("learn");
+  const [focusSeconds, setFocusSeconds] = useState(15 * 60);
+  const [timerRunning, setTimerRunning] = useState(false);
   const [mentorHint, setMentorHint] = useState(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -97,6 +121,20 @@ export default function CaseRunnerPage() {
       cancelled = true;
     };
   }, [worldKey, router]);
+
+  useEffect(() => {
+    if (!timerRunning || focusSeconds <= 0) return;
+
+    const intervalId = window.setInterval(() => {
+      setFocusSeconds((seconds) => Math.max(0, seconds - 1));
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [timerRunning, focusSeconds]);
+
+  useEffect(() => {
+    if (focusSeconds === 0) setTimerRunning(false);
+  }, [focusSeconds]);
 
   function saveAnswer(questionId: string, text: string) {
     if (!currentCase?.attempt) return;
@@ -229,31 +267,33 @@ export default function CaseRunnerPage() {
 
   return (
     <StudentShell>
-      <section className="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:py-8">
-        <motion.div
-          animate={{ opacity: 1, y: 0 }}
-          className="rounded-[8px] bg-[#6d28d9] p-5 text-white shadow-[0_10px_0_#4c1d95]"
-          initial={{ opacity: 0, y: 16 }}
-        >
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/18 px-3 py-2 text-sm font-black">
-            <Sparkles size={17} />
-            {currentCase.case.title}
-          </span>
-          <p className="mt-3 font-bold leading-6 text-white/90">{currentCase.case.openingStory}</p>
-          <div className="mt-4">
-            <MentorDialogue>
-              Hubungkan bukti dengan hati-hati. Jika informasinya belum cukup, tulis apa yang masih perlu diverifikasi.
-            </MentorDialogue>
-          </div>
-        </motion.div>
+      <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:py-8">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
+          <div className="min-w-0">
+            <motion.div
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-[8px] bg-[#6d28d9] p-5 text-white shadow-[0_10px_0_#4c1d95]"
+              initial={{ opacity: 0, y: 16 }}
+            >
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/18 px-3 py-2 text-sm font-black">
+                <Sparkles size={17} />
+                {currentCase.case.title}
+              </span>
+              <p className="mt-3 font-bold leading-6 text-white/90">{currentCase.case.openingStory}</p>
+              <div className="mt-4">
+                <MentorDialogue>
+                  Hubungkan bukti dengan hati-hati. Jika informasinya belum cukup, tulis apa yang masih perlu diverifikasi.
+                </MentorDialogue>
+              </div>
+            </motion.div>
 
-        {error ? (
-          <p className="mt-4 rounded-[8px] border border-[#fed7aa] bg-[#fff7ed] p-3 text-sm font-bold text-[#c2410c]">
-            {error} Coba kirim ulang saat koneksi stabil.
-          </p>
-        ) : null}
+            {error ? (
+              <p className="mt-4 rounded-[8px] border border-[#fed7aa] bg-[#fff7ed] p-3 text-sm font-bold text-[#c2410c]">
+                {error} Coba kirim ulang saat koneksi stabil.
+              </p>
+            ) : null}
 
-        {phase !== "test" ? (
+            {phase !== "test" ? (
           <div className="mt-6 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
             {phase === "learn" ? (
               <>
@@ -413,9 +453,9 @@ export default function CaseRunnerPage() {
               </>
             )}
           </div>
-        ) : null}
+            ) : null}
 
-        {phase === "test" ? (
+            {phase === "test" ? (
           <>
 
         <div className="mt-6 rounded-[8px] border border-[#bfdbfe] bg-[#eff6ff] p-4">
@@ -612,9 +652,126 @@ export default function CaseRunnerPage() {
           Kirim jawaban kasus
         </button>
           </>
-        ) : null}
+            ) : null}
+          </div>
+
+          <LearningSidePanel
+            focusSeconds={focusSeconds}
+            onResetTimer={() => {
+              setFocusSeconds(15 * 60);
+              setTimerRunning(false);
+            }}
+            onToggleTimer={() => setTimerRunning((running) => !running)}
+            phase={phase}
+            timerRunning={timerRunning}
+          />
+        </div>
       </section>
     </StudentShell>
+  );
+}
+
+function LearningSidePanel({
+  focusSeconds,
+  onResetTimer,
+  onToggleTimer,
+  phase,
+  timerRunning,
+}: {
+  focusSeconds: number;
+  onResetTimer: () => void;
+  onToggleTimer: () => void;
+  phase: LearningPhase;
+  timerRunning: boolean;
+}) {
+  const activeStepIndex = LEARNING_STEPS.findIndex((step) => step.phase === phase);
+  const minutes = Math.floor(focusSeconds / 60).toString().padStart(2, "0");
+  const seconds = (focusSeconds % 60).toString().padStart(2, "0");
+
+  return (
+    <aside className="space-y-4 lg:sticky lg:top-24">
+      <div className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="flex items-center gap-2">
+          <span className="flex size-10 items-center justify-center rounded-[8px] bg-[#ecfeff] text-[#0891b2]">
+            <Timer size={20} />
+          </span>
+          <div>
+            <p className="text-xs font-black uppercase text-slate-400">Timer fokus</p>
+            <p className="font-heading text-lg font-black">Belajar 15 menit</p>
+          </div>
+        </div>
+
+        <div className="mt-4 rounded-[8px] bg-[#172033] px-4 py-5 text-center text-white">
+          <p className="font-heading text-4xl font-black tabular-nums">
+            {minutes}:{seconds}
+          </p>
+          <p className="mt-1 text-xs font-bold text-white/70">
+            {timerRunning ? "Sedang fokus" : focusSeconds === 0 ? "Waktunya istirahat" : "Mulai saat siap"}
+          </p>
+        </div>
+
+        <div className="mt-3 grid grid-cols-[1fr_auto] gap-2">
+          <button
+            className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-4 py-3 font-heading font-black text-white shadow-[0_5px_0_#129447] transition active:translate-y-1 active:shadow-none"
+            onClick={onToggleTimer}
+            type="button"
+          >
+            {timerRunning ? <Pause size={18} /> : <Play size={18} />}
+            {timerRunning ? "Jeda" : "Mulai"}
+          </button>
+          <button
+            aria-label="Reset timer"
+            className="inline-flex size-12 items-center justify-center rounded-[8px] border-2 border-slate-200 bg-white text-slate-600 shadow-[0_5px_0_#d8e2ef] transition active:translate-y-1 active:shadow-none"
+            onClick={onResetTimer}
+            type="button"
+          >
+            <RotateCcw size={18} />
+          </button>
+        </div>
+      </div>
+
+      <div className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm">
+        <p className="text-xs font-black uppercase text-[#2563eb]">Subbab hari ini</p>
+        <h2 className="font-heading mt-1 text-xl font-black">Ikuti urutan ini</h2>
+        <div className="mt-4 space-y-2">
+          {LEARNING_STEPS.map((step, index) => {
+            const isDone = index < activeStepIndex;
+            const isActive = index === activeStepIndex;
+
+            return (
+              <div
+                className={[
+                  "flex items-center gap-3 rounded-[8px] border-2 p-3",
+                  isActive
+                    ? "border-[#6d28d9] bg-[#f5f3ff]"
+                    : isDone
+                      ? "border-[#bbf7d0] bg-[#f0fdf4]"
+                      : "border-slate-100 bg-[#f8fafc]",
+                ].join(" ")}
+                key={step.phase}
+              >
+                <span
+                  className={[
+                    "flex size-9 shrink-0 items-center justify-center rounded-full",
+                    isDone
+                      ? "bg-[#22c55e] text-white"
+                      : isActive
+                        ? "bg-[#6d28d9] text-white"
+                        : "bg-white text-slate-300",
+                  ].join(" ")}
+                >
+                  {isDone ? <CheckCircle2 size={19} /> : isActive ? index + 1 : <Circle size={17} />}
+                </span>
+                <div className="min-w-0">
+                  <p className="font-heading font-black text-[#172033]">{step.title}</p>
+                  <p className="text-xs font-bold text-slate-500">{isDone ? "Selesai" : step.subtitle}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </aside>
   );
 }
 
