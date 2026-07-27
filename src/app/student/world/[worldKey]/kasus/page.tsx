@@ -595,10 +595,15 @@ export default function CaseRunnerPage() {
               );
             })}
           </div>
+          {!canSubmit ? (
+            <p className="mt-3 rounded-[8px] bg-[#fff7ed] p-3 text-sm font-bold text-[#c2410c]">
+              Sebelum kirim, isi kesimpulan dan pilih seberapa yakin kamu.
+            </p>
+          ) : null}
         </div>
 
         <button
-          className="light-trail mt-6 inline-flex items-center gap-2 rounded-[8px] bg-[#22c55e] px-6 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-60"
+          className="light-trail mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-6 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-60 sm:w-auto"
           disabled={!canSubmit}
           onClick={handleSubmit}
           type="button"

@@ -79,28 +79,28 @@ export default function StudentDashboardPage() {
                 </div>
                 <span className="inline-flex items-center gap-2 rounded-full bg-white/14 px-3 py-2 text-sm font-black">
                   <Search size={17} />
-                  Petualangan hari ini
+                  Mulai 10 menit
                 </span>
                 <h1 className="font-heading mt-4 max-w-xl text-4xl font-black leading-tight">
-                  Hai {user?.name ?? "Siswa"}, mulai dari kasus detektif dulu.
+                  Hai {user?.name ?? "Siswa"}, yuk lanjut belajar.
                 </h1>
                 <p className="mt-3 max-w-xl font-bold leading-7 text-white/80">
-                  Baca materi pendek, lihat contoh, lalu jawab kasus. Setelah selesai, kamu langsung tahu bagian yang sudah paham dan yang perlu latihan ulang.
+                  Cukup ikuti 3 langkah: baca sebentar, lihat contoh, lalu jawab. Setelah selesai, kamu langsung tahu skill yang naik.
                 </p>
 
                 <Link
                   className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] sm:w-auto"
                   href="/student/world/detectivia/kasus"
                 >
-                  Mulai Petualangan Hari Ini
+                  Mulai Belajar
                   <ArrowRight size={18} />
                 </Link>
 
                 <div className="mt-6 grid gap-3 sm:grid-cols-3">
                   {[
-                    ["1", "Baca", "Pahami materi"],
-                    ["2", "Lihat", "Contoh jawaban"],
-                    ["3", "Jawab", "Cek kemampuan"],
+                    ["1", "Baca", "Materi pendek"],
+                    ["2", "Contoh", "Lihat cara jawab"],
+                    ["3", "Jawab", "Dapat hasil"],
                   ].map(([number, title, text]) => (
                     <div className="rounded-[8px] bg-white/10 p-3" key={title}>
                       <span className="grid size-8 place-items-center rounded-[8px] bg-white font-heading font-black text-[#172033]">
@@ -114,17 +114,17 @@ export default function StudentDashboardPage() {
               </article>
 
               <aside className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
-                <p className="text-sm font-black uppercase text-[#6d28d9]">Kamu sedang di</p>
+                <p className="text-sm font-black uppercase text-[#6d28d9]">Kelas aktif</p>
                 <h2 className="font-heading mt-1 text-3xl font-black">
-                  Dunia Detektif
+                  Detektif Pemula
                 </h2>
                 <p className="mt-2 font-bold leading-6 text-slate-600">
                   {adaptivePlan?.message ??
-                    "Belajar membaca bukti, menyusun alasan, lalu membuat kesimpulan yang adil."}
+                    "Belajar membaca bukti, memilih alasan, lalu membuat kesimpulan yang adil."}
                 </p>
                 {adaptivePlan?.targetModule ? (
                   <div className="mt-4 rounded-[8px] bg-[#f8fafc] p-4">
-                    <p className="text-xs font-black uppercase text-slate-400">Belajar sekarang</p>
+                    <p className="text-xs font-black uppercase text-slate-400">Lanjutkan</p>
                     <p className="font-heading mt-1 text-xl font-black">{adaptivePlan.targetModule.title}</p>
                     {adaptivePlan.mastery ? (
                       <p className="mt-1 text-sm font-bold text-slate-500">
@@ -134,12 +134,12 @@ export default function StudentDashboardPage() {
                   </div>
                 ) : null}
                 <div className="mt-4 rounded-[8px] bg-[#f8fafc] p-4">
-                  <p className="text-xs font-black uppercase text-slate-400">Latihan aktif</p>
+                  <p className="text-xs font-black uppercase text-slate-400">Tugas hari ini</p>
                   <p className="mt-1 font-heading text-lg font-black">
                     {currentCase?.case.title ?? "Kasus hari ini"}
                   </p>
                   <p className="mt-1 text-sm font-bold text-slate-500">
-                    {currentCase?.questions.length ?? 0} soal - sekitar {currentCase?.case.estimatedMinutes ?? 0} menit
+                    {currentCase?.questions.length ?? 0} soal, sekitar {currentCase?.case.estimatedMinutes ?? 0} menit
                   </p>
                 </div>
               </aside>
@@ -154,17 +154,17 @@ export default function StudentDashboardPage() {
             <section className="mt-5 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm font-black uppercase text-[#2563eb]">Pilih jalur lain</p>
-                  <h2 className="font-heading text-2xl font-black">Mau coba impian lain nanti?</h2>
+                  <p className="text-sm font-black uppercase text-[#2563eb]">Cita-cita</p>
+                  <h2 className="font-heading text-2xl font-black">Mau coba kelas impian lain?</h2>
                   <p className="mt-1 text-sm font-bold text-slate-500">
-                    Detektif aktif dulu sebagai jalur contoh. Jalur lain akan dibuka bertahap.
+                    Untuk sekarang Detektif aktif dulu. Pilihan lain akan dibuka bertahap.
                   </p>
                 </div>
                 <Link
                   className="inline-flex items-center justify-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-4 py-3 font-heading font-black text-slate-700 shadow-[0_5px_0_#d8e2ef]"
                   href="/student/careers"
                 >
-                  Lihat pilihan impian
+                  Lihat impian
                   <ArrowRight size={17} />
                 </Link>
               </div>
@@ -174,7 +174,7 @@ export default function StudentDashboardPage() {
               <section className="mt-5 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
                 <p className="text-sm font-black uppercase text-[#6d28d9]">Jalur belajar</p>
                 <h2 className="font-heading mt-1 text-2xl font-black">
-                  Langkah menjadi {curriculum.characterClass}
+                  Langkah sampai dapat sertifikat
                 </h2>
                 <div className="mt-4 grid gap-3">
                   {curriculum.modules.map((module) => (

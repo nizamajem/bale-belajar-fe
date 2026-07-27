@@ -4,13 +4,17 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import {
   ArrowRight,
+  Award,
   CalendarDays,
+  CheckCircle2,
+  Download,
   GraduationCap,
   IdCard,
   Loader2,
   LucideIcon,
   Presentation,
   School as SchoolIcon,
+  ShieldCheck,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiFetch, ApiError } from "@/lib/api";
@@ -143,6 +147,72 @@ export default function StudentProfilePage() {
           </div>
         </motion.div>
 
+        <motion.div
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-5 overflow-hidden rounded-[8px] border border-[#bfdbfe] bg-white shadow-sm"
+          initial={{ opacity: 0, y: 12 }}
+          transition={{ delay: 0.12 }}
+        >
+          <div className="grid gap-0 lg:grid-cols-[1fr_320px]">
+            <div className="p-5 sm:p-6">
+              <div className="flex items-center gap-3">
+                <span className="grid size-12 place-items-center rounded-[8px] bg-[#f59e0b] text-white shadow-[0_5px_0_#d97706]">
+                  <Award size={25} />
+                </span>
+                <div>
+                  <p className="text-sm font-black uppercase text-[#2563eb]">Sertifikat Keahlian</p>
+                  <h2 className="font-heading text-2xl font-black">Bukti kamu sudah bisa</h2>
+                </div>
+              </div>
+              <p className="mt-3 max-w-2xl font-bold leading-7 text-slate-600">
+                Setelah menyelesaikan satu kelas dan lulus proyek akhir, sertifikat bisa tampil di profil.
+                Isinya bukan cuma selesai belajar, tetapi juga skill, nilai, dan rekomendasi kelas berikutnya.
+              </p>
+              <div className="mt-4 grid gap-2 sm:grid-cols-3">
+                {["Kelas selesai", "Proyek lulus", "Skill tercatat"].map((item) => (
+                  <div className="flex items-center gap-2 rounded-[8px] bg-[#f8fafc] px-3 py-3 text-sm font-black text-slate-700" key={item}>
+                    <CheckCircle2 className="shrink-0 text-[#16a34a]" size={17} />
+                    {item}
+                  </div>
+                ))}
+              </div>
+              <Link
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#2563eb] px-4 py-3 font-heading font-black text-white shadow-[0_5px_0_#1d4ed8] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none sm:w-auto"
+                href="/demo/certificate"
+              >
+                <Download size={17} />
+                Lihat contoh sertifikat
+              </Link>
+            </div>
+
+            <div className="bg-[#eff6ff] p-5">
+              <div className="rounded-[8px] border-4 border-[#172033] bg-[#fffdf7] p-4 text-center shadow-[0_8px_0_#cbd5e1]">
+                <div className="mx-auto grid size-14 place-items-center rounded-full border-4 border-[#f59e0b] text-[#f59e0b]">
+                  <ShieldCheck size={28} />
+                </div>
+                <p className="mt-3 text-[10px] font-black uppercase tracking-[0.16em] text-[#2563eb]">
+                  Certificate of Skill
+                </p>
+                <p className="font-heading mt-2 text-2xl font-black leading-tight">
+                  Detektif Pemula
+                </p>
+                <p className="mt-2 text-xs font-bold text-slate-500">Diberikan kepada</p>
+                <p className="font-heading mt-1 text-xl font-black text-[#6d28d9]">
+                  {me?.studentProfile?.fullName ?? me?.name ?? "Nama Siswa"}
+                </p>
+                <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+                  <MiniCertificateStat label="Nilai" value="91" />
+                  <MiniCertificateStat label="Modul" value="4/4" />
+                  <MiniCertificateStat label="Badge" value="Teliti" />
+                </div>
+                <p className="mt-4 rounded-[8px] bg-[#f0fdf4] p-3 text-xs font-black text-[#166534]">
+                  Siap lanjut ke kelas berikutnya
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         {me && !me.roles.includes("TEACHER") ? (
           <motion.div
             animate={{ opacity: 1, y: 0 }}
@@ -179,5 +249,14 @@ export default function StudentProfilePage() {
         ) : null}
       </section>
     </StudentShell>
+  );
+}
+
+function MiniCertificateStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[8px] bg-white p-2 shadow-sm">
+      <p className="font-heading text-lg font-black text-[#172033]">{value}</p>
+      <p className="text-[10px] font-black uppercase text-slate-400">{label}</p>
+    </div>
   );
 }

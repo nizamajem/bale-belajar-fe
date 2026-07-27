@@ -133,6 +133,9 @@ export default function MissionRunnerPage() {
 
   if (!mission) return null;
 
+  const answeredCount = Object.values(answers).filter(Boolean).length;
+  const canSubmit = answeredCount === mission.activities.length && !submitting;
+
   if (result) {
     return (
       <StudentShell>
@@ -218,8 +221,22 @@ export default function MissionRunnerPage() {
           <p className="mt-3 font-bold leading-6 text-white/90">{mission.mission.narrative}</p>
           <div className="mt-4">
             <MentorDialogue>
-              Pilih jawaban terbaik. Kalau ragu, cari petunjuk di kalimat soal sebelum lanjut.
+              Pilih satu jawaban di setiap soal. Kalau ragu, baca lagi kalimat soalnya.
             </MentorDialogue>
+          </div>
+          <div className="mt-4 rounded-[8px] bg-white/10 p-3">
+            <div className="flex items-center justify-between gap-3 text-sm font-black">
+              <span>Progres jawaban</span>
+              <span>
+                {answeredCount}/{mission.activities.length}
+              </span>
+            </div>
+            <div className="mt-2 h-3 overflow-hidden rounded-full bg-white/20">
+              <div
+                className="h-full rounded-full bg-[#22c55e]"
+                style={{ width: `${mission.activities.length ? (answeredCount / mission.activities.length) * 100 : 0}%` }}
+              />
+            </div>
           </div>
         </motion.div>
 
@@ -267,13 +284,13 @@ export default function MissionRunnerPage() {
         </div>
 
         <button
-          className="light-trail mt-6 inline-flex items-center gap-2 rounded-[8px] bg-[#22c55e] px-6 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-60"
-          disabled={submitting}
+          className="light-trail mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-6 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-60 sm:w-auto"
+          disabled={!canSubmit}
           onClick={handleSubmit}
           type="button"
         >
           {submitting ? <Loader2 className="animate-spin" size={18} /> : null}
-          Kumpulkan jawaban
+          {answeredCount === mission.activities.length ? "Kumpulkan jawaban" : "Jawab semua soal dulu"}
         </button>
       </section>
     </StudentShell>
