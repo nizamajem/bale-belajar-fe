@@ -1,89 +1,89 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Lock, Search, ShieldCheck, Sparkles } from "lucide-react";
-import { careerPaths } from "@/lib/career-paths";
+import { ArrowRight, BookOpen, CheckCircle2, Lock, Search, Sparkles, X } from "lucide-react";
+import { useState } from "react";
+import { CareerPathConfig, CareerPathId, careerPaths } from "@/lib/career-paths";
 import { StudentShell } from "../_components/student-shell";
 
-const detectiveLevels = [
-  { title: "Level 1-3", text: "Dasar bukti", icon: Search },
-  { title: "Level 4-6", text: "Motif, saksi, laporan", icon: ShieldCheck },
-  { title: "Level 7-10", text: "Anomali dan digital", icon: Sparkles },
-  { title: "Level 11-12", text: "Wawancara expert dan final case", icon: CheckCircle2 },
-];
+const curriculumDetails: Record<
+  CareerPathId,
+  {
+    certificate: string;
+    duration: string;
+    modules: string[];
+    output: string;
+  }
+> = {
+  DETECTIVE: {
+    certificate: "Sertifikat Rank Observer",
+    duration: "4 misi awal + Boss Case",
+    modules: ["Detective Oath", "Observasi", "Fakta vs Asumsi", "Evidence Board", "Boss Case Pemula"],
+    output: "Laporan kasus singkat dan badge Evidence Before Accusation.",
+  },
+  ANIMAL_DOCTOR: {
+    certificate: "Sertifikat Animal Care Starter",
+    duration: "4 misi awal",
+    modules: ["Empati pada hewan", "Kebutuhan dasar", "Gejala sederhana", "Catatan kesehatan"],
+    output: "Jurnal perawatan hewan sederhana.",
+  },
+  KOREAN_AMBASSADOR: {
+    certificate: "Sertifikat Language Starter",
+    duration: "4 misi awal",
+    modules: ["Hangul dasar", "Sapaan", "Budaya sehari-hari", "Percakapan mini"],
+    output: "Video/audio perkenalan singkat.",
+  },
+  PROGRAMMER: {
+    certificate: "Sertifikat Logic Starter",
+    duration: "4 misi awal",
+    modules: ["Pola", "Instruksi berurutan", "Debug sederhana", "Proyek mini"],
+    output: "Prototipe aplikasi kecil berbasis logika.",
+  },
+  DOCTOR: {
+    certificate: "Sertifikat Health Starter",
+    duration: "4 misi awal",
+    modules: ["Tubuh manusia", "Kebiasaan sehat", "Membaca gejala", "Keputusan berbasis bukti"],
+    output: "Poster edukasi kesehatan sederhana.",
+  },
+  ARCHITECT: {
+    certificate: "Sertifikat Design Starter",
+    duration: "4 misi awal",
+    modules: ["Ruang dan bentuk", "Sketsa denah", "Ukuran sederhana", "Presentasi desain"],
+    output: "Konsep ruang impian dengan denah sederhana.",
+  },
+  ENTREPRENEUR: {
+    certificate: "Sertifikat Business Starter",
+    duration: "4 misi awal",
+    modules: ["Cari masalah", "Ide solusi", "Hitung biaya", "Pitch sederhana"],
+    output: "Mini pitch deck ide usaha.",
+  },
+  CONTENT_CREATOR: {
+    certificate: "Sertifikat Creator Starter",
+    duration: "4 misi awal",
+    modules: ["Ide konten", "Naskah pendek", "Visual sederhana", "Etika digital"],
+    output: "Konsep konten edukatif 1 menit.",
+  },
+  TEACHER: {
+    certificate: "Sertifikat Teaching Starter",
+    duration: "4 misi awal",
+    modules: ["Memahami teman", "Membuat contoh", "Menjelaskan pelan", "Membantu tanpa menggurui"],
+    output: "Mini lesson untuk membantu teman belajar.",
+  },
+};
 
 export default function StudentCareersPage() {
+  const [selectedCareer, setSelectedCareer] = useState<CareerPathConfig | null>(null);
+
   return (
     <StudentShell>
       <section className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:py-8">
-        <p className="text-sm font-black uppercase text-[#2563eb]">Mau jadi apa?</p>
+        <p className="text-sm font-black uppercase text-[#2563eb]">Kelas impian</p>
         <h1 className="font-heading text-3xl font-black leading-tight text-[#172033] sm:text-5xl">
-          Pilih 1 dari 9 akademi cita-cita.
+          Pilih kelas akademi yang ingin kamu coba.
         </h1>
         <p className="mt-2 max-w-2xl font-bold leading-6 text-slate-500">
-          Setiap akademi dibuat seperti game belajar: mulai dari misi pendek, naik rank, lalu kumpulkan bukti skill di profilmu.
+          Lihat pilihan kelas, buka detail kurikulum, lalu mulai dari kelas yang sudah aktif.
         </p>
-
-        <section className="mt-6 overflow-hidden rounded-[8px] bg-[#172033] text-white shadow-[0_10px_0_#020617]">
-          <div className="grid gap-5 p-5 lg:grid-cols-[260px_1fr] lg:items-center">
-            <div className="rounded-[8px] bg-white/8 p-5">
-              <div className="detective-avatar mx-auto">
-                <div className="detective-hat" />
-                <div className="detective-face">
-                  <span className="detective-eye left-7" />
-                  <span className="detective-eye right-7" />
-                  <span className="detective-smile" />
-                </div>
-                <div className="detective-coat">
-                  <span className="detective-lens" />
-                </div>
-              </div>
-              <p className="mt-4 text-center font-heading text-2xl font-black">Detektif Muda</p>
-              <p className="mt-1 text-center text-sm font-bold text-white/60">Pemula sampai Expert</p>
-            </div>
-            <div>
-              <p className="text-sm font-black uppercase text-[#f9c74f]">Akademi aktif pertama</p>
-              <h2 className="font-heading mt-2 text-3xl font-black sm:text-5xl">
-                Jadi detektif yang bisa membaca bukti, bukan asal menebak.
-              </h2>
-              <p className="mt-3 max-w-2xl font-bold leading-7 text-white/76">
-                Jalur Detectivia punya 12 bab: fakta vs dugaan, timeline, sumber bukti, wawancara saksi, jejak digital, sampai final investigation.
-              </p>
-              <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                {[
-                  ["12", "Bab dari dasar"],
-                  ["9+", "Kasus latihan"],
-                  ["Pilihan", "Minim mengetik"],
-                ].map(([value, label]) => (
-                  <div className="rounded-[8px] bg-white/10 p-4" key={label}>
-                    <p className="font-heading text-3xl font-black">{value}</p>
-                    <p className="text-sm font-bold text-white/60">{label}</p>
-                  </div>
-                ))}
-              </div>
-              <Link
-                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] sm:w-auto"
-                href="/student/world/detectivia"
-              >
-                Mulai jalur Detektif
-                <ArrowRight size={18} />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-5 grid gap-3 md:grid-cols-4">
-          {detectiveLevels.map((level) => {
-            const Icon = level.icon;
-            return (
-            <div className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm" key={level.title}>
-              <Icon className="text-[#6d28d9]" size={22} />
-              <p className="font-heading mt-3 text-lg font-black">{level.title}</p>
-              <p className="mt-1 text-sm font-bold leading-5 text-slate-500">{level.text}</p>
-            </div>
-            );
-          })}
-        </section>
 
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {careerPaths.map((career) => {
@@ -93,21 +93,36 @@ export default function StudentCareersPage() {
                 className="overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-sm"
                 key={career.id}
               >
-                <div className="min-h-40 p-5 text-white" style={{ background: career.gradient }}>
-                  <span className="grid size-12 place-items-center rounded-[8px] bg-white/16">
-                    {active ? <Search size={26} /> : <Sparkles size={26} />}
-                  </span>
+                <div className="min-h-44 p-5 text-white" style={{ background: career.gradient }}>
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="grid size-11 place-items-center rounded-[8px] bg-white/16">
+                      {active ? <Search size={24} /> : <Sparkles size={24} />}
+                    </span>
+                    <span className="rounded-full bg-white/14 px-3 py-1 text-xs font-black text-white">
+                      {active ? "Aktif" : "Segera"}
+                    </span>
+                  </div>
                   <p className="mt-4 text-xs font-black uppercase text-white/62">{career.academyName}</p>
-                  <h2 className="font-heading mt-4 text-2xl font-black">{career.title}</h2>
+                  <h2 className="font-heading mt-2 text-2xl font-black">{career.title}</h2>
                   <p className="mt-2 text-sm font-bold leading-6 text-white/82">{career.tagline}</p>
                 </div>
-                <div className="p-4">
+
+                <div className="grid gap-2 p-4">
+                  <button
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-4 py-3 font-heading font-black text-slate-700 shadow-[0_5px_0_#d8e2ef]"
+                    onClick={() => setSelectedCareer(career)}
+                    type="button"
+                  >
+                    <BookOpen size={17} />
+                    Detail kurikulum
+                  </button>
+
                   {active ? (
                     <Link
                       className="inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-4 py-3 font-heading font-black text-white shadow-[0_5px_0_#129447]"
                       href="/student/world/detectivia"
                     >
-                      Mulai dari sini
+                      Mulai kelas
                       <ArrowRight size={17} />
                     </Link>
                   ) : (
@@ -117,7 +132,7 @@ export default function StudentCareersPage() {
                       type="button"
                     >
                       <Lock size={17} />
-                      Segera dibuka
+                      Belum dibuka
                     </button>
                   )}
                 </div>
@@ -126,6 +141,92 @@ export default function StudentCareersPage() {
           })}
         </div>
       </section>
+
+      {selectedCareer ? (
+        <CurriculumModal career={selectedCareer} onClose={() => setSelectedCareer(null)} />
+      ) : null}
     </StudentShell>
+  );
+}
+
+function CurriculumModal({
+  career,
+  onClose,
+}: {
+  career: CareerPathConfig;
+  onClose: () => void;
+}) {
+  const detail = curriculumDetails[career.id];
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-end bg-[#020617]/55 px-3 py-3 sm:place-items-center sm:p-6">
+      <div className="max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-[8px] bg-white shadow-2xl">
+        <div className="p-5 text-white" style={{ background: career.gradient }}>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-black uppercase text-white/65">{career.academyName}</p>
+              <h2 className="font-heading mt-2 text-3xl font-black">{career.title}</h2>
+              <p className="mt-2 max-w-xl text-sm font-bold leading-6 text-white/82">{career.tagline}</p>
+            </div>
+            <button
+              aria-label="Tutup detail kurikulum"
+              className="grid size-10 shrink-0 place-items-center rounded-[8px] bg-white/14 text-white"
+              onClick={onClose}
+              type="button"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        </div>
+
+        <div className="p-5">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <InfoBox label="Durasi awal" value={detail.duration} />
+            <InfoBox label="Sertifikat" value={detail.certificate} />
+          </div>
+
+          <div className="mt-5 rounded-[8px] bg-[#f8fafc] p-4">
+            <p className="text-sm font-black uppercase text-[#2563eb]">Isi kurikulum</p>
+            <div className="mt-3 grid gap-2">
+              {detail.modules.map((module, index) => (
+                <div className="flex items-center gap-3 rounded-[8px] bg-white p-3 shadow-sm" key={module}>
+                  <span className="grid size-8 shrink-0 place-items-center rounded-[8px] bg-[#172033] font-heading font-black text-white">
+                    {index + 1}
+                  </span>
+                  <p className="font-heading font-black text-[#172033]">{module}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-[8px] border border-[#bbf7d0] bg-[#f0fdf4] p-4">
+            <div className="flex gap-2">
+              <CheckCircle2 className="mt-0.5 shrink-0 text-[#166534]" size={19} />
+              <div>
+                <p className="font-heading font-black text-[#166534]">Output akhir</p>
+                <p className="mt-1 text-sm font-bold leading-6 text-[#166534]">{detail.output}</p>
+              </div>
+            </div>
+          </div>
+
+          <button
+            className="mt-5 inline-flex w-full items-center justify-center rounded-[8px] bg-[#172033] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#020617]"
+            onClick={onClose}
+            type="button"
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InfoBox({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm">
+      <p className="text-xs font-black uppercase text-slate-400">{label}</p>
+      <p className="font-heading mt-1 text-lg font-black text-[#172033]">{value}</p>
+    </div>
   );
 }
