@@ -25,7 +25,7 @@ import { FormEvent, useState } from "react";
 import { apiFetch, ApiError } from "@/lib/api";
 
 const productFlow = [
-  ["1", "Pilih cita-cita", "Siswa memilih jalur seperti detektif, dokter, programmer, atau guru."],
+  ["1", "Pilih akademi", "Siswa memilih 1 dari 9 akademi BaleCita Universe."],
   ["2", "Belajar dulu", "Materi singkat, contoh, dan studi kasus muncul sebelum latihan."],
   ["3", "Kerjakan tes", "Jawaban dinilai untuk membaca skill yang kuat dan yang perlu latihan lagi."],
   ["4", "Dapat rekomendasi", "AI dipakai untuk analisis dan saran belajar, bukan mengganti keputusan guru."],
@@ -169,13 +169,13 @@ export default function WelcomePage() {
         <motion.div animate={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 16 }}>
           <span className="inline-flex items-center gap-2 rounded-full bg-[#eff6ff] px-3 py-2 text-sm font-black text-[#2563eb]">
             <Sparkles size={17} />
-            Platform belajar berbasis cita-cita
+            9 akademi belajar berbasis cita-cita
           </span>
           <h1 className="font-heading mt-5 text-4xl font-black leading-tight sm:text-6xl">
             Belajar jadi seru karena dimulai dari impian anak.
           </h1>
           <p className="mt-5 max-w-2xl text-lg font-bold leading-8 text-slate-600">
-            Siswa memilih cita-cita, lalu BaleBelajar membuat jalur belajar bertahap: materi singkat, contoh kasus, tes, dan rekomendasi latihan ulang yang bisa dipantau guru.
+            Siswa memilih akademi cita-cita, lalu BaleBelajar membuat jalur belajar bertahap: materi singkat, contoh kasus, tes, dan rekomendasi latihan ulang yang bisa dipantau guru.
           </p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <Link className="light-trail inline-flex min-h-12 items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_7px_0_#129447]" href="/demo/detective">

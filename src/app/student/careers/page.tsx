@@ -18,10 +18,10 @@ export default function StudentCareersPage() {
       <section className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:py-8">
         <p className="text-sm font-black uppercase text-[#2563eb]">Mau jadi apa?</p>
         <h1 className="font-heading text-3xl font-black leading-tight text-[#172033] sm:text-5xl">
-          Pilih dunia belajar yang terasa seperti game.
+          Pilih 1 dari 9 akademi cita-cita.
         </h1>
         <p className="mt-2 max-w-2xl font-bold leading-6 text-slate-500">
-          Kamu belajar dari dasar, lihat cerita kasus, pilih jawaban, lalu naik level sampai siap menyelesaikan misi akhir.
+          Setiap akademi dibuat seperti game belajar: mulai dari misi pendek, naik rank, lalu kumpulkan bukti skill di profilmu.
         </p>
 
         <section className="mt-6 overflow-hidden rounded-[8px] bg-[#172033] text-white shadow-[0_10px_0_#020617]">
@@ -42,7 +42,7 @@ export default function StudentCareersPage() {
               <p className="mt-1 text-center text-sm font-bold text-white/60">Pemula sampai Expert</p>
             </div>
             <div>
-              <p className="text-sm font-black uppercase text-[#f9c74f]">Rekomendasi utama</p>
+              <p className="text-sm font-black uppercase text-[#f9c74f]">Akademi aktif pertama</p>
               <h2 className="font-heading mt-2 text-3xl font-black sm:text-5xl">
                 Jadi detektif yang bisa membaca bukti, bukan asal menebak.
               </h2>
@@ -87,7 +87,7 @@ export default function StudentCareersPage() {
 
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {careerPaths.map((career) => {
-            const active = career.id === "DETECTIVE";
+            const active = career.status === "ACTIVE";
             return (
               <article
                 className="overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-sm"
@@ -97,6 +97,7 @@ export default function StudentCareersPage() {
                   <span className="grid size-12 place-items-center rounded-[8px] bg-white/16">
                     {active ? <Search size={26} /> : <Sparkles size={26} />}
                   </span>
+                  <p className="mt-4 text-xs font-black uppercase text-white/62">{career.academyName}</p>
                   <h2 className="font-heading mt-4 text-2xl font-black">{career.title}</h2>
                   <p className="mt-2 text-sm font-bold leading-6 text-white/82">{career.tagline}</p>
                 </div>
