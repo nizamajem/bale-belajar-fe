@@ -64,13 +64,13 @@ export default function StudentLoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center px-4 py-8 sm:px-6">
+    <main className="flex min-h-screen items-center px-4 py-5 sm:px-6">
       <motion.section
         animate={{ opacity: 1, scale: 1 }}
-        className="mx-auto grid w-full max-w-5xl overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-xl lg:grid-cols-[0.9fr_1.1fr]"
+        className="mx-auto grid w-full max-w-4xl overflow-hidden rounded-[8px] border border-slate-200 bg-white shadow-xl lg:grid-cols-[0.82fr_1.18fr]"
         initial={{ opacity: 0, scale: 0.97 }}
       >
-        <div className="bg-[#22c55e] p-6 text-white sm:p-8">
+        <div className="hidden bg-[#22c55e] p-6 text-white md:block lg:p-8">
           <Link className="flex items-center gap-3" href="/">
             <span className="grid size-11 place-items-center rounded-[8px] bg-white text-[#16a34a] shadow-[0_6px_0_#bbf7d0]">
               <BookOpen size={24} strokeWidth={3} />
@@ -78,36 +78,50 @@ export default function StudentLoginPage() {
             <span className="font-heading text-xl font-black">BaleBelajar</span>
           </Link>
 
-          <div className="book-buddy mx-auto mt-6 max-w-[180px] sm:mt-10 sm:max-w-[250px]">
+          <motion.div
+            animate={{ y: [0, -8, 0] }}
+            className="book-buddy mx-auto mt-10 max-w-[220px]"
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          >
             <div className="relative aspect-square rounded-[28px] bg-white/18">
               <div className="absolute inset-x-[18%] top-[18%] h-[62%] rounded-[24px] bg-white shadow-[0_10px_0_#bbf7d0]" />
               <div className="absolute left-[31%] top-[38%] size-7 rounded-full bg-[#172033]" />
               <div className="absolute right-[31%] top-[38%] size-7 rounded-full bg-[#172033]" />
               <div className="absolute left-1/2 top-[58%] h-5 w-16 -translate-x-1/2 rounded-b-full border-b-[7px] border-[#172033]" />
             </div>
-          </div>
+          </motion.div>
 
           <h1 className="font-heading mt-8 text-3xl font-black leading-tight">
-            Masuk, lalu lanjutkan perjalanan belajarmu.
+            Lanjut belajar.
           </h1>
-          <p className="mt-3 font-bold leading-7 text-white/86">
-            Pakai kode peserta dari guru untuk langsung masuk kelas. Email dan Google bisa dipakai untuk akun mandiri.
+          <p className="mt-3 max-w-sm font-bold leading-7 text-white/86">
+            Masuk, pilih misi, lalu teruskan dari tempat terakhir.
           </p>
-          <div className="mt-6 rounded-[8px] bg-white/14 p-4 text-sm font-bold leading-6 text-white/86">
-            BaleBelajar menyimpan progress, hasil tes, dan rekomendasi dari backend sekolah.
-          </div>
         </div>
 
-        <div className="p-6 sm:p-8 lg:p-10">
-          <span className="inline-flex items-center gap-2 rounded-full bg-[#eff6ff] px-3 py-2 text-sm font-black text-[#2563eb]">
-            <Sparkles size={17} />
-            Login siswa
-          </span>
-          <h2 className="font-heading mt-5 text-3xl font-black">
-            Lanjut dari akun resmi
-          </h2>
+        <div className="p-5 sm:p-8 lg:p-10">
+          <Link className="mb-6 flex items-center gap-3 md:hidden" href="/">
+            <span className="grid size-11 place-items-center rounded-[8px] bg-[#22c55e] text-white shadow-[0_5px_0_#129447]">
+              <BookOpen size={24} strokeWidth={3} />
+            </span>
+            <span>
+              <span className="block font-heading text-xl font-black">BaleBelajar</span>
+              <span className="text-xs font-black uppercase text-slate-400">Ruang siswa</span>
+            </span>
+          </Link>
 
-          <div className="mt-6 grid grid-cols-2 gap-2 rounded-[8px] bg-slate-100 p-1">
+          <span className="inline-flex items-center gap-2 rounded-full bg-[#eff6ff] px-3 py-2 text-xs font-black text-[#2563eb]">
+            <Sparkles size={15} />
+            Siswa
+          </span>
+          <h2 className="font-heading mt-4 text-3xl font-black">
+            Masuk ke kelas
+          </h2>
+          <p className="mt-2 text-sm font-bold leading-6 text-slate-500">
+            Pakai kode dari guru. Bisa juga masuk dengan email atau Google.
+          </p>
+
+          <div className="mt-5 grid grid-cols-2 gap-2 rounded-[8px] bg-slate-100 p-1">
             <button
               className={[
                 "rounded-[6px] py-2 font-heading font-black transition",
@@ -116,7 +130,7 @@ export default function StudentLoginPage() {
               onClick={() => setMethod("code")}
               type="button"
             >
-              Kode Peserta
+              Kode
             </button>
             <button
               className={[
@@ -131,7 +145,7 @@ export default function StudentLoginPage() {
           </div>
 
           {method === "email" ? (
-            <form className="mt-6 space-y-4" onSubmit={handleEmailSubmit}>
+            <form className="mt-5 space-y-4" onSubmit={handleEmailSubmit}>
               <label className="block">
                 <span className="mb-2 block text-sm font-black text-slate-600">Email</span>
                 <input
@@ -172,19 +186,19 @@ export default function StudentLoginPage() {
               </button>
             </form>
           ) : (
-            <form className="mt-6 space-y-5" onSubmit={handleCodeSubmit}>
+            <form className="mt-5 space-y-4" onSubmit={handleCodeSubmit}>
               <label className="block">
                 <span className="mb-2 block text-sm font-black text-slate-600">
-                  Kode peserta
+                  Kode dari guru
                 </span>
-                <span className="flex items-center gap-3 rounded-[8px] border-2 border-[#bbf7d0] bg-[#f0fdf4] px-4 py-4 shadow-[0_6px_0_#bbf7d0]">
+                <span className="flex items-center gap-3 rounded-[8px] border-2 border-[#bbf7d0] bg-[#f0fdf4] px-4 py-3 shadow-[0_5px_0_#bbf7d0]">
                   <KeyRound className="text-[#22c55e]" size={22} />
                   <input
-                    className="w-full border-0 bg-transparent font-heading text-xl font-black uppercase tracking-[0.08em] outline-none"
+                    className="w-full min-w-0 border-0 bg-transparent font-heading text-lg font-black uppercase outline-none sm:text-xl"
                     autoCapitalize="characters"
                     autoComplete="one-time-code"
                     onChange={(event) => setParticipantCode(event.target.value.toUpperCase())}
-                    placeholder="KODE PESERTA"
+                    placeholder="KODE"
                     required
                     value={participantCode}
                   />
@@ -198,18 +212,18 @@ export default function StudentLoginPage() {
               ) : null}
 
               <button
-                className="flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_7px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-70"
+                className="flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#22c55e] px-5 py-4 font-heading font-black text-white shadow-[0_6px_0_#129447] transition hover:-translate-y-0.5 active:translate-y-1 active:shadow-none disabled:opacity-70"
                 disabled={loading}
                 type="submit"
               >
                 {loading ? <Loader2 className="animate-spin" size={19} /> : null}
-                Masuk dan lanjut
+                Masuk
                 {!loading ? <ArrowRight size={19} /> : null}
               </button>
             </form>
           )}
 
-          <div className="my-6 flex items-center gap-3 text-xs font-black uppercase text-slate-400">
+          <div className="my-5 flex items-center gap-3 text-xs font-black uppercase text-slate-400">
             <span className="h-px flex-1 bg-slate-100" />
             atau
             <span className="h-px flex-1 bg-slate-100" />
@@ -227,10 +241,10 @@ export default function StudentLoginPage() {
             />
           )}
 
-          <div className="mt-4 flex items-start gap-3 rounded-[8px] bg-[#f8fafc] p-4 text-sm font-bold leading-6 text-slate-500">
+          <div className="mt-4 flex items-start gap-3 rounded-[8px] bg-[#f8fafc] p-3 text-sm font-bold leading-6 text-slate-500">
             <ShieldCheck className="mt-0.5 shrink-0 text-[#22c55e]" size={20} />
             <p>
-              Butuh kode peserta? Minta guru atau admin sekolah membuka menu Siswa, lalu bagikan kode resmi kelasmu.
+              Belum punya kode? Minta ke guru.
             </p>
           </div>
 
