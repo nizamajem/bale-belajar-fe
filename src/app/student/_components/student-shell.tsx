@@ -43,8 +43,8 @@ const navItems = [
   {
     href: "/student/growth-map?worldKey=detectivia",
     match: "/student/growth-map",
-    label: "Skill",
-    description: "Yang sudah paham",
+    label: "Kemampuan",
+    description: "Yang kamu kuasai",
     icon: MapPinned,
   },
   {
