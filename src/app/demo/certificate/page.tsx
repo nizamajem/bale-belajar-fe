@@ -12,21 +12,21 @@ import {
 } from "lucide-react";
 
 export const metadata = {
-  title: "Contoh Sertifikat BaleBelajar",
-  description: "Contoh sertifikat BaleBelajar tiga halaman berisi kelulusan kelas, kurikulum, nilai akhir, peningkatan skill, dan rekomendasi.",
+  title: "Contoh Sertifikat BaleDetective",
+  description: "Contoh sertifikat Akademi Detektif BaleDetective berisi rank, misi, skill, portofolio, dan rekomendasi.",
 };
 
 const curriculum = [
-  ["Fondasi Bukti", "Fakta vs dugaan, sumber bukti, dan cara membaca informasi awal.", "92"],
-  ["Timeline Kasus", "Menyusun urutan kejadian dan menemukan bagian yang perlu dicek ulang.", "88"],
-  ["Logika Kesimpulan", "Membuat kesimpulan yang adil tanpa menuduh dari asumsi.", "90"],
-  ["Studi Kasus Akhir", "Menganalisis kasus lengkap dan menjelaskan alasan dengan rapi.", "94"],
+  ["Detective Oath", "Aturan aman: tidak menuduh, menjaga privasi, dan berani bilang belum cukup bukti.", "94"],
+  ["The Watchtower", "Melihat perubahan, mencatat detail, dan membedakan fakta dari asumsi.", "92"],
+  ["Evidence Harbor", "Memilih bukti yang relevan, kuat, dan bisa dicek sumbernya.", "88"],
+  ["Boss Case Pemula", "Menyusun evidence board dan laporan kasus singkat.", "91"],
 ];
 
 const improvements = [
-  ["Membedakan fakta dan dugaan", "Naik dari 64% menjadi 92%", "Sangat kuat"],
-  ["Memilih bukti paling relevan", "Naik dari 58% menjadi 88%", "Kuat"],
-  ["Menyusun kesimpulan aman", "Naik dari 61% menjadi 90%", "Sangat baik"],
+  ["Observasi detail", "Naik dari 62% menjadi 92%", "Sangat kuat"],
+  ["Fakta vs asumsi", "Naik dari 64% menjadi 90%", "Sangat baik"],
+  ["Etika detektif", "Naik dari 70% menjadi 94%", "Aman"],
 ];
 
 export default function CertificateDemoPage() {
@@ -69,9 +69,9 @@ function CertificatePageOne() {
 
         <section className="py-10 text-center">
           <Award className="mx-auto text-[#f59e0b]" size={72} />
-          <p className="mt-5 text-sm font-black uppercase tracking-[0.24em] text-[#2563eb]">Sertifikat Penyelesaian</p>
+          <p className="mt-5 text-sm font-black uppercase tracking-[0.24em] text-[#2563eb]">Sertifikat Keahlian</p>
           <h1 className="font-heading mx-auto mt-4 max-w-3xl text-5xl font-black leading-tight sm:text-7xl">
-            Kelas Detektif Pemula
+            Akademi Detektif BaleDetective
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg font-bold leading-8 text-slate-600">
             Dengan bangga diberikan kepada
@@ -80,13 +80,13 @@ function CertificatePageOne() {
             Alya Putri
           </p>
           <p className="mx-auto mt-5 max-w-3xl font-bold leading-8 text-slate-600">
-            Telah menyelesaikan perjalanan belajar Detectivia: membaca bukti, membedakan fakta dan dugaan, menyusun timeline, serta membuat kesimpulan yang adil.
+            Telah menyelesaikan rank awal Detectivia: Detective Oath, observasi, fakta vs asumsi, evidence board, dan Boss Case pemula.
           </p>
 
           <div className="mx-auto mt-8 grid max-w-3xl gap-3 sm:grid-cols-3">
             <ScoreCard label="Nilai akhir" value="91" />
             <ScoreCard label="Predikat" value="Sangat Baik" />
-            <ScoreCard label="Level" value="Pembaca Bukti" />
+            <ScoreCard label="Rank" value="Observer" />
           </div>
         </section>
 
@@ -106,15 +106,15 @@ function CertificatePageTwo() {
       <header className="flex flex-col gap-4 border-b border-slate-200 pb-6 sm:flex-row sm:items-center sm:justify-between">
         <BrandMark />
         <div className="rounded-[8px] bg-[#f0fdf4] px-4 py-3 text-sm font-black text-[#166534]">
-          Kurikulum selesai 4/4 modul
+          Rank awal selesai 4/4 misi
         </div>
       </header>
 
       <section className="mt-8">
         <p className="text-sm font-black uppercase text-[#2563eb]">Halaman 2</p>
-        <h2 className="font-heading mt-2 text-4xl font-black">Kurikulum yang diselesaikan</h2>
+        <h2 className="font-heading mt-2 text-4xl font-black">Misi yang diselesaikan</h2>
         <p className="mt-3 max-w-3xl font-bold leading-7 text-slate-600">
-          Ringkasan ini membantu siswa, orang tua, dan guru melihat materi apa saja yang sudah selesai serta capaian akhirnya.
+          Ringkasan ini membantu siswa, orang tua, dan guru melihat misi apa saja yang selesai tanpa membaca laporan panjang.
         </p>
 
         <div className="mt-6 grid gap-4">
@@ -137,9 +137,9 @@ function CertificatePageTwo() {
       </section>
 
       <section className="mt-8 grid gap-4 md:grid-cols-3">
-        <SummaryCard icon={<ClipboardCheck size={24} />} title="Final Project" text="Misteri Dokumen Presentasi" />
+        <SummaryCard icon={<ClipboardCheck size={24} />} title="Boss Case" text="The Cup That Moved" />
         <SummaryCard icon={<ShieldCheck size={24} />} title="Status" text="Lulus dan siap lanjut" />
-        <SummaryCard icon={<Medal size={24} />} title="Badge" text="Detektif Teliti" />
+        <SummaryCard icon={<Medal size={24} />} title="Badge" text="Evidence Before Accusation" />
       </section>
     </article>
   );
@@ -155,9 +155,9 @@ function CertificatePageThree() {
 
       <section className="mt-8">
         <p className="text-sm font-black uppercase text-[#6d28d9]">Halaman 3</p>
-        <h2 className="font-heading mt-2 text-4xl font-black">Skill improvement dan rekomendasi</h2>
+        <h2 className="font-heading mt-2 text-4xl font-black">Skill, portofolio, dan rekomendasi</h2>
         <p className="mt-3 max-w-3xl font-bold leading-7 text-slate-600">
-          Halaman ini dibuat agar sertifikat tidak hanya menjadi hadiah, tetapi juga bukti perkembangan belajar yang bisa dibaca guru dan orang tua.
+          Sertifikat ini tidak hanya jadi hadiah. Di dalamnya ada bukti belajar: skill yang naik, portofolio kasus, dan langkah berikutnya.
         </p>
 
         <div className="mt-6 grid gap-4">
@@ -185,9 +185,9 @@ function CertificatePageThree() {
             <h3 className="font-heading mt-3 text-2xl font-black">Rekomendasi berikutnya</h3>
             <div className="mt-4 grid gap-3">
               {[
-                "Lanjut ke Kelas Detektif Menengah: Analisis Saksi dan Motif.",
-                "Latihan 10 menit per hari untuk memperkuat kesimpulan tertulis.",
-                "Coba satu kasus baru setiap minggu agar kemampuan tidak hanya hafalan.",
+                "Lanjut ke Evidence Harbor: memilih bukti yang kuat dan relevan.",
+                "Latihan 10 menit per hari: fakta atau asumsi.",
+                "Bangun portofolio kecil: 3 observation log dan 1 evidence board.",
               ].map((item) => (
                 <p className="flex gap-2 rounded-[8px] bg-white/10 p-3 text-sm font-bold leading-6" key={item}>
                   <CheckCircle2 className="mt-0.5 shrink-0 text-[#22c55e]" size={17} />
@@ -200,7 +200,7 @@ function CertificatePageThree() {
             <Sparkles className="text-[#c2410c]" size={30} />
             <h3 className="font-heading mt-3 text-2xl font-black text-[#9a3412]">Catatan BaleBelajar</h3>
             <p className="mt-3 font-bold leading-7 text-[#9a3412]">
-              Alya menunjukkan perkembangan kuat dalam membaca bukti dan menyusun alasan. Tantangan berikutnya adalah membuat laporan investigasi yang lebih ringkas, runtut, dan mudah dipahami.
+              Alya mulai disiplin memeriksa bukti sebelum membuat kesimpulan. Tantangan berikutnya adalah memilih bukti paling relevan dan menulis laporan yang lebih singkat.
             </p>
           </section>
         </div>

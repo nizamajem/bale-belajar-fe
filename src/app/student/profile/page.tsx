@@ -161,15 +161,15 @@ export default function StudentProfilePage() {
                 </span>
                 <div>
                   <p className="text-sm font-black uppercase text-[#2563eb]">Sertifikat Keahlian</p>
-                  <h2 className="font-heading text-2xl font-black">Bukti kamu sudah bisa</h2>
+                  <h2 className="font-heading text-2xl font-black">Bukti misi detektifmu</h2>
                 </div>
               </div>
               <p className="mt-3 max-w-2xl font-bold leading-7 text-slate-600">
-                Setelah menyelesaikan satu kelas dan lulus proyek akhir, sertifikat bisa tampil di profil.
-                Isinya bukan cuma selesai belajar, tetapi juga skill, nilai, dan rekomendasi kelas berikutnya.
+                Setelah menyelesaikan rank awal Detectivia dan Boss Case, sertifikat bisa tampil di profil.
+                Isinya ringkas: misi selesai, skill naik, badge etika, dan rekomendasi kelas berikutnya.
               </p>
               <div className="mt-4 grid gap-2 sm:grid-cols-3">
-                {["Kelas selesai", "Proyek lulus", "Skill tercatat"].map((item) => (
+                {["Misi selesai", "Boss Case lulus", "Skill tercatat"].map((item) => (
                   <div className="flex items-center gap-2 rounded-[8px] bg-[#f8fafc] px-3 py-3 text-sm font-black text-slate-700" key={item}>
                     <CheckCircle2 className="shrink-0 text-[#16a34a]" size={17} />
                     {item}
@@ -191,10 +191,10 @@ export default function StudentProfilePage() {
                   <ShieldCheck size={28} />
                 </div>
                 <p className="mt-3 text-[10px] font-black uppercase tracking-[0.16em] text-[#2563eb]">
-                  Certificate of Skill
+                  BaleDetective Skill
                 </p>
                 <p className="font-heading mt-2 text-2xl font-black leading-tight">
-                  Detektif Pemula
+                  Rank Observer
                 </p>
                 <p className="mt-2 text-xs font-bold text-slate-500">Diberikan kepada</p>
                 <p className="font-heading mt-1 text-xl font-black text-[#6d28d9]">
@@ -202,11 +202,11 @@ export default function StudentProfilePage() {
                 </p>
                 <div className="mt-4 grid grid-cols-3 gap-2 text-center">
                   <MiniCertificateStat label="Nilai" value="91" />
-                  <MiniCertificateStat label="Modul" value="4/4" />
-                  <MiniCertificateStat label="Badge" value="Teliti" />
+                  <MiniCertificateStat label="Misi" value="4/4" />
+                  <MiniCertificateStat label="Badge" value="Etis" />
                 </div>
                 <p className="mt-4 rounded-[8px] bg-[#f0fdf4] p-3 text-xs font-black text-[#166534]">
-                  Siap lanjut ke kelas berikutnya
+                  Siap lanjut ke Evidence Harbor
                 </p>
               </div>
             </div>

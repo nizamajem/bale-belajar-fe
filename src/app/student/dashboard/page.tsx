@@ -85,7 +85,7 @@ export default function StudentDashboardPage() {
                   Hai {user?.name ?? "Siswa"}, yuk lanjut belajar.
                 </h1>
                 <p className="mt-3 max-w-xl font-bold leading-7 text-white/80">
-                  Cukup ikuti 3 langkah: baca sebentar, lihat contoh, lalu jawab. Setelah selesai, kamu langsung tahu skill yang naik.
+                  Satu misi cuma 10-20 menit. Baca cerita, pilih bukti, lalu buat kesimpulan aman tanpa asal menuduh.
                 </p>
 
                 <Link
@@ -98,9 +98,9 @@ export default function StudentDashboardPage() {
 
                 <div className="mt-6 grid gap-3 sm:grid-cols-3">
                   {[
-                    ["1", "Baca", "Materi pendek"],
-                    ["2", "Contoh", "Lihat cara jawab"],
-                    ["3", "Jawab", "Dapat hasil"],
+                    ["1", "Amati", "Cari perubahan"],
+                    ["2", "Pilih bukti", "Mana yang kuat?"],
+                    ["3", "Simpulkan", "Tulis alasan"],
                   ].map(([number, title, text]) => (
                     <div className="rounded-[8px] bg-white/10 p-3" key={title}>
                       <span className="grid size-8 place-items-center rounded-[8px] bg-white font-heading font-black text-[#172033]">
@@ -120,7 +120,7 @@ export default function StudentDashboardPage() {
                 </h2>
                 <p className="mt-2 font-bold leading-6 text-slate-600">
                   {adaptivePlan?.message ??
-                    "Belajar membaca bukti, memilih alasan, lalu membuat kesimpulan yang adil."}
+                    "Mulai dari Detective Oath, observasi, fakta vs asumsi, lalu Boss Case pemula."}
                 </p>
                 {adaptivePlan?.targetModule ? (
                   <div className="mt-4 rounded-[8px] bg-[#f8fafc] p-4">
@@ -140,6 +140,12 @@ export default function StudentDashboardPage() {
                   </p>
                   <p className="mt-1 text-sm font-bold text-slate-500">
                     {currentCase?.questions.length ?? 0} soal, sekitar {currentCase?.case.estimatedMinutes ?? 0} menit
+                  </p>
+                </div>
+                <div className="mt-4 rounded-[8px] border border-[#bbf7d0] bg-[#f0fdf4] p-4">
+                  <p className="text-xs font-black uppercase text-[#166534]">Aturan emas</p>
+                  <p className="mt-1 text-sm font-black leading-5 text-[#166534]">
+                    Bukti dulu, baru kesimpulan. Kalau belum yakin, boleh jawab belum cukup bukti.
                   </p>
                 </div>
               </aside>
@@ -174,8 +180,24 @@ export default function StudentDashboardPage() {
               <section className="mt-5 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
                 <p className="text-sm font-black uppercase text-[#6d28d9]">Jalur belajar</p>
                 <h2 className="font-heading mt-1 text-2xl font-black">
-                  Langkah sampai dapat sertifikat
+                  Jalur Detektif Pemula
                 </h2>
+                <div className="mt-4 grid gap-3 sm:grid-cols-4">
+                  {[
+                    ["1", "Oath", "Main aman dan etis"],
+                    ["2", "Observasi", "Cari detail penting"],
+                    ["3", "Bukti", "Pilih yang relevan"],
+                    ["4", "Boss Case", "Buat laporan singkat"],
+                  ].map(([step, title, text]) => (
+                    <div className="rounded-[8px] bg-[#172033] p-3 text-white" key={title}>
+                      <span className="grid size-8 place-items-center rounded-[8px] bg-[#22c55e] font-heading font-black shadow-[0_4px_0_#129447]">
+                        {step}
+                      </span>
+                      <p className="mt-3 font-heading font-black">{title}</p>
+                      <p className="mt-1 text-xs font-bold leading-5 text-white/65">{text}</p>
+                    </div>
+                  ))}
+                </div>
                 <div className="mt-4 grid gap-3">
                   {curriculum.modules.map((module) => (
                     <div className="rounded-[8px] bg-[#f8fafc] p-4" key={module.id}>
