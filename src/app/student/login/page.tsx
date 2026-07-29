@@ -248,6 +248,14 @@ export default function StudentLoginPage() {
             </p>
           </div>
 
+          <Link
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-[8px] border-2 border-[#bfdbfe] bg-[#eff6ff] px-4 py-3 font-heading font-black text-[#2563eb]"
+            href="/student/baleverse"
+          >
+            Coba demo BaleVerse
+            <ArrowRight size={17} />
+          </Link>
+
           <p className="mt-5 text-center text-sm font-bold text-slate-400">
             Belum punya akun?{" "}
             <Link className="text-[#6d28d9] hover:underline" href="/daftar">
