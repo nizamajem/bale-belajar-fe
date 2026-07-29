@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, KeyRound, Loader2, Mail, ShieldCheck, Sparkles } from "lucide-react";
 import { FormEvent, useState } from "react";
+import { BeloMascot } from "@/components/belo-mascot";
 import { GoogleAuthButton } from "@/components/google-auth-button";
 import { ApiError } from "@/lib/api";
 import { dashboardPathForRole, login, loginWithGoogle, studentLogin } from "@/lib/auth";
@@ -80,15 +81,15 @@ export default function StudentLoginPage() {
 
           <motion.div
             animate={{ y: [0, -8, 0] }}
-            className="book-buddy mx-auto mt-10 max-w-[220px]"
+            className="mx-auto mt-10 max-w-[200px]"
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           >
-            <div className="relative aspect-square rounded-[28px] bg-white/18">
-              <div className="absolute inset-x-[18%] top-[18%] h-[62%] rounded-[24px] bg-white shadow-[0_10px_0_#bbf7d0]" />
-              <div className="absolute left-[31%] top-[38%] size-7 rounded-full bg-[#172033]" />
-              <div className="absolute right-[31%] top-[38%] size-7 rounded-full bg-[#172033]" />
-              <div className="absolute left-1/2 top-[58%] h-5 w-16 -translate-x-1/2 rounded-b-full border-b-[7px] border-[#172033]" />
-            </div>
+            <BeloMascot
+              className="h-auto w-full drop-shadow-[0_16px_20px_rgba(23,32,51,0.22)]"
+              pose="melambai"
+              priority
+              size={200}
+            />
           </motion.div>
 
           <h1 className="font-heading mt-8 text-3xl font-black leading-tight">

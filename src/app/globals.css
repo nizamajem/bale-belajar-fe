@@ -59,16 +59,6 @@ canvas {
   font-family: var(--font-heading), system-ui, sans-serif;
 }
 
-@keyframes bob {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-2deg);
-  }
-  50% {
-    transform: translateY(-10px) rotate(2deg);
-  }
-}
-
 @keyframes shine {
   0% {
     transform: translateX(-120%);
@@ -248,10 +238,6 @@ canvas {
     opacity: 1;
     transform: scale(1) rotate(0);
   }
-}
-
-.book-buddy {
-  animation: bob 3.2s ease-in-out infinite;
 }
 
 .shine::after {
