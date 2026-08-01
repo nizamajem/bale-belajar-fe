@@ -4,9 +4,7 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      allow: ["/", "/welcome", "/privacy", "/terms"],
-      disallow: ["/admin", "/teacher", "/student"],
+      disallow: "/",
     },
-    sitemap: "https://app.balebelajar.com/sitemap.xml",
   };
 }

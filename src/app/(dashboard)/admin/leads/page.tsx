@@ -36,17 +36,17 @@ export default function AdminLeadsPage() {
   }, [leads]);
 
   return (
-    <DashboardShell role="admin" title="CRM Leads Pilot">
+    <DashboardShell title="CRM Leads Pilot">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Lead baru" tone="red" value={loading ? "-" : String(metrics.newLead)} />
         <MetricCard label="Perlu follow-up" tone="yellow" value={loading ? "-" : String(metrics.contacted)} />
-        <MetricCard label="Pilot" tone="blue" value={loading ? "-" : String(metrics.pilot)} />
+        <MetricCard label="Pilot" tone="navy" value={loading ? "-" : String(metrics.pilot)} />
         <MetricCard label="Converted" tone="green" value={loading ? "-" : String(metrics.converted)} />
       </div>
 
       <section className="mt-5 rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <div className="mb-5">
-          <p className="text-sm font-black uppercase text-[#2563eb]">Pipeline sales</p>
+          <p className="text-sm font-black uppercase text-[#0E3A5F]">Pipeline sales</p>
           <h2 className="font-heading text-2xl font-black">Sekolah yang mengajukan pilot</h2>
           <p className="mt-2 text-sm font-bold leading-6 text-slate-500">
             Gunakan halaman ini untuk follow-up WhatsApp, jadwal demo, dan prioritas sekolah dengan jumlah siswa besar.
@@ -104,7 +104,7 @@ export default function AdminLeadsPage() {
       </section>
 
       <section className="mt-5 rounded-[8px] bg-[#172033] p-5 text-white">
-        <School className="text-[#f9c74f]" size={28} />
+        <School className="text-[#F4B400]" size={28} />
         <h2 className="font-heading mt-3 text-2xl font-black">SOP follow-up 24 jam</h2>
         <div className="mt-3 grid gap-3 md:grid-cols-3">
           {["Kirim link demo dan contoh laporan", "Tawarkan jadwal demo 30 menit", "Catat kebutuhan kelas dan jumlah siswa"].map((item, index) => (

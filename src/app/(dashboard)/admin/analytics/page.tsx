@@ -46,7 +46,7 @@ export default function AdminAnalyticsPage() {
   const newLeads = leads.filter((lead) => lead.status === "NEW").length;
 
   return (
-    <DashboardShell role="admin" title="Analitik">
+    <DashboardShell title="Analitik">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Sekolah pilot" value={loading ? "-" : String(activePilot)} />
         <MetricCard label="Total siswa" tone="green" value={loading ? "-" : String(totalStudents)} />
@@ -57,11 +57,11 @@ export default function AdminAnalyticsPage() {
       <div className="mt-5 grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
         <section className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
           <div className="mb-5 flex items-center gap-3">
-            <span className="grid size-11 place-items-center rounded-[8px] bg-[#eff6ff] text-[#2563eb]">
+            <span className="grid size-11 place-items-center rounded-[8px] bg-[#FFF3E0] text-[#0E3A5F]">
               <BarChart3 size={23} />
             </span>
             <div>
-              <p className="text-sm font-black uppercase text-[#2563eb]">Distribusi</p>
+              <p className="text-sm font-black uppercase text-[#0E3A5F]">Distribusi</p>
               <h2 className="font-heading text-2xl font-black">Status asesmen</h2>
             </div>
           </div>
@@ -123,7 +123,7 @@ export default function AdminAnalyticsPage() {
       </div>
 
       <section className="mt-5 rounded-[8px] border border-slate-200 bg-[#172033] p-4 text-white shadow-sm sm:p-5">
-        <UsersRound className="text-[#f9c74f]" size={28} />
+        <UsersRound className="text-[#F4B400]" size={28} />
         <h2 className="font-heading mt-4 text-2xl font-black">Insight operasional</h2>
         <p className="mt-2 max-w-3xl font-semibold leading-7 text-slate-300">
           Halaman ini membaca data live dari sekolah, siswa, asesmen, dan lead pilot.

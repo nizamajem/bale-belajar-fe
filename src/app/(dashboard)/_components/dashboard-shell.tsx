@@ -5,10 +5,8 @@ import { useRouter, usePathname } from "next/navigation";
 import {
   BarChart3,
   Bell,
-  BookOpen,
   ClipboardList,
   Handshake,
-  GraduationCap,
   LayoutDashboard,
   Loader2,
   LogOut,
@@ -18,52 +16,32 @@ import {
   UsersRound,
 } from "lucide-react";
 import { logout, useRequireAuth } from "@/lib/auth";
-import { RoleSwitcher } from "@/components/role-switcher";
 
-type Role = "admin" | "teacher";
-
-const nav = {
-  admin: [
-    { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/admin/schools", label: "Sekolah", icon: School },
-    { href: "/admin/students", label: "Siswa", icon: UsersRound },
-    { href: "/admin/assessments", label: "Asesmen", icon: ClipboardList },
-    { href: "/admin/curriculum", label: "Kurikulum", icon: SplitSquareVertical },
-    { href: "/admin/leads", label: "Leads", icon: Handshake },
-    { href: "/admin/analytics", label: "Analitik", icon: BarChart3 },
-    { href: "/admin/settings", label: "Pengaturan", icon: Settings },
-  ],
-  teacher: [
-    { href: "/teacher/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/teacher/onboarding", label: "Mulai", icon: BookOpen },
-    { href: "/teacher/classrooms", label: "Kelas", icon: GraduationCap },
-    { href: "/teacher/assessments", label: "Asesmen", icon: ClipboardList },
-    { href: "/teacher/reports", label: "Laporan", icon: BarChart3 },
-  ],
-};
-
-const roleGuard: Record<Role, ("SUPER_ADMIN" | "ADMIN" | "TEACHER")[]> = {
-  admin: ["SUPER_ADMIN", "ADMIN"],
-  teacher: ["TEACHER"],
-};
+const adminNav = [
+  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/schools", label: "Sekolah", icon: School },
+  { href: "/admin/students", label: "Siswa", icon: UsersRound },
+  { href: "/admin/assessments", label: "Asesmen", icon: ClipboardList },
+  { href: "/admin/curriculum", label: "Kurikulum", icon: SplitSquareVertical },
+  { href: "/admin/leads", label: "Leads", icon: Handshake },
+  { href: "/admin/analytics", label: "Analitik", icon: BarChart3 },
+  { href: "/admin/settings", label: "Pengaturan", icon: Settings },
+];
 
 export function DashboardShell({
   children,
-  role,
   title,
 }: {
   children: React.ReactNode;
-  role: Role;
   title: string;
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, ready } = useRequireAuth(roleGuard[role], "/staff/login");
-  const items = nav[role];
+  const { user, ready } = useRequireAuth(["SUPER_ADMIN", "ADMIN"], "/login");
 
   function handleLogout() {
     logout();
-    router.push("/staff/login");
+    router.push("/login");
   }
 
   if (!ready || !user) {
@@ -78,20 +56,20 @@ export function DashboardShell({
     <main className="min-h-screen bg-[#f8fafc] text-[#172033]">
       <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-slate-200 bg-white lg:block">
         <div className="flex h-full flex-col p-5">
-          <Link className="mb-8 flex items-center gap-3" href={items[0].href}>
-            <span className="grid size-11 place-items-center rounded-[8px] bg-[#2563eb] text-white shadow-[0_6px_0_#1d4ed8]">
-              <BookOpen size={24} strokeWidth={3} />
+          <Link className="mb-8 flex items-center gap-3" href={adminNav[0].href}>
+            <span className="grid size-11 place-items-center rounded-[8px] bg-[#F4B400] text-[#0E3A5F] shadow-[0_6px_0_#C28F00]">
+              <School size={24} strokeWidth={3} />
             </span>
             <div>
               <p className="font-heading text-lg font-black">BaleBelajar</p>
               <p className="text-xs font-bold uppercase text-slate-400">
-                {role === "admin" ? "Admin Console" : "Teacher Console"}
+                Admin Console
               </p>
             </div>
           </Link>
 
           <nav className="space-y-2">
-            {items.map((item) => {
+            {adminNav.map((item) => {
               const active = pathname === item.href;
               const Icon = item.icon;
 
@@ -100,7 +78,7 @@ export function DashboardShell({
                   className={[
                     "flex items-center gap-3 rounded-[8px] px-4 py-3 font-heading font-black transition",
                     active
-                      ? "bg-[#eff6ff] text-[#2563eb]"
+                      ? "bg-[#FFF3E0] text-[#0E3A5F]"
                       : "text-slate-600 hover:bg-slate-50",
                   ].join(" ")}
                   href={item.href}
@@ -136,11 +114,10 @@ export function DashboardShell({
               </h1>
             </div>
             <div className="flex items-center gap-3">
-              <RoleSwitcher user={user} />
               <button className="grid size-10 place-items-center rounded-[8px] border border-slate-200 bg-white text-slate-600 shadow-sm">
                 <Bell size={19} />
               </button>
-              <div className="grid size-10 place-items-center rounded-full bg-[#172033] font-heading font-black text-white">
+              <div className="grid size-10 place-items-center rounded-full bg-[#0E3A5F] font-heading font-black text-white">
                 {user.name.charAt(0).toUpperCase()}
               </div>
             </div>
@@ -153,9 +130,9 @@ export function DashboardShell({
       <nav className="fixed inset-x-3 bottom-3 z-40 rounded-[8px] border border-slate-200 bg-white/95 p-2 shadow-2xl backdrop-blur lg:hidden">
         <div
           className="hide-scrollbar grid auto-cols-[minmax(82px,1fr)] grid-flow-col gap-1 overflow-x-auto"
-          style={{ gridTemplateColumns: `repeat(${items.length + 1}, minmax(82px, 1fr))` }}
+          style={{ gridTemplateColumns: `repeat(${adminNav.length + 1}, minmax(82px, 1fr))` }}
         >
-          {items.map((item) => {
+          {adminNav.map((item) => {
             const active = pathname === item.href;
             const Icon = item.icon;
 
@@ -163,7 +140,7 @@ export function DashboardShell({
               <Link
                 className={[
                   "flex min-h-16 flex-col items-center justify-center gap-1 rounded-[8px] px-2 py-2 text-center text-[11px] font-black",
-                  active ? "bg-[#eff6ff] text-[#2563eb]" : "text-slate-500",
+                  active ? "bg-[#FFF3E0] text-[#0E3A5F]" : "text-slate-500",
                 ].join(" ")}
                 href={item.href}
                 key={item.href}
@@ -189,18 +166,18 @@ export function DashboardShell({
 
 export function MetricCard({
   label,
-  tone = "blue",
+  tone = "yellow",
   value,
 }: {
   label: string;
-  tone?: "blue" | "green" | "yellow" | "red";
+  tone?: "yellow" | "green" | "red" | "navy";
   value: string;
 }) {
   const tones = {
-    blue: "bg-[#eff6ff] text-[#2563eb]",
+    yellow: "bg-[#FFF3E0] text-[#B45309]",
     green: "bg-[#f0fdf4] text-[#16a34a]",
     red: "bg-[#fff1f2] text-[#e11d48]",
-    yellow: "bg-[#fffbeb] text-[#d97706]",
+    navy: "bg-[#eef2f7] text-[#0E3A5F]",
   };
 
   return (

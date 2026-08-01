@@ -160,17 +160,17 @@ export default function AdminAssessmentsPage() {
   );
 
   return (
-    <DashboardShell role="admin" title="Manajemen Asesmen">
+    <DashboardShell title="Manajemen Asesmen">
       <section className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-black uppercase text-[#2563eb]">
+            <p className="text-sm font-black uppercase text-[#0E3A5F]">
               Assessment engine
             </p>
             <h2 className="font-heading text-2xl font-black">Daftar asesmen</h2>
           </div>
           <button
-            className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#2563eb] px-4 py-3 font-heading font-black text-white shadow-[0_5px_0_#1d4ed8]"
+            className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#F4B400] px-4 py-3 font-heading font-black text-[#0E3A5F] shadow-[0_5px_0_#C28F00]"
             onClick={() => setShowModal(true)}
             type="button"
           >
@@ -199,7 +199,7 @@ export default function AdminAssessmentsPage() {
               >
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                   <div className="flex min-w-0 gap-4">
-                    <span className="grid size-12 shrink-0 place-items-center rounded-[8px] bg-white text-[#2563eb]">
+                    <span className="grid size-12 shrink-0 place-items-center rounded-[8px] bg-white text-[#0E3A5F]">
                       <CalendarClock size={23} />
                     </span>
                     <div className="min-w-0">
@@ -319,7 +319,7 @@ export default function AdminAssessmentsPage() {
               ) : null}
 
               <button
-                className="mt-2 inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#2563eb] px-4 py-3 font-heading font-black text-white shadow-[0_5px_0_#1d4ed8] disabled:opacity-70"
+                className="mt-2 inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#F4B400] px-4 py-3 font-heading font-black text-[#0E3A5F] shadow-[0_5px_0_#C28F00] disabled:opacity-70"
                 disabled={submitting}
                 type="submit"
               >
@@ -343,7 +343,7 @@ export default function AdminAssessmentsPage() {
           >
             <div className="mb-5 flex items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-black uppercase text-[#2563eb]">Isi asesmen</p>
+                <p className="text-sm font-black uppercase text-[#0E3A5F]">Isi asesmen</p>
                 <h3 className="font-heading text-xl font-black">{configAssessment.title}</h3>
                 <p className="mt-1 text-sm font-bold text-slate-500">
                   Pilih soal aktif dan kelas dari data backend sebelum publikasi.
@@ -385,7 +385,7 @@ export default function AdminAssessmentsPage() {
                   value={orderNumber}
                 />
                 <button
-                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#2563eb] px-4 py-3 font-heading font-black text-white shadow-[0_5px_0_#1d4ed8] disabled:opacity-70"
+                  className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-[8px] bg-[#F4B400] px-4 py-3 font-heading font-black text-[#0E3A5F] shadow-[0_5px_0_#C28F00] disabled:opacity-70"
                   disabled={configSubmitting || !selectedQuestionId}
                   onClick={addQuestionToAssessment}
                   type="button"

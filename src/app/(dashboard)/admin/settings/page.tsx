@@ -32,9 +32,9 @@ const settings = [
 
 export default function AdminSettingsPage() {
   return (
-    <DashboardShell role="admin" title="Pengaturan">
+    <DashboardShell title="Pengaturan">
       <section className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-        <p className="text-sm font-black uppercase text-[#2563eb]">Konfigurasi</p>
+        <p className="text-sm font-black uppercase text-[#0E3A5F]">Konfigurasi</p>
         <h2 className="font-heading text-2xl font-black">Pengaturan platform</h2>
         <p className="mt-2 max-w-2xl font-semibold leading-7 text-slate-600">
           Ringkasan konfigurasi runtime untuk memastikan admin tahu aplikasi terhubung
@@ -44,7 +44,7 @@ export default function AdminSettingsPage() {
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           {settings.map(({ icon: Icon, title, value, text }) => (
             <article className="rounded-[8px] bg-[#f8fafc] p-4" key={title}>
-              <Icon className="text-[#2563eb]" size={24} />
+              <Icon className="text-[#0E3A5F]" size={24} />
               <p className="font-heading mt-4 text-xl font-black">{title}</p>
               <p className="mt-1 break-words text-sm font-black text-[#16a34a]">{value}</p>
               <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">{text}</p>

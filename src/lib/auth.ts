@@ -19,7 +19,6 @@ export type AuthUser = {
 };
 
 type AuthResponse = { accessToken: string; user: AuthUser };
-type GoogleAuthResponse = AuthResponse & { isNewUser: boolean };
 
 function storeSession(accessToken: string, user: AuthUser) {
   setToken(accessToken);
@@ -47,76 +46,15 @@ export async function login(email: string, password: string) {
   return data.user;
 }
 
-export async function studentLogin(participantCode: string) {
-  const { data } = await apiFetch<AuthResponse>("/auth/student-login", {
-    method: "POST",
-    body: { participantCode },
-    auth: false,
-  });
-  storeSession(data.accessToken, data.user);
-  return data.user;
-}
-
-export async function registerStudent(
-  name: string,
-  email: string,
-  password: string,
-  gradeLevel?: number,
-) {
-  const { data } = await apiFetch<AuthResponse>("/auth/register", {
-    method: "POST",
-    body: { name, email, password, gradeLevel },
-    auth: false,
-  });
-  storeSession(data.accessToken, data.user);
-  return data.user;
-}
-
-export async function loginWithGoogle(idToken: string) {
-  const { data } = await apiFetch<GoogleAuthResponse>("/auth/google", {
-    method: "POST",
-    body: { idToken },
-    auth: false,
-  });
-  storeSession(data.accessToken, data.user);
-  return { user: data.user, isNewUser: data.isNewUser };
-}
-
-export async function switchRole(role: UserRole) {
-  const { data } = await apiFetch<AuthResponse>("/auth/switch-role", {
-    method: "POST",
-    body: { role },
-  });
-  storeSession(data.accessToken, data.user);
-  return data.user;
-}
-
-export async function addRole(role: UserRole) {
-  const { data } = await apiFetch<{ roles: UserRole[] }>("/auth/roles", {
-    method: "POST",
-    body: { role },
-  });
-  const current = getStoredUser();
-  if (current) {
-    window.localStorage.setItem(
-      USER_KEY,
-      JSON.stringify({ ...current, roles: data.roles }),
-    );
-  }
-  return data.roles;
-}
-
 export function logout() {
   clearSession();
 }
 
-export function dashboardPathForRole(role: UserRole): string {
-  if (role === "STUDENT") return "/student/dashboard";
-  if (role === "TEACHER") return "/teacher/dashboard";
+export function dashboardPathForRole(): string {
   return "/admin/dashboard";
 }
 
-export function useRequireAuth(allowedRoles: UserRole[], loginPath = "/student/login") {
+export function useRequireAuth(allowedRoles: UserRole[], loginPath = "/login") {
   const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [ready, setReady] = useState(false);

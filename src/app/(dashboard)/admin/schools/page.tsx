@@ -83,17 +83,17 @@ export default function AdminSchoolsPage() {
   }
 
   return (
-    <DashboardShell role="admin" title="Data Sekolah">
+    <DashboardShell title="Data Sekolah">
       <section className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-black uppercase text-[#2563eb]">
+            <p className="text-sm font-black uppercase text-[#0E3A5F]">
               Master data
             </p>
             <h2 className="font-heading text-2xl font-black">Sekolah pilot</h2>
           </div>
           <button
-            className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#2563eb] px-4 py-3 font-heading font-black text-white shadow-[0_5px_0_#1d4ed8] active:translate-y-1 active:shadow-none"
+            className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#F4B400] px-4 py-3 font-heading font-black text-[#0E3A5F] shadow-[0_5px_0_#C28F00] active:translate-y-1 active:shadow-none"
             onClick={() => setShowModal(true)}
             type="button"
           >
@@ -142,7 +142,7 @@ export default function AdminSchoolsPage() {
                   >
                     <td className="rounded-l-[8px] px-4 py-4">
                       <div className="flex items-center gap-3">
-                        <span className="grid size-10 place-items-center rounded-[8px] bg-white text-[#2563eb]">
+                        <span className="grid size-10 place-items-center rounded-[8px] bg-white text-[#0E3A5F]">
                           <SchoolIcon size={19} />
                         </span>
                         <span className="font-heading font-black">{school.name}</span>
@@ -150,7 +150,7 @@ export default function AdminSchoolsPage() {
                     </td>
                     <td className="px-4 py-4 font-bold text-slate-600">{school.city}</td>
                     <td className="px-4 py-4">
-                      <span className="rounded-full bg-[#eff6ff] px-3 py-1 text-xs font-black text-[#2563eb]">
+                      <span className="rounded-full bg-[#FFF3E0] px-3 py-1 text-xs font-black text-[#0E3A5F]">
                         {school.pilotStatus}
                       </span>
                     </td>
@@ -250,7 +250,7 @@ export default function AdminSchoolsPage() {
               ) : null}
 
               <button
-                className="mt-2 inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#2563eb] px-4 py-3 font-heading font-black text-white shadow-[0_5px_0_#1d4ed8] disabled:opacity-70"
+                className="mt-2 inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#F4B400] px-4 py-3 font-heading font-black text-[#0E3A5F] shadow-[0_5px_0_#C28F00] disabled:opacity-70"
                 disabled={submitting}
                 type="submit"
               >

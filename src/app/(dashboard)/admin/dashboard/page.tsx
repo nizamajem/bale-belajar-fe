@@ -55,7 +55,7 @@ export default function AdminDashboardPage() {
   }, []);
 
   return (
-    <DashboardShell role="admin" title="Dashboard Admin">
+    <DashboardShell title="Dashboard Admin">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Total sekolah" value={loading ? "-" : String(totalSchools)} />
         <MetricCard label="Total siswa" tone="green" value={loading ? "-" : String(totalStudents)} />
@@ -70,7 +70,7 @@ export default function AdminDashboardPage() {
           initial={{ opacity: 0, y: 14 }}
         >
           <div className="mb-5">
-            <p className="text-sm font-black uppercase text-[#2563eb]">
+            <p className="text-sm font-black uppercase text-[#0E3A5F]">
               Ringkasan
             </p>
             <h2 className="font-heading text-2xl font-black">
@@ -96,7 +96,7 @@ export default function AdminDashboardPage() {
                 >
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <span className="grid size-10 place-items-center rounded-[8px] bg-white text-[#2563eb]">
+                      <span className="grid size-10 place-items-center rounded-[8px] bg-white text-[#0E3A5F]">
                         <School size={19} />
                       </span>
                       <div>
@@ -154,7 +154,7 @@ export default function AdminDashboardPage() {
       <div className="mt-5">
         <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-center gap-3">
-            <UsersRound className="text-[#2563eb]" size={24} />
+            <UsersRound className="text-[#0E3A5F]" size={24} />
             <h2 className="font-heading text-xl font-black">Aktivitas lead terbaru</h2>
           </div>
           <div className="space-y-3">

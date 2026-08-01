@@ -131,7 +131,7 @@ export default function AdminStudentsPage() {
   );
 
   return (
-    <DashboardShell role="admin" title="Data Siswa">
+    <DashboardShell title="Data Siswa">
       <div className="grid gap-5 xl:grid-cols-[1fr_320px]">
         <section className="rounded-[8px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -152,7 +152,7 @@ export default function AdminStudentsPage() {
                 <Download size={19} />
               </button>
               <button
-                className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#2563eb] px-4 py-3 font-heading font-black text-white shadow-[0_5px_0_#1d4ed8] active:translate-y-1 active:shadow-none"
+                className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#F4B400] px-4 py-3 font-heading font-black text-[#0E3A5F] shadow-[0_5px_0_#C28F00] active:translate-y-1 active:shadow-none"
                 onClick={() => setShowModal(true)}
                 type="button"
               >
@@ -201,7 +201,7 @@ export default function AdminStudentsPage() {
                       key={student.id}
                       transition={{ delay: index * 0.04 }}
                     >
-                      <td className="rounded-l-[8px] px-4 py-4 font-heading font-black text-[#2563eb]">
+                      <td className="rounded-l-[8px] px-4 py-4 font-heading font-black text-[#0E3A5F]">
                         {student.participantCode}
                       </td>
                       <td className="px-4 py-4 font-heading font-black">{student.fullName}</td>
@@ -374,7 +374,7 @@ export default function AdminStudentsPage() {
               ) : null}
 
               <button
-                className="mt-2 inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#2563eb] px-4 py-3 font-heading font-black text-white shadow-[0_5px_0_#1d4ed8] disabled:opacity-70"
+                className="mt-2 inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#F4B400] px-4 py-3 font-heading font-black text-[#0E3A5F] shadow-[0_5px_0_#C28F00] disabled:opacity-70"
                 disabled={submitting}
                 type="submit"
               >
@@ -410,7 +410,7 @@ function Field({
     <label className="block">
       <span className="mb-2 block text-sm font-black text-slate-600">{label}</span>
       <input
-        className="w-full rounded-[8px] border-2 border-slate-200 px-4 py-3 font-bold outline-none focus:border-[#2563eb]"
+        className="w-full rounded-[8px] border-2 border-slate-200 px-4 py-3 font-bold outline-none focus:border-[#F4B400]"
         name={name}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}

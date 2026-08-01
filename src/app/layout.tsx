@@ -16,26 +16,15 @@ const body = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "BaleBelajar - Platform Belajar Berbasis Cita-cita",
-    template: "%s | BaleBelajar",
+    default: "BaleBelajar Admin Console",
+    template: "%s | BaleBelajar Admin",
   },
   description:
-    "BaleBelajar membantu sekolah mengubah asesmen dan kurikulum menjadi perjalanan belajar berbasis cita-cita dengan materi, studi kasus, tes, dan rekomendasi remedial.",
-  keywords: [
-    "BaleBelajar",
-    "platform asesmen siswa",
-    "rekomendasi belajar AI",
-    "kurikulum berbasis cita-cita",
-    "edtech sekolah Indonesia",
-  ],
+    "Konsol admin BaleBelajar untuk mengelola sekolah, siswa, kurikulum, dan asesmen.",
   metadataBase: new URL("https://app.balebelajar.com"),
-  openGraph: {
-    title: "BaleBelajar - Platform Belajar Berbasis Cita-cita",
-    description:
-      "Materi, studi kasus, tes, dan rekomendasi remedial untuk membantu guru memahami kebutuhan belajar siswa.",
-    locale: "id_ID",
-    siteName: "BaleBelajar",
-    type: "website",
+  robots: {
+    index: false,
+    follow: false,
   },
 };
 

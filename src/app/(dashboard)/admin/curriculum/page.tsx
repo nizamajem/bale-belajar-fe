@@ -150,10 +150,10 @@ export default function AdminCurriculumPage() {
   }
 
   return (
-    <DashboardShell role="admin" title="Curriculum Builder">
+    <DashboardShell title="Curriculum Builder">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-black uppercase text-[#2563eb]">Engine Kurikulum</p>
+          <p className="text-sm font-black uppercase text-[#0E3A5F]">Engine Kurikulum</p>
           <h2 className="font-heading text-2xl font-black">Bangun roadmap belajar per cita-cita</h2>
         </div>
         <div className="flex gap-2">
@@ -163,7 +163,7 @@ export default function AdminCurriculumPage() {
             value={worldKey}
           />
           <button
-            className="inline-flex items-center gap-2 rounded-[8px] bg-[#2563eb] px-4 py-2 font-heading font-black text-white"
+            className="inline-flex items-center gap-2 rounded-[8px] bg-[#F4B400] px-4 py-2 font-heading font-black text-[#0E3A5F]"
             onClick={load}
             type="button"
           >
@@ -193,7 +193,7 @@ export default function AdminCurriculumPage() {
                 <button
                   className={[
                     "w-full rounded-[8px] border-2 p-4 text-left transition",
-                    selectedModuleId === module.id ? "border-[#2563eb] bg-[#eff6ff]" : "border-slate-200 bg-white",
+                    selectedModuleId === module.id ? "border-[#F4B400] bg-[#FFF3E0]" : "border-slate-200 bg-white",
                   ].join(" ")}
                   key={module.id}
                   onClick={() => setSelectedModuleId(module.id)}
@@ -283,7 +283,7 @@ function BuilderForm({
   return (
     <form className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm" onSubmit={onSubmit}>
       <div className="flex items-center gap-2">
-        <span className="grid size-9 place-items-center rounded-[8px] bg-[#eff6ff] text-[#2563eb]">{icon}</span>
+        <span className="grid size-9 place-items-center rounded-[8px] bg-[#FFF3E0] text-[#0E3A5F]">{icon}</span>
         <p className="font-heading text-xl font-black">{title}</p>
       </div>
       {children}
@@ -294,7 +294,7 @@ function BuilderForm({
 function Input({ name, placeholder, type = "text" }: { name: string; placeholder: string; type?: string }) {
   return (
     <input
-      className="mt-3 w-full rounded-[8px] border-2 border-slate-200 px-3 py-3 font-bold outline-none focus:border-[#2563eb]"
+      className="mt-3 w-full rounded-[8px] border-2 border-slate-200 px-3 py-3 font-bold outline-none focus:border-[#F4B400]"
       name={name}
       placeholder={placeholder}
       type={type}
@@ -305,7 +305,7 @@ function Input({ name, placeholder, type = "text" }: { name: string; placeholder
 function Textarea({ name, placeholder }: { name: string; placeholder: string }) {
   return (
     <textarea
-      className="mt-3 w-full rounded-[8px] border-2 border-slate-200 px-3 py-3 font-bold outline-none focus:border-[#2563eb]"
+      className="mt-3 w-full rounded-[8px] border-2 border-slate-200 px-3 py-3 font-bold outline-none focus:border-[#F4B400]"
       name={name}
       placeholder={placeholder}
       rows={3}
