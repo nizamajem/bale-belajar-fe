@@ -43,6 +43,41 @@ type QuestionPayload = {
   competencies: CompetencyOption[];
   questions: QuestQuestion[];
 };
+type ImportedQuest = {
+  id: string;
+  code: string;
+  title: string;
+  missionType?: string;
+  objective?: string;
+  story?: string;
+  studentInstruction?: string;
+  estimatedMinutes: number;
+  xpRewardFirst: number;
+  status: string;
+  _count?: { questions: number };
+};
+type ImportedChapter = {
+  id: string;
+  chapterCode: string;
+  chapterNumber: number;
+  title: string;
+  story?: string;
+  difficulty?: string;
+  estimatedDurationDays?: number;
+  recommendedSessions?: number;
+  goal?: string;
+  status: string;
+  subWorldKey?: string;
+  subWorldName?: string;
+  competencies: CompetencyOption[];
+  quests: ImportedQuest[];
+};
+type ImportedCurriculum = {
+  id: string;
+  key: string;
+  name: string;
+  chapters: ImportedChapter[];
+};
 
 const lessonTypes = ["CONCEPT", "PROFESSIONAL_HABIT", "EXAMPLE", "CHECKLIST", "RUBRIC", "MASTERY_PATH"];
 const questionTypes = [
@@ -84,14 +119,18 @@ function AdminCurriculumContent() {
   const view = normalizeView(searchParams.get("view"));
   const [worldKey, setWorldKey] = useState("detectivia");
   const [curriculum, setCurriculum] = useState<WorldCurriculum | null>(null);
+  const [importedCurriculum, setImportedCurriculum] = useState<ImportedCurriculum | null>(null);
   const [questionsData, setQuestionsData] = useState<QuestionPayload | null>(null);
   const [readiness, setReadiness] = useState<CurriculumReadiness | null>(null);
   const [selectedModuleId, setSelectedModuleId] = useState("");
   const [selectedItemType, setSelectedItemType] = useState<ItemType>("module");
   const [selectedItemId, setSelectedItemId] = useState("");
   const [selectedQuestionId, setSelectedQuestionId] = useState("");
+  const [selectedChapterId, setSelectedChapterId] = useState("");
+  const [selectedQuestId, setSelectedQuestId] = useState("");
   const [itemModal, setItemModal] = useState<{ type: ItemType; mode: FormMode } | null>(null);
   const [questionModal, setQuestionModal] = useState<FormMode | null>(null);
+  const [importedModal, setImportedModal] = useState<{ type: "chapter" | "quest"; mode: FormMode } | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -105,6 +144,14 @@ function AdminCurriculumContent() {
     () => questionsData?.questions.find((question) => question.id === selectedQuestionId),
     [questionsData, selectedQuestionId],
   );
+  const selectedChapter = useMemo(
+    () => importedCurriculum?.chapters.find((chapter) => chapter.id === selectedChapterId),
+    [importedCurriculum, selectedChapterId],
+  );
+  const selectedQuest = useMemo(
+    () => selectedChapter?.quests.find((quest) => quest.id === selectedQuestId),
+    [selectedChapter, selectedQuestId],
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -117,12 +164,18 @@ function AdminCurriculumContent() {
       setCurriculum(curriculumRes.data);
       setReadiness(readinessRes.data);
       setSelectedModuleId((current) => current || curriculumRes.data.modules[0]?.id || "");
+      if (view === "list") {
+        const { data } = await apiFetch<ImportedCurriculum>(`/admin/curriculum/worlds/${worldKey}/imported`);
+        setImportedCurriculum(data);
+        setSelectedChapterId((current) => current || data.chapters[0]?.id || "");
+      }
       if (view === "questions") {
         const { data } = await apiFetch<QuestionPayload>(`/admin/curriculum/worlds/${worldKey}/questions`);
         setQuestionsData(data);
       }
     } catch (err) {
       setCurriculum(null);
+      setImportedCurriculum(null);
       setQuestionsData(null);
       setMessage(err instanceof ApiError ? err.message : "Kurikulum gagal dimuat.");
     } finally {
@@ -232,19 +285,35 @@ function AdminCurriculumContent() {
       ) : null}
 
       {view === "list" ? (
-        <CurriculumListView
-          curriculum={curriculum}
+        <ImportedCurriculumListView
+          data={importedCurriculum}
           loading={loading}
-          onAdd={(type) => setItemModal({ type, mode: "add" })}
-          onDelete={removeSelectedItem}
-          onSelect={selectItem}
-          onUpdate={() => setItemModal({ type: selectedItemType, mode: "update" })}
+          onAdd={(type) => setImportedModal({ type, mode: "add" })}
+          onDelete={async (type) => {
+            const id = type === "chapter" ? selectedChapterId : selectedQuestId;
+            if (!id) return;
+            const ok = window.confirm(type === "chapter" ? "Arsipkan kurikulum terpilih?" : "Arsipkan misi terpilih?");
+            if (!ok) return;
+            setSaving(true);
+            try {
+              await apiFetch(type === "chapter" ? `/admin/curriculum/chapters/${id}` : `/admin/curriculum/quests/${id}`, { method: "DELETE" });
+              if (type === "chapter") setSelectedChapterId("");
+              if (type === "quest") setSelectedQuestId("");
+              await load();
+            } catch (err) {
+              setMessage(err instanceof ApiError ? err.message : "Data gagal dihapus.");
+            } finally {
+              setSaving(false);
+            }
+          }}
+          onOpenChapter={setSelectedChapterId}
+          onSelectChapter={setSelectedChapterId}
+          onSelectQuest={setSelectedQuestId}
+          onUpdate={(type) => setImportedModal({ type, mode: "update" })}
           saving={saving}
-          selectedItemId={selectedItemId}
-          selectedItemType={selectedItemType}
-          selectedModule={selectedModule}
-          selectedModuleId={selectedModuleId}
-          setSelectedModuleId={setSelectedModuleId}
+          selectedChapter={selectedChapter}
+          selectedChapterId={selectedChapterId}
+          selectedQuestId={selectedQuestId}
         />
       ) : null}
 
@@ -287,6 +356,22 @@ function AdminCurriculumContent() {
             await load();
           }}
           question={questionModal === "update" ? selectedQuestion : undefined}
+        />
+      ) : null}
+
+      {importedModal ? (
+        <ImportedModal
+          chapter={importedModal.type === "chapter" ? selectedChapter : undefined}
+          mode={importedModal.mode}
+          onClose={() => setImportedModal(null)}
+          onSaved={async () => {
+            setImportedModal(null);
+            await load();
+          }}
+          quest={importedModal.type === "quest" ? selectedQuest : undefined}
+          selectedChapter={selectedChapter}
+          type={importedModal.type}
+          worldKey={worldKey}
         />
       ) : null}
     </DashboardShell>
@@ -391,6 +476,119 @@ function CurriculumListView(props: {
           selectedItemType={props.selectedItemType}
           title="List Remedial"
         />
+      </div>
+    </div>
+  );
+}
+
+function ImportedCurriculumListView(props: {
+  data: ImportedCurriculum | null;
+  loading: boolean;
+  onAdd: (type: "chapter" | "quest") => void;
+  onDelete: (type: "chapter" | "quest") => void;
+  onOpenChapter: (id: string) => void;
+  onSelectChapter: (id: string) => void;
+  onSelectQuest: (id: string) => void;
+  onUpdate: (type: "chapter" | "quest") => void;
+  saving: boolean;
+  selectedChapter?: ImportedChapter;
+  selectedChapterId: string;
+  selectedQuestId: string;
+}) {
+  return (
+    <div className="grid gap-5 xl:grid-cols-[1fr_1.15fr]">
+      <DataPanel
+        addLabel="Add Kurikulum"
+        canDelete={Boolean(props.selectedChapterId)}
+        canUpdate={Boolean(props.selectedChapterId)}
+        onAdd={() => props.onAdd("chapter")}
+        onDelete={() => props.onDelete("chapter")}
+        onUpdate={() => props.onUpdate("chapter")}
+        title="List Kurikulum"
+      >
+        <TableShell loading={props.loading} empty={!props.data?.chapters.length} colSpan={8}>
+          <thead className="table-head">
+            <tr>
+              <th className="w-12 px-4 py-3"><span /></th>
+              <th className="px-4 py-3 text-left">No</th>
+              <th className="px-4 py-3 text-left">Code</th>
+              <th className="px-4 py-3 text-left">Judul</th>
+              <th className="px-4 py-3 text-left">Sub Dunia</th>
+              <th className="px-4 py-3 text-left">Kompetensi</th>
+              <th className="px-4 py-3 text-left">Status</th>
+              <th className="px-4 py-3 text-left">Operation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {props.data?.chapters.map((chapter) => (
+              <tr className="border-b border-slate-100 hover:bg-[#f8fafc]" key={chapter.id}>
+                <td className="px-4 py-3">
+                  <input checked={props.selectedChapterId === chapter.id} onChange={() => props.onSelectChapter(chapter.id)} type="checkbox" />
+                </td>
+                <td className="px-4 py-3 text-slate-600">{chapter.chapterNumber}</td>
+                <td className="px-4 py-3 font-mono text-xs text-slate-600">{chapter.chapterCode}</td>
+                <td className="px-4 py-3 font-bold text-[#0E3A5F]">{chapter.title}</td>
+                <td className="px-4 py-3 text-slate-600">{chapter.subWorldName ?? "-"}</td>
+                <td className="px-4 py-3 text-slate-600">{chapter.competencies.length}</td>
+                <td className="px-4 py-3 text-slate-600">{chapter.status}</td>
+                <td className="px-4 py-3">
+                  <button className="font-bold text-[#2f80d8]" onClick={() => props.onOpenChapter(chapter.id)} type="button">Buka</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </TableShell>
+      </DataPanel>
+
+      <div className="space-y-5">
+        <section className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-xs font-black uppercase text-[#0E3A5F]">Kurikulum aktif</p>
+          <h2 className="font-heading text-xl font-black">{props.selectedChapter?.title ?? "Pilih kurikulum"}</h2>
+          <p className="mt-1 text-sm font-bold text-slate-500">{props.selectedChapter?.goal ?? "Klik Buka pada List Kurikulum untuk melihat misi."}</p>
+        </section>
+
+        <DataPanel
+          addLabel="Add Misi"
+          canDelete={Boolean(props.selectedQuestId)}
+          canUpdate={Boolean(props.selectedQuestId)}
+          onAdd={() => props.onAdd("quest")}
+          onDelete={() => props.onDelete("quest")}
+          onUpdate={() => props.onUpdate("quest")}
+          title="List Misi"
+        >
+          <table className="w-full min-w-[820px] border-collapse text-sm">
+            <thead className="table-head">
+              <tr>
+                <th className="w-12 px-4 py-3"><span /></th>
+                <th className="px-4 py-3 text-left">Code</th>
+                <th className="px-4 py-3 text-left">Judul</th>
+                <th className="px-4 py-3 text-left">Tipe</th>
+                <th className="px-4 py-3 text-left">Menit</th>
+                <th className="px-4 py-3 text-left">XP</th>
+                <th className="px-4 py-3 text-left">Soal</th>
+                <th className="px-4 py-3 text-left">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {!props.selectedChapter?.quests.length ? (
+                <tr><td className="px-4 py-10 text-center font-bold text-slate-500" colSpan={8}>Belum ada misi.</td></tr>
+              ) : props.selectedChapter.quests.map((quest) => (
+                <tr className="border-b border-slate-100 hover:bg-[#f8fafc]" key={quest.id}>
+                  <td className="px-4 py-3">
+                    <input checked={props.selectedQuestId === quest.id} onChange={() => props.onSelectQuest(quest.id)} type="checkbox" />
+                  </td>
+                  <td className="px-4 py-3 font-mono text-xs text-slate-600">{quest.code}</td>
+                  <td className="px-4 py-3 font-bold text-[#0E3A5F]">{quest.title}</td>
+                  <td className="px-4 py-3 text-slate-600">{quest.missionType ?? "-"}</td>
+                  <td className="px-4 py-3 text-slate-600">{quest.estimatedMinutes}</td>
+                  <td className="px-4 py-3 text-slate-600">{quest.xpRewardFirst}</td>
+                  <td className="px-4 py-3 text-slate-600">{quest._count?.questions ?? 0}</td>
+                  <td className="px-4 py-3 text-slate-600">{quest.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </DataPanel>
       </div>
     </div>
   );
@@ -612,6 +810,118 @@ function ItemModal({
             <Field name="actionType" defaultValue={String(item?.actionType ?? "NEXT_SIMILAR_CASE")} label="Action Type" />
           </>
         ) : null}
+        {message ? <p className="mt-3 text-sm font-bold text-[#e11d48]">{message}</p> : null}
+        <ModalActions loading={saving} onClose={onClose} />
+      </form>
+    </Modal>
+  );
+}
+
+function ImportedModal({
+  chapter,
+  mode,
+  onClose,
+  onSaved,
+  quest,
+  selectedChapter,
+  type,
+  worldKey,
+}: {
+  chapter?: ImportedChapter;
+  mode: FormMode;
+  onClose: () => void;
+  onSaved: () => void;
+  quest?: ImportedQuest;
+  selectedChapter?: ImportedChapter;
+  type: "chapter" | "quest";
+  worldKey: string;
+}) {
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const body =
+      type === "chapter"
+        ? {
+            chapterCode: emptyToUndefined(form.get("chapterCode")),
+            chapterNumber: numberOrUndefined(form.get("chapterNumber")),
+            difficulty: emptyToUndefined(form.get("difficulty")),
+            estimatedDurationDays: numberOrUndefined(form.get("estimatedDurationDays")),
+            goal: emptyToUndefined(form.get("goal")),
+            recommendedSessions: numberOrUndefined(form.get("recommendedSessions")),
+            status: String(form.get("status") || "ACTIVE"),
+            story: emptyToUndefined(form.get("story")),
+            subWorldKey: emptyToUndefined(form.get("subWorldKey")),
+            subWorldName: emptyToUndefined(form.get("subWorldName")),
+            title: String(form.get("title") || ""),
+          }
+        : {
+            code: emptyToUndefined(form.get("code")),
+            estimatedMinutes: numberOrUndefined(form.get("estimatedMinutes")),
+            missionType: emptyToUndefined(form.get("missionType")),
+            objective: emptyToUndefined(form.get("objective")),
+            status: String(form.get("status") || "ACTIVE"),
+            story: emptyToUndefined(form.get("story")),
+            studentInstruction: emptyToUndefined(form.get("studentInstruction")),
+            title: String(form.get("title") || ""),
+            xpRewardFirst: numberOrUndefined(form.get("xpRewardFirst")),
+          };
+    const path =
+      type === "chapter"
+        ? mode === "add"
+          ? `/admin/curriculum/worlds/${worldKey}/chapters`
+          : `/admin/curriculum/chapters/${chapter?.id}`
+        : mode === "add"
+          ? `/admin/curriculum/chapters/${selectedChapter?.id}/quests`
+          : `/admin/curriculum/quests/${quest?.id}`;
+    if (type === "quest" && mode === "add" && !selectedChapter?.id) {
+      setMessage("Pilih kurikulum dulu sebelum tambah misi.");
+      return;
+    }
+    setSaving(true);
+    setMessage(null);
+    try {
+      await apiFetch(path, { method: mode === "add" ? "POST" : "PATCH", body });
+      onSaved();
+    } catch (err) {
+      setMessage(err instanceof ApiError ? err.message : "Gagal menyimpan data.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <Modal title={`${mode === "add" ? "Add" : "Update"} ${type === "chapter" ? "Kurikulum" : "Misi"}`} onClose={onClose}>
+      <form onSubmit={submit}>
+        {type === "chapter" ? (
+          <>
+            <Field name="title" defaultValue={chapter?.title ?? ""} label="Judul" required />
+            <Field name="chapterCode" defaultValue={chapter?.chapterCode ?? ""} label="Code" />
+            <Field name="chapterNumber" defaultValue={String(chapter?.chapterNumber ?? "")} label="Nomor" type="number" />
+            <Field name="subWorldKey" defaultValue={chapter?.subWorldKey ?? ""} label="Sub World Key" />
+            <Field name="subWorldName" defaultValue={chapter?.subWorldName ?? ""} label="Sub World Name" />
+            <Field name="goal" defaultValue={chapter?.goal ?? ""} label="Tujuan" multiline />
+            <Field name="story" defaultValue={chapter?.story ?? ""} label="Cerita" multiline />
+            <Field name="difficulty" defaultValue={chapter?.difficulty ?? ""} label="Difficulty" />
+            <Field name="estimatedDurationDays" defaultValue={String(chapter?.estimatedDurationDays ?? "")} label="Durasi Hari" type="number" />
+            <Field name="recommendedSessions" defaultValue={String(chapter?.recommendedSessions ?? "")} label="Sesi" type="number" />
+            <SelectField name="status" defaultValue={chapter?.status ?? "ACTIVE"} label="Status" options={["DRAFT", "ACTIVE", "ARCHIVED"]} />
+          </>
+        ) : (
+          <>
+            <Field name="title" defaultValue={quest?.title ?? ""} label="Judul" required />
+            <Field name="code" defaultValue={quest?.code ?? ""} label="Code" />
+            <Field name="missionType" defaultValue={quest?.missionType ?? ""} label="Tipe Misi" />
+            <Field name="objective" defaultValue={quest?.objective ?? ""} label="Objective" multiline />
+            <Field name="studentInstruction" defaultValue={quest?.studentInstruction ?? ""} label="Instruksi Siswa" multiline />
+            <Field name="story" defaultValue={quest?.story ?? ""} label="Cerita" multiline />
+            <Field name="estimatedMinutes" defaultValue={String(quest?.estimatedMinutes ?? 10)} label="Menit" type="number" />
+            <Field name="xpRewardFirst" defaultValue={String(quest?.xpRewardFirst ?? 0)} label="XP" type="number" />
+            <SelectField name="status" defaultValue={quest?.status ?? "ACTIVE"} label="Status" options={["DRAFT", "ACTIVE", "ARCHIVED"]} />
+          </>
+        )}
         {message ? <p className="mt-3 text-sm font-bold text-[#e11d48]">{message}</p> : null}
         <ModalActions loading={saving} onClose={onClose} />
       </form>
