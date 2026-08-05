@@ -6,6 +6,7 @@ import {
   BarChart3,
   Bell,
   ClipboardList,
+  ChevronDown,
   Handshake,
   LayoutDashboard,
   Loader2,
@@ -20,12 +21,17 @@ import { logout, useRequireAuth } from "@/lib/auth";
 const adminNav = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/schools", label: "Sekolah", icon: School },
-  { href: "/admin/users", label: "Users", icon: UsersRound },
   { href: "/admin/assessments", label: "Asesmen", icon: ClipboardList },
   { href: "/admin/curriculum", label: "Kurikulum", icon: SplitSquareVertical },
   { href: "/admin/leads", label: "Leads", icon: Handshake },
   { href: "/admin/analytics", label: "Analitik", icon: BarChart3 },
   { href: "/admin/settings", label: "Pengaturan", icon: Settings },
+];
+
+const userNav = [
+  { href: "/admin/users?role=STUDENT", label: "Siswa" },
+  { href: "/admin/users?role=TEACHER", label: "Guru" },
+  { href: "/admin/users?role=PARENT", label: "Orangtua" },
 ];
 
 export function DashboardShell({
@@ -74,19 +80,21 @@ export function DashboardShell({
               const Icon = item.icon;
 
               return (
-                <Link
-                  className={[
-                    "flex items-center gap-3 rounded-[8px] px-4 py-3 font-heading font-black transition",
-                    active
-                      ? "bg-[#FFF3E0] text-[#0E3A5F]"
-                      : "text-slate-600 hover:bg-slate-50",
-                  ].join(" ")}
-                  href={item.href}
-                  key={item.href}
-                >
-                  <Icon size={20} />
-                  {item.label}
-                </Link>
+                <div key={item.href}>
+                  <Link
+                    className={[
+                      "flex items-center gap-3 rounded-[8px] px-4 py-3 font-heading font-black transition",
+                      active
+                        ? "bg-[#FFF3E0] text-[#0E3A5F]"
+                        : "text-slate-600 hover:bg-slate-50",
+                    ].join(" ")}
+                    href={item.href}
+                  >
+                    <Icon size={20} />
+                    {item.label}
+                  </Link>
+                  {item.href === "/admin/schools" ? <UsersNavGroup active={pathname === "/admin/users"} /> : null}
+                </div>
               );
             })}
           </nav>
@@ -130,7 +138,7 @@ export function DashboardShell({
       <nav className="fixed inset-x-3 bottom-3 z-40 rounded-[8px] border border-slate-200 bg-white/95 p-2 shadow-2xl backdrop-blur lg:hidden">
         <div
           className="hide-scrollbar grid auto-cols-[minmax(82px,1fr)] grid-flow-col gap-1 overflow-x-auto"
-          style={{ gridTemplateColumns: `repeat(${adminNav.length + 1}, minmax(82px, 1fr))` }}
+          style={{ gridTemplateColumns: `repeat(${adminNav.length + userNav.length + 1}, minmax(82px, 1fr))` }}
         >
           {adminNav.map((item) => {
             const active = pathname === item.href;
@@ -150,6 +158,19 @@ export function DashboardShell({
               </Link>
             );
           })}
+          {userNav.map((item) => (
+            <Link
+              className={[
+                "flex min-h-16 flex-col items-center justify-center gap-1 rounded-[8px] px-2 py-2 text-center text-[11px] font-black",
+                pathname === "/admin/users" ? "bg-[#FFF3E0] text-[#0E3A5F]" : "text-slate-500",
+              ].join(" ")}
+              href={item.href}
+              key={item.href}
+            >
+              <UsersRound size={20} />
+              <span className="leading-tight">{item.label}</span>
+            </Link>
+          ))}
           <button
             className="flex min-h-16 flex-col items-center justify-center gap-1 rounded-[8px] px-2 py-2 text-center text-[11px] font-black text-slate-500"
             onClick={handleLogout}
@@ -161,6 +182,37 @@ export function DashboardShell({
         </div>
       </nav>
     </main>
+  );
+}
+
+function UsersNavGroup({ active }: { active: boolean }) {
+  return (
+    <div className="mt-2">
+      <Link
+        className={[
+          "flex items-center gap-3 rounded-[8px] px-4 py-3 font-heading font-black transition",
+          active
+            ? "bg-[#FFF3E0] text-[#0E3A5F]"
+            : "text-slate-600 hover:bg-slate-50",
+        ].join(" ")}
+        href="/admin/users?role=STUDENT"
+      >
+        <UsersRound size={20} />
+        <span className="flex-1">Users</span>
+        <ChevronDown size={17} />
+      </Link>
+      <div className="mt-1 space-y-1 pl-9">
+        {userNav.map((item) => (
+          <Link
+            className="block rounded-[8px] px-4 py-2 text-sm font-heading font-black text-slate-500 hover:bg-slate-50 hover:text-[#0E3A5F]"
+            href={item.href}
+            key={item.href}
+          >
+            {item.label}
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }
 

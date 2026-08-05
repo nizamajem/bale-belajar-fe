@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Download, Loader2, Search, UserRoundCheck } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { AdminUser, AdminUserRole } from "@/lib/types";
 import { DashboardShell, MetricCard } from "../../_components/dashboard-shell";
@@ -14,6 +15,24 @@ const tabs: { label: string; role: AdminUserRole }[] = [
 ];
 
 export default function AdminUsersPage() {
+  return (
+    <Suspense
+      fallback={
+        <DashboardShell title="Users">
+          <div className="grid min-h-64 place-items-center rounded-[8px] bg-white">
+            <Loader2 className="animate-spin text-slate-400" size={32} />
+          </div>
+        </DashboardShell>
+      }
+    >
+      <AdminUsersContent />
+    </Suspense>
+  );
+}
+
+function AdminUsersContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [activeRole, setActiveRole] = useState<AdminUserRole>("STUDENT");
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [counts, setCounts] = useState<Record<AdminUserRole, number>>({
@@ -44,6 +63,18 @@ export default function AdminUsersPage() {
     const timeout = setTimeout(() => void loadUsers(activeRole, search), 300);
     return () => clearTimeout(timeout);
   }, [activeRole, search]);
+
+  useEffect(() => {
+    const role = searchParams.get("role");
+    if (role === "STUDENT" || role === "TEACHER" || role === "PARENT") {
+      setActiveRole(role);
+    }
+  }, [searchParams]);
+
+  function selectRole(role: AdminUserRole) {
+    setActiveRole(role);
+    router.push(`/admin/users?role=${role}`);
+  }
 
   function exportUsers() {
     const rows = users.map((user) =>
@@ -114,7 +145,7 @@ export default function AdminUsersPage() {
                     : "text-slate-500",
                 ].join(" ")}
                 key={tab.role}
-                onClick={() => setActiveRole(tab.role)}
+                onClick={() => selectRole(tab.role)}
                 type="button"
               >
                 {tab.label}
