@@ -78,6 +78,13 @@ type ImportedCurriculum = {
   name: string;
   chapters: ImportedChapter[];
 };
+type AdminWorldOption = {
+  id: string;
+  key: string;
+  name: string;
+  characterClass: string;
+  _count?: { chapters: number; quests: number; curriculumModules: number };
+};
 
 const lessonTypes = ["CONCEPT", "PROFESSIONAL_HABIT", "EXAMPLE", "CHECKLIST", "RUBRIC", "MASTERY_PATH"];
 const questionTypes = [
@@ -118,6 +125,7 @@ function AdminCurriculumContent() {
   const searchParams = useSearchParams();
   const view = normalizeView(searchParams.get("view"));
   const [worldKey, setWorldKey] = useState("detectivia");
+  const [worlds, setWorlds] = useState<AdminWorldOption[]>([]);
   const [curriculum, setCurriculum] = useState<WorldCurriculum | null>(null);
   const [importedCurriculum, setImportedCurriculum] = useState<ImportedCurriculum | null>(null);
   const [questionsData, setQuestionsData] = useState<QuestionPayload | null>(null);
@@ -182,6 +190,20 @@ function AdminCurriculumContent() {
       setLoading(false);
     }
   }, [view, worldKey]);
+
+  const loadWorlds = useCallback(async () => {
+    try {
+      const { data } = await apiFetch<AdminWorldOption[]>("/admin/curriculum/worlds");
+      setWorlds(data);
+      setWorldKey((current) => data.some((world) => world.key === current) ? current : data[0]?.key ?? current);
+    } catch {
+      setWorlds([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadWorlds();
+  }, [loadWorlds]);
 
   useEffect(() => {
     void load();
@@ -258,7 +280,14 @@ function AdminCurriculumContent() {
         <div className="grid gap-4 lg:grid-cols-[1fr_auto_auto] lg:items-end">
           <label className="block text-xs font-bold text-slate-600">
             World Key
-            <input className="filter-input mt-1" onChange={(event) => setWorldKey(event.target.value)} value={worldKey} />
+            <select className="filter-input mt-1" onChange={(event) => setWorldKey(event.target.value)} value={worldKey}>
+              {worlds.length === 0 ? <option value={worldKey}>{worldKey}</option> : null}
+              {worlds.map((world) => (
+                <option key={world.id} value={world.key}>
+                  {world.name} ({world.key}) - {world._count?.chapters ?? 0} kurikulum, {world._count?.quests ?? 0} misi
+                </option>
+              ))}
+            </select>
           </label>
           <button className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#F4B400] px-5 py-3 font-heading font-black text-[#0E3A5F] shadow-[0_4px_0_#C28F00]" onClick={load} type="button">
             <RefreshCcw size={17} />

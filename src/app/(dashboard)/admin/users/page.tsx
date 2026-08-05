@@ -9,6 +9,40 @@ import { DashboardShell } from "../../_components/dashboard-shell";
 
 type UserStatus = AdminUser["status"];
 type FormMode = "add" | "update";
+type UserLearningHistory = {
+  user: { id: string; name: string; email?: string; role: string; gradeLevel?: number };
+  onboarding: Record<string, unknown> | null;
+  placementAttempts: {
+    id: string;
+    worldKey?: string;
+    status: string;
+    submittedAt?: string;
+    answers: LearningAnswer[];
+  }[];
+  questAttempts: {
+    id: string;
+    world: { key: string; name: string };
+    quest: { code: string; title: string };
+    status: string;
+    overallScore?: number | null;
+    submittedAt?: string;
+    answers: LearningAnswer[];
+  }[];
+};
+type LearningAnswer = {
+  id: string;
+  questionId?: string;
+  questionCode?: string;
+  questionText: string;
+  questionType: string;
+  competency?: { code: string; name: string } | null;
+  selectedAnswer: unknown;
+  correctAnswer?: unknown;
+  isCorrect?: boolean | null;
+  score?: number | null;
+  isSkipped?: boolean;
+  answeredAt?: string;
+};
 
 const roles: { label: string; value: AdminUserRole }[] = [
   { label: "Siswa", value: "STUDENT" },
@@ -58,6 +92,8 @@ function AdminUsersContent() {
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [formMode, setFormMode] = useState<FormMode | null>(null);
+  const [history, setHistory] = useState<UserLearningHistory | null>(null);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   const selectedUser = useMemo(
     () => users.find((user) => user.id === selectedIds[0]),
@@ -174,6 +210,20 @@ function AdminUsersContent() {
     const boundedPage = Math.min(Math.max(nextPage, 1), Math.max(meta.totalPages, 1));
     setPage(boundedPage);
     await loadUsers(boundedPage);
+  }
+
+  async function openHistory(user: AdminUser) {
+    setSelectedIds([user.id]);
+    setHistoryLoading(true);
+    setErrorMessage(null);
+    try {
+      const { data } = await apiFetch<UserLearningHistory>(`/users/${user.id}/history`);
+      setHistory(data);
+    } catch (err) {
+      setErrorMessage(err instanceof ApiError ? err.message : "History user gagal dimuat.");
+    } finally {
+      setHistoryLoading(false);
+    }
   }
 
   const pageNumbers = getPageNumbers(meta.page, meta.totalPages);
@@ -314,8 +364,11 @@ function AdminUsersContent() {
                     <td className="px-4 py-3 text-slate-600">{statusLabel(user.status)}</td>
                     <td className="px-4 py-3 text-slate-600">{formatDateTime(user.createdAt)}</td>
                     <td className="px-4 py-3">
-                      <button className="font-bold text-[#0E3A5F]" onClick={() => setSelectedIds([user.id])} type="button">
+                      <button className="mr-3 font-bold text-[#0E3A5F]" onClick={() => setSelectedIds([user.id])} type="button">
                         Pilih
+                      </button>
+                      <button className="font-bold text-[#2f80d8]" onClick={() => openHistory(user)} type="button">
+                        History
                       </button>
                     </td>
                   </tr>
@@ -355,6 +408,13 @@ function AdminUsersContent() {
             void loadUsers(page);
           }}
           user={formMode === "update" ? selectedUser : undefined}
+        />
+      ) : null}
+      {history || historyLoading ? (
+        <HistoryModal
+          history={history}
+          loading={historyLoading}
+          onClose={() => setHistory(null)}
         />
       ) : null}
     </DashboardShell>
@@ -528,6 +588,144 @@ function UserFormModal({
   );
 }
 
+function HistoryModal({
+  history,
+  loading,
+  onClose,
+}: {
+  history: UserLearningHistory | null;
+  loading: boolean;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/30 p-4">
+      <div className="max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-[8px] bg-white p-5 shadow-2xl">
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs font-black uppercase text-[#0E3A5F]">History belajar</p>
+            <h2 className="font-heading text-xl font-black">
+              {history?.user.name ?? "Memuat data..."}
+            </h2>
+            <p className="text-sm font-bold text-slate-500">
+              {history?.user.email ?? "-"} {history?.user.gradeLevel ? `- Kelas ${history.user.gradeLevel}` : ""}
+            </p>
+          </div>
+          <button className="rounded-[8px] border border-slate-200 px-3 py-1 font-bold text-slate-500" onClick={onClose} type="button">
+            Tutup
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="grid min-h-64 place-items-center">
+            <Loader2 className="animate-spin text-slate-400" size={30} />
+          </div>
+        ) : history ? (
+          <div className="space-y-5">
+            <section className="rounded-[8px] bg-[#f8fafc] p-4">
+              <p className="font-heading font-black">Onboarding 7 Pertanyaan</p>
+              <div className="mt-3 grid gap-2 text-sm font-bold text-slate-600 md:grid-cols-3">
+                <span>Status: {history.onboarding?.completedAt ? "Selesai" : "Belum selesai"}</span>
+                <span>Dunia: {String(history.onboarding?.learningWorld ?? "-")}</span>
+                <span>Level awal: {String(history.onboarding?.selfReportedLevel ?? "-")}</span>
+                <span>Tujuan: {String(history.onboarding?.learningGoal ?? "-")}</span>
+                <span>Kelas: {String(history.onboarding?.gradeChoice ?? "-")}</span>
+                <span>Durasi: {String(history.onboarding?.dailyDuration ?? "-")}</span>
+              </div>
+            </section>
+
+            <HistorySection
+              emptyText="Belum ada history cek awal."
+              groups={history.placementAttempts.map((attempt) => ({
+                id: attempt.id,
+                title: `Cek awal ${attempt.worldKey ?? "-"}`,
+                subtitle: `${attempt.status}${attempt.submittedAt ? ` - ${formatDateTime(attempt.submittedAt)}` : ""}`,
+                answers: attempt.answers,
+              }))}
+              title="History Cek Awal"
+            />
+
+            <HistorySection
+              emptyText="Belum ada history misi."
+              groups={history.questAttempts.map((attempt) => ({
+                id: attempt.id,
+                title: `${attempt.quest.title} (${attempt.world.name})`,
+                subtitle: `${attempt.status}${attempt.overallScore != null ? ` - skor ${attempt.overallScore}` : ""}`,
+                answers: attempt.answers,
+              }))}
+              title="History Misi dan Kompetensi"
+            />
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function HistorySection({
+  emptyText,
+  groups,
+  title,
+}: {
+  emptyText: string;
+  groups: { id: string; title: string; subtitle: string; answers: LearningAnswer[] }[];
+  title: string;
+}) {
+  return (
+    <section className="rounded-[8px] border border-slate-200 p-4">
+      <h3 className="font-heading text-lg font-black">{title}</h3>
+      {groups.length === 0 ? (
+        <p className="mt-3 font-bold text-slate-500">{emptyText}</p>
+      ) : (
+        <div className="mt-3 space-y-4">
+          {groups.map((group) => (
+            <div className="rounded-[8px] bg-[#f8fafc] p-3" key={group.id}>
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <p className="font-heading font-black text-[#0E3A5F]">{group.title}</p>
+                <p className="text-sm font-bold text-slate-500">{group.subtitle}</p>
+              </div>
+              <div className="hide-scrollbar overflow-x-auto">
+                <table className="w-full min-w-[900px] border-collapse text-sm">
+                  <thead className="bg-white text-xs font-black uppercase text-slate-400">
+                    <tr>
+                      <th className="px-3 py-2 text-left">Pertanyaan</th>
+                      <th className="px-3 py-2 text-left">Tipe</th>
+                      <th className="px-3 py-2 text-left">Kompetensi</th>
+                      <th className="px-3 py-2 text-left">Jawaban User</th>
+                      <th className="px-3 py-2 text-left">Jawaban Benar</th>
+                      <th className="px-3 py-2 text-left">Hasil</th>
+                      <th className="px-3 py-2 text-left">Skor</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {group.answers.map((answer) => (
+                      <tr className="border-b border-white" key={answer.id}>
+                        <td className="max-w-sm px-3 py-3 font-bold text-[#0E3A5F]">{answer.questionText}</td>
+                        <td className="px-3 py-3 text-slate-600">{answer.questionType}</td>
+                        <td className="px-3 py-3 text-slate-600">{answer.competency?.name ?? "-"}</td>
+                        <td className="px-3 py-3 text-slate-600">{formatAnswerValue(answer.selectedAnswer)}</td>
+                        <td className="px-3 py-3 text-slate-600">{formatAnswerValue(answer.correctAnswer)}</td>
+                        <td className="px-3 py-3"><ResultBadge value={answer.isCorrect} skipped={answer.isSkipped} /></td>
+                        <td className="px-3 py-3 text-slate-600">{answer.score ?? "-"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ResultBadge({ skipped, value }: { skipped?: boolean; value?: boolean | null }) {
+  if (skipped) return <span className="rounded-full bg-slate-200 px-3 py-1 text-xs font-black text-slate-600">SKIP</span>;
+  if (value === true) return <span className="rounded-full bg-[#dcfce7] px-3 py-1 text-xs font-black text-[#166534]">BENAR</span>;
+  if (value === false) return <span className="rounded-full bg-[#fee2e2] px-3 py-1 text-xs font-black text-[#991b1b]">SALAH</span>;
+  return <span className="rounded-full bg-[#FFF3E0] px-3 py-1 text-xs font-black text-[#7A4A00]">REVIEW</span>;
+}
+
 function GoToPage({ onGo, totalPages }: { onGo: (page: number) => void; totalPages: number }) {
   const [value, setValue] = useState("1");
   return (
@@ -575,4 +773,20 @@ function formatDateTime(value: string) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(value));
+}
+
+function formatAnswerValue(value: unknown): string {
+  if (value === null || value === undefined || value === "") return "-";
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  if (Array.isArray(value)) return value.map(formatAnswerValue).join(", ");
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    if (record.selectedOptionId) return String(record.selectedOptionId);
+    if (record.value) return String(record.value);
+    if (record.text) return String(record.text);
+    return JSON.stringify(record);
+  }
+  return String(value);
 }
