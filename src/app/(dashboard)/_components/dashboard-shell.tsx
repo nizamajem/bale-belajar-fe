@@ -20,7 +20,7 @@ import { logout, useRequireAuth } from "@/lib/auth";
 const adminNav = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/schools", label: "Sekolah", icon: School },
-  { href: "/admin/students", label: "Siswa", icon: UsersRound },
+  { href: "/admin/users", label: "Users", icon: UsersRound },
   { href: "/admin/assessments", label: "Asesmen", icon: ClipboardList },
   { href: "/admin/curriculum", label: "Kurikulum", icon: SplitSquareVertical },
   { href: "/admin/leads", label: "Leads", icon: Handshake },

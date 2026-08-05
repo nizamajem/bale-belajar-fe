@@ -38,6 +38,34 @@ export type StudentProfile = {
   classrooms?: { classroom: { id: string; name: string; gradeLevel: number } }[];
 };
 
+export type AdminUserRole = "STUDENT" | "TEACHER" | "PARENT";
+
+export type AdminUser = {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  role: AdminUserRole;
+  status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
+  createdAt: string;
+  lastLoginAt?: string;
+  studentProfile?: {
+    id: string;
+    fullName: string;
+    participantCode?: string;
+    gradeLevel?: number;
+    academicYear?: string;
+    school?: { id: string; name: string; slug: string };
+    classrooms?: { classroom: { id: string; name: string; gradeLevel: number } }[];
+  };
+  teacherProfile?: {
+    id: string;
+    employeeNumber?: string;
+    subjectSpecialization?: string;
+    school?: { id: string; name: string; slug: string };
+  };
+};
+
 export type Classroom = {
   id: string;
   schoolId: string;
