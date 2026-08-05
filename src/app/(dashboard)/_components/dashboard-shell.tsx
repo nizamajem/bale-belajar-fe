@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import * as React from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
-  BarChart3,
   Bell,
-  ClipboardList,
   ChevronDown,
-  Handshake,
+  History,
   LayoutDashboard,
   Loader2,
   LogOut,
@@ -21,10 +20,8 @@ import { logout, useRequireAuth } from "@/lib/auth";
 const adminNav = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/schools", label: "Sekolah", icon: School },
-  { href: "/admin/assessments", label: "Asesmen", icon: ClipboardList },
+  { href: "/admin/history", label: "History", icon: History },
   { href: "/admin/curriculum", label: "Kurikulum", icon: SplitSquareVertical },
-  { href: "/admin/leads", label: "Leads", icon: Handshake },
-  { href: "/admin/analytics", label: "Analitik", icon: BarChart3 },
   { href: "/admin/settings", label: "Pengaturan", icon: Settings },
 ];
 
@@ -49,7 +46,14 @@ export function DashboardShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [usersOpen, setUsersOpen] = React.useState(pathname === "/admin/users");
+  const [curriculumOpen, setCurriculumOpen] = React.useState(pathname === "/admin/curriculum");
+  const [currentHref, setCurrentHref] = React.useState(pathname);
   const { user, ready } = useRequireAuth(["SUPER_ADMIN", "ADMIN"], "/login");
+
+  React.useEffect(() => {
+    setCurrentHref(`${window.location.pathname}${window.location.search}`);
+  }, [pathname]);
 
   function handleLogout() {
     logout();
@@ -86,7 +90,16 @@ export function DashboardShell({
               const Icon = item.icon;
 
               if (item.href === "/admin/curriculum") {
-                return <CurriculumNavGroup active={pathname === "/admin/curriculum"} key={item.href} />;
+                return (
+                  <CurriculumNavGroup
+                    active={pathname === "/admin/curriculum"}
+                    currentHref={currentHref}
+                    key={item.href}
+                    open={curriculumOpen}
+                    onSelect={setCurrentHref}
+                    onToggle={() => setCurriculumOpen((value) => !value)}
+                  />
+                );
               }
 
               return (
@@ -103,7 +116,15 @@ export function DashboardShell({
                     <Icon size={20} />
                     {item.label}
                   </Link>
-                  {item.href === "/admin/schools" ? <UsersNavGroup active={pathname === "/admin/users"} /> : null}
+                  {item.href === "/admin/schools" ? (
+                    <UsersNavGroup
+                      active={pathname === "/admin/users"}
+                      currentHref={currentHref}
+                      onSelect={setCurrentHref}
+                      onToggle={() => setUsersOpen((value) => !value)}
+                      open={usersOpen}
+                    />
+                  ) : null}
                 </div>
               );
             })}
@@ -209,62 +230,115 @@ export function DashboardShell({
   );
 }
 
-function CurriculumNavGroup({ active }: { active: boolean }) {
+function CurriculumNavGroup({
+  active,
+  currentHref,
+  onSelect,
+  onToggle,
+  open,
+}: {
+  active: boolean;
+  currentHref: string;
+  onSelect: (href: string) => void;
+  onToggle: () => void;
+  open: boolean;
+}) {
   return (
     <div className="mt-2">
-      <div
+      <button
         className={[
-          "flex items-center gap-3 rounded-[8px] px-4 py-3 font-heading font-black transition",
+          "flex w-full items-center gap-3 rounded-[8px] px-4 py-3 text-left font-heading font-black transition",
           active
             ? "bg-[#FFF3E0] text-[#0E3A5F]"
             : "text-slate-600 hover:bg-slate-50",
         ].join(" ")}
+        onClick={onToggle}
+        type="button"
       >
         <SplitSquareVertical size={20} />
         <span className="flex-1">Kurikulum</span>
-        <ChevronDown size={17} />
-      </div>
-      <div className="mt-1 space-y-1 pl-9">
-        {curriculumNav.map((item) => (
-          <Link
-            className="block rounded-[8px] px-4 py-2 text-sm font-heading font-black text-slate-500 hover:bg-slate-50 hover:text-[#0E3A5F]"
-            href={item.href}
-            key={item.href}
-          >
-            {item.label}
-          </Link>
-        ))}
-      </div>
+        <ChevronDown className={open ? "rotate-180 transition" : "transition"} size={17} />
+      </button>
+      {open ? (
+        <SubNav
+          currentHref={currentHref}
+          items={curriculumNav}
+          onSelect={onSelect}
+        />
+      ) : null}
     </div>
   );
 }
 
-function UsersNavGroup({ active }: { active: boolean }) {
+function UsersNavGroup({
+  active,
+  currentHref,
+  onSelect,
+  onToggle,
+  open,
+}: {
+  active: boolean;
+  currentHref: string;
+  onSelect: (href: string) => void;
+  onToggle: () => void;
+  open: boolean;
+}) {
   return (
     <div className="mt-2">
-      <div
+      <button
         className={[
-          "flex items-center gap-3 rounded-[8px] px-4 py-3 font-heading font-black transition",
+          "flex w-full items-center gap-3 rounded-[8px] px-4 py-3 text-left font-heading font-black transition",
           active
             ? "bg-[#FFF3E0] text-[#0E3A5F]"
             : "text-slate-600 hover:bg-slate-50",
         ].join(" ")}
+        onClick={onToggle}
+        type="button"
       >
         <UsersRound size={20} />
         <span className="flex-1">Users</span>
-        <ChevronDown size={17} />
-      </div>
-      <div className="mt-1 space-y-1 pl-9">
-        {userNav.map((item) => (
+        <ChevronDown className={open ? "rotate-180 transition" : "transition"} size={17} />
+      </button>
+      {open ? (
+        <SubNav
+          currentHref={currentHref}
+          items={userNav}
+          onSelect={onSelect}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function SubNav({
+  currentHref,
+  items,
+  onSelect,
+}: {
+  currentHref: string;
+  items: { href: string; label: string }[];
+  onSelect: (href: string) => void;
+}) {
+  return (
+    <div className="mt-1 space-y-1 pl-9">
+      {items.map((item) => {
+        const active = currentHref === item.href;
+        return (
           <Link
-            className="block rounded-[8px] px-4 py-2 text-sm font-heading font-black text-slate-500 hover:bg-slate-50 hover:text-[#0E3A5F]"
+            className={[
+              "block rounded-[8px] px-4 py-2 text-sm font-heading font-black transition",
+              active
+                ? "bg-[#FFF3E0] text-[#0E3A5F]"
+                : "text-slate-500 hover:bg-slate-50 hover:text-[#0E3A5F]",
+            ].join(" ")}
             href={item.href}
             key={item.href}
+            onClick={() => onSelect(item.href)}
           >
             {item.label}
           </Link>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 }
