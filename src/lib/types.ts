@@ -238,6 +238,7 @@ export type CurriculumModuleSummary = {
   bigIdea?: string | null;
   orderNumber: number;
   estimatedMinutes: number;
+  status?: "DRAFT" | "ACTIVE" | "ARCHIVED";
   competency?: { id: string; code: string; name: string } | null;
   lessons: CurriculumLesson[];
   caseStudies: {

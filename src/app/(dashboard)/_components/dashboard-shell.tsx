@@ -34,6 +34,12 @@ const userNav = [
   { href: "/admin/users?role=PARENT", label: "Orangtua" },
 ];
 
+const curriculumNav = [
+  { href: "/admin/curriculum?view=list", label: "List Kurikulum" },
+  { href: "/admin/curriculum?view=questions", label: "List Pertanyaan" },
+  { href: "/admin/curriculum?view=import", label: "Import Template" },
+];
+
 export function DashboardShell({
   children,
   title,
@@ -78,6 +84,10 @@ export function DashboardShell({
             {adminNav.map((item) => {
               const active = pathname === item.href;
               const Icon = item.icon;
+
+              if (item.href === "/admin/curriculum") {
+                return <CurriculumNavGroup active={pathname === "/admin/curriculum"} key={item.href} />;
+              }
 
               return (
                 <div key={item.href}>
@@ -138,9 +148,10 @@ export function DashboardShell({
       <nav className="fixed inset-x-3 bottom-3 z-40 rounded-[8px] border border-slate-200 bg-white/95 p-2 shadow-2xl backdrop-blur lg:hidden">
         <div
           className="hide-scrollbar grid auto-cols-[minmax(82px,1fr)] grid-flow-col gap-1 overflow-x-auto"
-          style={{ gridTemplateColumns: `repeat(${adminNav.length + userNav.length + 1}, minmax(82px, 1fr))` }}
+          style={{ gridTemplateColumns: `repeat(${adminNav.length + userNav.length + curriculumNav.length + 1}, minmax(82px, 1fr))` }}
         >
           {adminNav.map((item) => {
+            if (item.href === "/admin/curriculum") return null;
             const active = pathname === item.href;
             const Icon = item.icon;
 
@@ -171,6 +182,19 @@ export function DashboardShell({
               <span className="leading-tight">{item.label}</span>
             </Link>
           ))}
+          {curriculumNav.map((item) => (
+            <Link
+              className={[
+                "flex min-h-16 flex-col items-center justify-center gap-1 rounded-[8px] px-2 py-2 text-center text-[11px] font-black",
+                pathname === "/admin/curriculum" ? "bg-[#FFF3E0] text-[#0E3A5F]" : "text-slate-500",
+              ].join(" ")}
+              href={item.href}
+              key={item.href}
+            >
+              <SplitSquareVertical size={20} />
+              <span className="leading-tight">{item.label}</span>
+            </Link>
+          ))}
           <button
             className="flex min-h-16 flex-col items-center justify-center gap-1 rounded-[8px] px-2 py-2 text-center text-[11px] font-black text-slate-500"
             onClick={handleLogout}
@@ -182,6 +206,36 @@ export function DashboardShell({
         </div>
       </nav>
     </main>
+  );
+}
+
+function CurriculumNavGroup({ active }: { active: boolean }) {
+  return (
+    <div className="mt-2">
+      <div
+        className={[
+          "flex items-center gap-3 rounded-[8px] px-4 py-3 font-heading font-black transition",
+          active
+            ? "bg-[#FFF3E0] text-[#0E3A5F]"
+            : "text-slate-600 hover:bg-slate-50",
+        ].join(" ")}
+      >
+        <SplitSquareVertical size={20} />
+        <span className="flex-1">Kurikulum</span>
+        <ChevronDown size={17} />
+      </div>
+      <div className="mt-1 space-y-1 pl-9">
+        {curriculumNav.map((item) => (
+          <Link
+            className="block rounded-[8px] px-4 py-2 text-sm font-heading font-black text-slate-500 hover:bg-slate-50 hover:text-[#0E3A5F]"
+            href={item.href}
+            key={item.href}
+          >
+            {item.label}
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }
 
