@@ -35,6 +35,8 @@ type QuestQuestion = {
   competencyId: string;
   competency?: CompetencyOption;
   optionCount: number;
+  answerSummary?: string;
+  answerDetail?: Record<string, unknown>;
   quest: QuestOption;
 };
 type QuestionPayload = {
@@ -643,7 +645,7 @@ function QuestionsView(props: {
       onUpdate={props.onUpdate}
       title="List Pertanyaan"
     >
-      <TableShell loading={props.loading} empty={!props.data?.questions.length} colSpan={9}>
+      <TableShell loading={props.loading} empty={!props.data?.questions.length} colSpan={10}>
         <thead className="table-head">
           <tr>
             <th className="w-12 px-4 py-3"><span /></th>
@@ -652,6 +654,7 @@ function QuestionsView(props: {
             <th className="px-4 py-3 text-left">Pertanyaan</th>
             <th className="px-4 py-3 text-left">Tipe</th>
             <th className="px-4 py-3 text-left">Kompetensi</th>
+            <th className="px-4 py-3 text-left">Kunci Jawaban</th>
             <th className="px-4 py-3 text-left">Status</th>
             <th className="px-4 py-3 text-left">Opsi</th>
             <th className="px-4 py-3 text-left">Order</th>
@@ -668,6 +671,7 @@ function QuestionsView(props: {
               <td className="max-w-md px-4 py-3 font-bold text-[#0E3A5F]">{question.questionText}</td>
               <td className="px-4 py-3 text-slate-600">{question.questionType}</td>
               <td className="px-4 py-3 text-slate-600">{question.competency?.name ?? question.competencyId}</td>
+              <td className="max-w-md px-4 py-3 text-slate-600">{question.answerSummary ?? "-"}</td>
               <td className="px-4 py-3 text-slate-600">{question.status}</td>
               <td className="px-4 py-3 text-slate-600">{question.optionCount}</td>
               <td className="px-4 py-3 text-slate-600">{question.orderNumber}</td>
@@ -1278,34 +1282,188 @@ const expertTemplateRows = [{
   "Kompetensi": "",
   "Tipe Soal": "",
   "Pertanyaan": "",
+  "Format Jawaban": "",
   "Pilihan A": "",
   "Pilihan B": "",
   "Pilihan C": "",
   "Pilihan D": "",
   "Jawaban Benar": "",
+  "Rubrik/Pasangan/Urutan": "",
+  "Media URL": "",
   "Pembahasan": "",
   "Level Kesulitan": "",
   "Estimasi Menit": "",
+  "Sheet Teknis yang Dibutuhkan": "",
   "Catatan Pakar": "",
 }];
 
-const expertExampleRows = [{
-  "Dunia Belajar": "Detectivia",
-  "Tema Dunia": "Logika, bukti, dan investigasi",
-  "Bab/Modul": "Membedakan Fakta dan Dugaan",
-  "Tujuan Bab": "Siswa mampu memilah bukti dan dugaan.",
-  "Misi Harian": "Kasus Jejak di Halaman",
-  "Instruksi Siswa": "Tandai mana bukti, mana dugaan, lalu pilih kesimpulan paling masuk akal.",
-  "Kompetensi": "Menarik kesimpulan dari bukti",
-  "Tipe Soal": "Benar/Salah",
-  "Pertanyaan": "Kalimat 'tanah basah berarti tadi hujan' selalu pasti benar.",
-  "Pilihan A": "Benar",
-  "Pilihan B": "Salah",
-  "Pilihan C": "",
-  "Pilihan D": "",
-  "Jawaban Benar": "B",
-  "Pembahasan": "Tanah basah bisa karena hujan, disiram, atau tumpahan air.",
-  "Level Kesulitan": "Mudah",
-  "Estimasi Menit": "8",
-  "Catatan Pakar": "Cocok untuk latihan penalaran awal.",
-}];
+const expertExampleRows = [
+  {
+    "Dunia Belajar": "Detectivia",
+    "Tema Dunia": "Logika, bukti, dan investigasi",
+    "Bab/Modul": "Membedakan Fakta dan Dugaan",
+    "Tujuan Bab": "Siswa mampu memilah bukti dan dugaan.",
+    "Misi Harian": "Kasus Jejak di Halaman",
+    "Instruksi Siswa": "Tandai bukti, lalu pilih kesimpulan paling masuk akal.",
+    "Kompetensi": "Menarik kesimpulan dari bukti",
+    "Tipe Soal": "singleChoice",
+    "Pertanyaan": "Bukti mana yang paling kuat menunjukkan halaman baru saja disiram?",
+    "Format Jawaban": "Pilih satu. Harus ada 4 opsi dan 1 kunci.",
+    "Pilihan A": "Tanah basah di sekitar tanaman",
+    "Pilihan B": "Langit berawan",
+    "Pilihan C": "Ada kursi di halaman",
+    "Pilihan D": "Pagar berwarna hijau",
+    "Jawaban Benar": "A",
+    "Rubrik/Pasangan/Urutan": "",
+    "Media URL": "",
+    "Pembahasan": "Tanah basah di area tanaman adalah bukti langsung.",
+    "Level Kesulitan": "Mudah",
+    "Estimasi Menit": "2",
+    "Sheet Teknis yang Dibutuhkan": "QUESTION_BANK + QUESTION_OPTIONS",
+    "Catatan Pakar": "Gunakan opsi pengecoh yang masuk akal.",
+  },
+  {
+    "Dunia Belajar": "Scientia",
+    "Tema Dunia": "Sains dan observasi",
+    "Bab/Modul": "Ciri Makhluk Hidup",
+    "Tujuan Bab": "Siswa mengenali ciri makhluk hidup.",
+    "Misi Harian": "Bukti Kehidupan",
+    "Instruksi Siswa": "Pilih semua ciri yang benar.",
+    "Kompetensi": "Mengidentifikasi ciri makhluk hidup",
+    "Tipe Soal": "multipleSelect",
+    "Pertanyaan": "Pilih semua ciri makhluk hidup.",
+    "Format Jawaban": "Pilih lebih dari satu. Semua kunci ditulis dengan pemisah titik koma.",
+    "Pilihan A": "Bernapas",
+    "Pilihan B": "Berwarna merah",
+    "Pilihan C": "Berkembang biak",
+    "Pilihan D": "Terbuat dari plastik",
+    "Jawaban Benar": "A;C",
+    "Rubrik/Pasangan/Urutan": "",
+    "Media URL": "",
+    "Pembahasan": "Bernapas dan berkembang biak adalah ciri makhluk hidup.",
+    "Level Kesulitan": "Mudah",
+    "Estimasi Menit": "2",
+    "Sheet Teknis yang Dibutuhkan": "QUESTION_BANK + QUESTION_OPTIONS",
+    "Catatan Pakar": "Tandai A dan C sebagai is_correct=Yes di JSON.",
+  },
+  {
+    "Dunia Belajar": "Scientia",
+    "Tema Dunia": "Sains dan observasi",
+    "Bab/Modul": "Ciri Makhluk Hidup",
+    "Tujuan Bab": "Siswa mengenali ciri makhluk hidup.",
+    "Misi Harian": "Bukti Kehidupan",
+    "Instruksi Siswa": "Pasangkan konsep dengan contoh.",
+    "Kompetensi": "Menghubungkan ciri dengan contoh",
+    "Tipe Soal": "matching",
+    "Pertanyaan": "Jodohkan ciri makhluk hidup dengan contohnya.",
+    "Format Jawaban": "Pasangan kiri-kanan.",
+    "Pilihan A": "",
+    "Pilihan B": "",
+    "Pilihan C": "",
+    "Pilihan D": "",
+    "Jawaban Benar": "Tumbuh -> batang makin tinggi; Bernapas -> ikan mengambil oksigen",
+    "Rubrik/Pasangan/Urutan": "Setiap pasangan menjadi baris di MATCHING_PAIRS.",
+    "Media URL": "",
+    "Pembahasan": "Pasangan benar menjelaskan hubungan konsep dan contoh.",
+    "Level Kesulitan": "Sedang",
+    "Estimasi Menit": "3",
+    "Sheet Teknis yang Dibutuhkan": "QUESTION_BANK + MATCHING_PAIRS",
+    "Catatan Pakar": "Jangan tulis opsi A-D untuk matching.",
+  },
+  {
+    "Dunia Belajar": "Scientia",
+    "Tema Dunia": "Sains dan observasi",
+    "Bab/Modul": "Ciri Makhluk Hidup",
+    "Tujuan Bab": "Siswa mengenali prosedur observasi.",
+    "Misi Harian": "Urutan Pengamatan",
+    "Instruksi Siswa": "Susun langkah dari awal sampai akhir.",
+    "Kompetensi": "Mengurutkan prosedur observasi",
+    "Tipe Soal": "ordering",
+    "Pertanyaan": "Urutkan langkah pengamatan tanaman kacang hijau.",
+    "Format Jawaban": "Daftar urutan benar nomor 1 sampai selesai.",
+    "Pilihan A": "",
+    "Pilihan B": "",
+    "Pilihan C": "",
+    "Pilihan D": "",
+    "Jawaban Benar": "1. Siapkan kapas basah; 2. Letakkan biji; 3. Catat perubahan",
+    "Rubrik/Pasangan/Urutan": "Setiap item menjadi baris di ORDER_TIMELINE_ITEMS dengan correct_position.",
+    "Media URL": "",
+    "Pembahasan": "Urutan dimulai dari persiapan, perlakuan, lalu observasi.",
+    "Level Kesulitan": "Sedang",
+    "Estimasi Menit": "3",
+    "Sheet Teknis yang Dibutuhkan": "QUESTION_BANK + ORDER_TIMELINE_ITEMS",
+    "Catatan Pakar": "Timeline juga memakai format ini dengan item_kind=timeline.",
+  },
+  {
+    "Dunia Belajar": "Scientia",
+    "Tema Dunia": "Sains dan observasi",
+    "Bab/Modul": "Ciri Makhluk Hidup",
+    "Tujuan Bab": "Siswa menjelaskan alasan berbasis bukti.",
+    "Misi Harian": "Alasan Ilmiah",
+    "Instruksi Siswa": "Tulis jawaban 3-5 kalimat.",
+    "Kompetensi": "Menyusun argumen ilmiah",
+    "Tipe Soal": "longText",
+    "Pertanyaan": "Jelaskan mengapa tanaman termasuk makhluk hidup.",
+    "Format Jawaban": "Jawaban panjang, dinilai guru/mentor memakai rubrik.",
+    "Pilihan A": "",
+    "Pilihan B": "",
+    "Pilihan C": "",
+    "Pilihan D": "",
+    "Jawaban Benar": "Dinilai dengan rubrik.",
+    "Rubrik/Pasangan/Urutan": "Kriteria: bukti hidup 60%, alasan jelas 40%.",
+    "Media URL": "",
+    "Pembahasan": "Jawaban baik menyebut tumbuh, butuh air, dan perubahan teramati.",
+    "Level Kesulitan": "Sedang",
+    "Estimasi Menit": "5",
+    "Sheet Teknis yang Dibutuhkan": "QUESTION_BANK + RUBRIC_CRITERIA",
+    "Catatan Pakar": "Voice response memakai pola rubrik yang sama.",
+  },
+  {
+    "Dunia Belajar": "Scientia",
+    "Tema Dunia": "Sains dan observasi",
+    "Bab/Modul": "Bagian Tumbuhan",
+    "Tujuan Bab": "Siswa mengenali fungsi bagian tumbuhan.",
+    "Misi Harian": "Peta Tanaman",
+    "Instruksi Siswa": "Klik area yang benar pada gambar.",
+    "Kompetensi": "Mengidentifikasi bagian tumbuhan",
+    "Tipe Soal": "imageHotspot",
+    "Pertanyaan": "Klik bagian tanaman yang menyerap air.",
+    "Format Jawaban": "Area koordinat gambar. Tandai hotspot benar.",
+    "Pilihan A": "",
+    "Pilihan B": "",
+    "Pilihan C": "",
+    "Pilihan D": "",
+    "Jawaban Benar": "Akar",
+    "Rubrik/Pasangan/Urutan": "hotspot_id=ROOT, label=Akar, is_correct=Yes.",
+    "Media URL": "https://example.com/bagian-tanaman.png",
+    "Pembahasan": "Akar menyerap air dan mineral dari tanah.",
+    "Level Kesulitan": "Sedang",
+    "Estimasi Menit": "3",
+    "Sheet Teknis yang Dibutuhkan": "QUESTION_BANK + QUESTION_MEDIA + HOTSPOT_AREAS",
+    "Catatan Pakar": "Koordinat x/y relatif 0 sampai 1.",
+  },
+  {
+    "Dunia Belajar": "Scientia",
+    "Tema Dunia": "Sains dan observasi",
+    "Bab/Modul": "Bukti dan Kesimpulan",
+    "Tujuan Bab": "Siswa memilih bukti relevan.",
+    "Misi Harian": "Papan Bukti",
+    "Instruksi Siswa": "Pilih semua bukti yang mendukung kesimpulan.",
+    "Kompetensi": "Memilih bukti relevan",
+    "Tipe Soal": "evidenceBoard",
+    "Pertanyaan": "Pilih bukti bahwa tanaman adalah makhluk hidup.",
+    "Format Jawaban": "Beberapa kartu bukti. Tandai bukti yang benar.",
+    "Pilihan A": "",
+    "Pilihan B": "",
+    "Pilihan C": "",
+    "Pilihan D": "",
+    "Jawaban Benar": "Tinggi tanaman bertambah; muncul akar baru",
+    "Rubrik/Pasangan/Urutan": "Setiap bukti menjadi baris di EVIDENCE_ITEMS.",
+    "Media URL": "",
+    "Pembahasan": "Bukti relevan harus menunjukkan ciri kehidupan.",
+    "Level Kesulitan": "Sedang",
+    "Estimasi Menit": "4",
+    "Sheet Teknis yang Dibutuhkan": "QUESTION_BANK + EVIDENCE_ITEMS",
+    "Catatan Pakar": "Bukti salah tetap boleh ditulis sebagai pengecoh.",
+  },
+];
