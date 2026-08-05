@@ -25,6 +25,20 @@ const lessonTypes = [
   "MASTERY_PATH",
 ];
 
+type CurriculumReadiness = {
+  ready?: boolean;
+  counts?: {
+    sourceRows?: number;
+    worlds?: number;
+    activeQuests?: number;
+    activeQuestQuestions?: number;
+    placementTemplates?: number;
+  };
+  worlds?: { key: string; name: string; chapters: number; activeQuests: number; ready: boolean }[];
+  missingPlacementTypes?: string[];
+  issues?: string[];
+};
+
 export default function AdminCurriculumPage() {
   const [worldKey, setWorldKey] = useState("detectivia");
   const [curriculum, setCurriculum] = useState<WorldCurriculum | null>(null);
@@ -33,7 +47,7 @@ export default function AdminCurriculumPage() {
   const [submitting, setSubmitting] = useState(false);
   const [importing, setImporting] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [readiness, setReadiness] = useState<Record<string, unknown> | null>(null);
+  const [readiness, setReadiness] = useState<CurriculumReadiness | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const selectedModule = curriculum?.modules.find((module) => module.id === selectedModuleId);
 
@@ -60,14 +74,24 @@ export default function AdminCurriculumPage() {
 
   async function loadReadiness() {
     try {
-      const { data } = await apiFetch<Record<string, unknown>>("/admin/curriculum/readiness");
+      const { data } = await apiFetch<CurriculumReadiness>("/admin/curriculum/readiness");
       setReadiness(data);
     } catch {
       setReadiness(null);
     }
   }
 
-  async function downloadTemplate() {
+  function downloadExpertTemplate() {
+    downloadCsv("template-untuk-pakar-kurikulum.csv", expertTemplateRows);
+    setMessage("Template pakar berhasil diunduh. File ini bisa dibuka di Excel atau Google Sheets.");
+  }
+
+  function downloadExpertExample() {
+    downloadCsv("contoh-isian-pakar-kurikulum.csv", expertExampleRows);
+    setMessage("Contoh isian berhasil diunduh.");
+  }
+
+  async function downloadSystemTemplate() {
     setMessage(null);
     try {
       const { data } = await apiFetch<Record<string, unknown>>("/admin/curriculum/import-template");
@@ -78,7 +102,7 @@ export default function AdminCurriculumPage() {
       link.download = "template-kurikulum-baleverse.json";
       link.click();
       URL.revokeObjectURL(url);
-      setMessage("Template import berhasil diunduh.");
+      setMessage("Template teknis JSON berhasil diunduh.");
     } catch (err) {
       setMessage(err instanceof ApiError ? err.message : "Template gagal diunduh.");
     }
@@ -255,7 +279,7 @@ export default function AdminCurriculumPage() {
         </div>
       ) : null}
 
-      <section className="mb-5 grid gap-4 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm lg:grid-cols-[1fr_auto]">
+      <section className="mb-5 rounded-[8px] border border-slate-200 bg-white p-5 shadow-sm">
         <div>
           <div className="flex items-center gap-2">
             <span className="grid size-10 place-items-center rounded-[8px] bg-[#FFF3E0] text-[#0E3A5F]">
@@ -264,29 +288,71 @@ export default function AdminCurriculumPage() {
             <div>
               <p className="font-heading text-xl font-black">Import Kurikulum BaleVerse</p>
               <p className="text-sm font-bold text-slate-500">
-                Unduh template, isi data world/chapter/misi/soal, lalu upload JSON untuk import dan normalisasi.
+                Kirim template pakar ke ahli kurikulum, lalu gunakan template teknis JSON untuk import ke sistem.
               </p>
             </div>
           </div>
+
+          <div className="mt-5 grid gap-3 lg:grid-cols-3">
+            <button
+              className="inline-flex items-center justify-center gap-2 rounded-[8px] bg-[#F4B400] px-4 py-3 font-heading font-black text-[#0E3A5F]"
+              onClick={downloadExpertTemplate}
+              type="button"
+            >
+              <Download size={18} />
+              Download Template Pakar
+            </button>
+            <button
+              className="inline-flex items-center justify-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-4 py-3 font-heading font-black text-[#0E3A5F]"
+              onClick={downloadExpertExample}
+              type="button"
+            >
+              <Download size={18} />
+              Download Contoh Isian
+            </button>
+            <button
+              className="inline-flex items-center justify-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-4 py-3 font-heading font-black text-[#0E3A5F]"
+              onClick={downloadSystemTemplate}
+              type="button"
+            >
+              <Download size={18} />
+              Template Teknis JSON
+            </button>
+          </div>
+
+          <div className="mt-4 rounded-[8px] bg-slate-50 p-4">
+            <p className="font-heading font-black text-slate-900">Yang perlu diisi pakar</p>
+            <div className="mt-3 grid gap-2 text-sm font-bold text-slate-600 md:grid-cols-2 xl:grid-cols-4">
+              <span>Dunia belajar dan topik besar</span>
+              <span>Bab/modul dan tujuan belajar</span>
+              <span>Misi harian untuk siswa</span>
+              <span>Soal, pilihan, jawaban benar, pembahasan</span>
+            </div>
+            <p className="mt-3 text-xs font-bold text-slate-500">
+              File pakar berbentuk CSV agar mudah dibuka di Excel/Google Sheets. Setelah konten final, admin/kurikulum ops bisa memindahkan ke template teknis JSON untuk import sistem.
+            </p>
+          </div>
+
           {readiness ? (
-            <div className="mt-4 flex flex-wrap gap-2 text-xs font-black text-slate-600">
-              {Object.entries(readiness).slice(0, 6).map(([key, value]) => (
-                <span className="rounded-[8px] bg-slate-100 px-3 py-2" key={key}>
-                  {key}: {typeof value === "object" ? JSON.stringify(value) : String(value)}
-                </span>
-              ))}
+            <div className="mt-5">
+              <p className="font-heading font-black text-slate-900">Status data sistem</p>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                <ReadinessCard label="Siap BaleVerse" value={readiness.ready ? "Ya" : "Belum"} tone={readiness.ready ? "green" : "yellow"} />
+                <ReadinessCard label="World" value={readiness.counts?.worlds ?? 0} />
+                <ReadinessCard label="Misi Aktif" value={readiness.counts?.activeQuests ?? 0} />
+                <ReadinessCard label="Soal Misi" value={readiness.counts?.activeQuestQuestions ?? 0} />
+                <ReadinessCard label="Baris Sumber" value={readiness.counts?.sourceRows ?? 0} />
+              </div>
+              {readiness.issues?.length ? (
+                <div className="mt-3 rounded-[8px] bg-[#FFF3E0] p-3 text-sm font-bold text-[#7A4A00]">
+                  {readiness.issues.slice(0, 3).join(" ")}
+                </div>
+              ) : null}
             </div>
           ) : null}
         </div>
-        <div className="flex flex-col gap-2 sm:min-w-80">
-          <button
-            className="inline-flex items-center justify-center gap-2 rounded-[8px] border-2 border-slate-200 bg-white px-4 py-3 font-heading font-black text-[#0E3A5F]"
-            onClick={downloadTemplate}
-            type="button"
-          >
-            <Download size={18} />
-            Download Template
-          </button>
+
+        <div className="mt-5 grid gap-2 lg:grid-cols-[1fr_auto]">
           <label className="flex cursor-pointer items-center justify-center gap-2 rounded-[8px] border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm font-black text-slate-600">
             <Upload size={18} />
             {selectedFile ? selectedFile.name : "Pilih File JSON"}
@@ -399,6 +465,49 @@ function lines(value: FormDataEntryValue | null) {
     .filter(Boolean);
 }
 
+function downloadCsv(filename: string, rows: Record<string, string>[]) {
+  const headers = Object.keys(rows[0] ?? {});
+  const content = [
+    headers.join(";"),
+    ...rows.map((row) => headers.map((header) => csvCell(row[header] ?? "")).join(";")),
+  ].join("\n");
+  const blob = new Blob([`\uFEFF${content}`], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function csvCell(value: string) {
+  const escaped = value.replaceAll('"', '""');
+  return `"${escaped}"`;
+}
+
+function ReadinessCard({
+  label,
+  tone = "slate",
+  value,
+}: {
+  label: string;
+  tone?: "green" | "slate" | "yellow";
+  value: number | string;
+}) {
+  const toneClass =
+    tone === "green"
+      ? "bg-emerald-50 text-emerald-700"
+      : tone === "yellow"
+        ? "bg-[#FFF3E0] text-[#7A4A00]"
+        : "bg-slate-100 text-slate-700";
+  return (
+    <div className={`rounded-[8px] p-3 ${toneClass}`}>
+      <p className="text-xs font-black uppercase">{label}</p>
+      <p className="mt-1 font-heading text-2xl font-black">{value}</p>
+    </div>
+  );
+}
+
 function BuilderForm({
   children,
   icon,
@@ -455,3 +564,69 @@ function SubmitButton({ label, loading }: { label: string; loading: boolean }) {
     </button>
   );
 }
+
+const expertTemplateRows = [
+  {
+    "Dunia Belajar": "",
+    "Tema Dunia": "",
+    "Bab/Modul": "",
+    "Tujuan Bab": "",
+    "Misi Harian": "",
+    "Instruksi Siswa": "",
+    "Kompetensi": "",
+    "Tipe Soal": "",
+    "Pertanyaan": "",
+    "Pilihan A": "",
+    "Pilihan B": "",
+    "Pilihan C": "",
+    "Pilihan D": "",
+    "Jawaban Benar": "",
+    "Pembahasan": "",
+    "Level Kesulitan": "",
+    "Estimasi Menit": "",
+    "Catatan Pakar": "",
+  },
+];
+
+const expertExampleRows = [
+  {
+    "Dunia Belajar": "Scientia",
+    "Tema Dunia": "Sains lewat observasi dan eksperimen sederhana",
+    "Bab/Modul": "Sel dan Organisasi Kehidupan",
+    "Tujuan Bab": "Siswa bisa membedakan benda hidup dan tak hidup dari bukti pengamatan.",
+    "Misi Harian": "Misi Bukti Kehidupan",
+    "Instruksi Siswa": "Baca kasus singkat, pilih bukti paling kuat, lalu jelaskan alasannya.",
+    "Kompetensi": "Mengidentifikasi ciri makhluk hidup",
+    "Tipe Soal": "Pilihan Ganda",
+    "Pertanyaan": "Bukti mana yang paling menunjukkan bahwa objek adalah makhluk hidup?",
+    "Pilihan A": "Objek bertambah besar dari waktu ke waktu.",
+    "Pilihan B": "Objek berwarna kuning.",
+    "Pilihan C": "Objek berada di dekat air.",
+    "Pilihan D": "Objek terlihat mengilap.",
+    "Jawaban Benar": "A",
+    "Pembahasan": "Pertumbuhan adalah salah satu ciri makhluk hidup, sedangkan warna atau posisi belum cukup menjadi bukti.",
+    "Level Kesulitan": "Mudah",
+    "Estimasi Menit": "10",
+    "Catatan Pakar": "Gunakan contoh yang dekat dengan kehidupan siswa.",
+  },
+  {
+    "Dunia Belajar": "Detectivia",
+    "Tema Dunia": "Logika, bukti, dan investigasi",
+    "Bab/Modul": "Membedakan Fakta dan Dugaan",
+    "Tujuan Bab": "Siswa mampu memilah pernyataan berbasis bukti dan pernyataan yang masih dugaan.",
+    "Misi Harian": "Kasus Jejak di Halaman",
+    "Instruksi Siswa": "Tandai mana bukti, mana dugaan, lalu pilih kesimpulan paling masuk akal.",
+    "Kompetensi": "Menarik kesimpulan dari bukti",
+    "Tipe Soal": "Benar/Salah",
+    "Pertanyaan": "Kalimat 'tanah basah berarti tadi hujan' selalu pasti benar.",
+    "Pilihan A": "Benar",
+    "Pilihan B": "Salah",
+    "Pilihan C": "",
+    "Pilihan D": "",
+    "Jawaban Benar": "B",
+    "Pembahasan": "Tanah basah bisa karena hujan, disiram, atau tumpahan air. Jadi itu dugaan yang perlu bukti tambahan.",
+    "Level Kesulitan": "Mudah",
+    "Estimasi Menit": "8",
+    "Catatan Pakar": "Cocok untuk latihan penalaran awal.",
+  },
+];
