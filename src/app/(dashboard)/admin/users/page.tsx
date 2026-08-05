@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Download, Loader2, Search, UserRoundCheck } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { apiFetch } from "@/lib/api";
+import { ApiError, apiFetch } from "@/lib/api";
 import { AdminUser, AdminUserRole } from "@/lib/types";
 import { DashboardShell, MetricCard } from "../../_components/dashboard-shell";
 
@@ -42,18 +42,25 @@ function AdminUsersContent() {
   });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   async function loadUsers(role: AdminUserRole, searchTerm: string) {
     setLoading(true);
+    setErrorMessage(null);
     try {
       const { data, meta } = await apiFetch<AdminUser[]>("/users", {
         query: { page: 1, limit: 100, role, search: searchTerm || undefined },
       });
       setUsers(data);
       setCounts((current) => ({ ...current, [role]: meta?.total ?? data.length }));
-    } catch {
+    } catch (err) {
       setUsers([]);
       setCounts((current) => ({ ...current, [role]: 0 }));
+      setErrorMessage(
+        err instanceof ApiError
+          ? `${err.message} (${err.status})`
+          : "Data user belum bisa dimuat.",
+      );
     } finally {
       setLoading(false);
     }
@@ -165,6 +172,11 @@ function AdminUsersContent() {
         </div>
 
         <div className="hide-scrollbar mt-5 overflow-x-auto">
+          {errorMessage ? (
+            <div className="mb-4 rounded-[8px] bg-[#fff1f2] px-4 py-3 text-sm font-bold text-[#e11d48]">
+              {errorMessage}
+            </div>
+          ) : null}
           {loading ? (
             <div className="grid place-items-center py-10">
               <Loader2 className="animate-spin text-slate-400" size={28} />
