@@ -64,6 +64,49 @@ canvas {
   text-wrap: balance;
 }
 
+.filter-input {
+  width: 100%;
+  min-height: 40px;
+  border-radius: 8px;
+  border: 1px solid #dbe3ef;
+  background: #fff;
+  padding: 8px 12px;
+  color: #172033;
+  outline: none;
+}
+
+.filter-input:focus {
+  border-color: #0e3a5f;
+  box-shadow: 0 0 0 3px rgba(14, 58, 95, 0.1);
+}
+
+.pager,
+.pager-active,
+.pager-text {
+  min-width: 32px;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-weight: 800;
+}
+
+.pager {
+  background: #eef2f7;
+  color: #64748b;
+}
+
+.pager-active {
+  background: #2f80d8;
+  color: #fff;
+}
+
+.pager-text {
+  color: #64748b;
+}
+
+.pager-text:disabled {
+  opacity: 0.4;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

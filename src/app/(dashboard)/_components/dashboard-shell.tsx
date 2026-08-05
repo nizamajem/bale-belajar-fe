@@ -188,19 +188,18 @@ export function DashboardShell({
 function UsersNavGroup({ active }: { active: boolean }) {
   return (
     <div className="mt-2">
-      <Link
+      <div
         className={[
           "flex items-center gap-3 rounded-[8px] px-4 py-3 font-heading font-black transition",
           active
             ? "bg-[#FFF3E0] text-[#0E3A5F]"
             : "text-slate-600 hover:bg-slate-50",
         ].join(" ")}
-        href="/admin/users?role=STUDENT"
       >
         <UsersRound size={20} />
         <span className="flex-1">Users</span>
         <ChevronDown size={17} />
-      </Link>
+      </div>
       <div className="mt-1 space-y-1 pl-9">
         {userNav.map((item) => (
           <Link
